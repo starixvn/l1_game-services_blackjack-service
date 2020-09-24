@@ -1,0 +1,52 @@
+{
+    "name": "sc1-vip-sedie-service",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./src/app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon --es-module-specifier-resolution=node --watch ./src ./src/app.js",
+        "debug": "nodemon --es-module-specifier-resolution=node --watch ./ --inspect ./src/app.js",
+        "prod": "node --max-old-space-size=8192 --es-module-specifier-resolution=node ./src/app.js",
+        "reg": "npm set registry http://npm.lumigame.com"
+    },
+    "author": "pentagon",
+    "license": "ISC",
+    "type": "module",
+    "dependencies": {
+        "amqplib": "^0.6.0",
+        "body-parser": "^1.19.0",
+        "cron": "^1.8.2",
+        "express": "^4.17.1",
+        "helmet": "^3.23.3",
+        "lodash": "^4.17.19",
+        "lodash.sortby": "^4.7.0",
+        "mongoose": "^5.9.25",
+        "mongoose-auto-increment-reworked": "^1.2.1",
+        "morgan": "^1.10.0",
+        "nodemon": "^2.0.4",
+        "sc-base-apis": "^1.6.0",
+        "sc-common": "^1.5.0",
+        "sc-game-base": "^1.13.0",
+        "socket.io": "^2.3.0"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^9.1.2",
+        "@commitlint/config-conventional": "^9.1.2",
+        "@semantic-release/changelog": "^5.0.1",
+        "@semantic-release/commit-analyzer": "^8.0.1",
+        "@semantic-release/git": "^9.0.0",
+        "@semantic-release/gitlab": "^6.0.4",
+        "@semantic-release/npm": "^7.0.5",
+        "@semantic-release/release-notes-generator": "^9.0.1",
+        "husky": "^4.2.5",
+        "install": "^0.13.0",
+        "sc-semantic-release": "^1.1.0",
+        "semantic-release": "^17.1.1"
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    }
+}

@@ -224,9 +224,4 @@ export const cardValues = {
 	'J': 10,
 	'Q': 10,
 	'K': 10
-}
-
-export const suits = ['♥', '♦', '♣', '♠'];
-
-
-
+};

@@ -8,6 +8,7 @@ import Startup from "./startup";
 import TableGameDefinition from "./table-game-definition";
 import TableGameData from "./table-game-data";
 import GameCron from "./crons/game-cron";
+import BlackJackBot from "./crons/blackjack-bot";
 
 export class BlackJackApp extends Table.TableGameApp {}
 
@@ -18,7 +19,7 @@ const run = async () => {
         gameSettings,
         BlackJackRounds,
         BlackJackBets,
-        null //bots insert herre
+        new BlackJackBot(gameSettings.name, gameData, BlackJackBets)
     );
 
     const gameCron = new GameCron(definition, gameData);

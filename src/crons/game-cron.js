@@ -11,7 +11,22 @@ export default class GameCron extends Core.BaseGameCron {
         super(gameDefinition, gameData, null);
     }
 
-    async proceed() {}
+    async proceed() {
+        const { durations } = this.gameDefinition;
 
-    resetForNewRound() {}
+        if (this.gameData.remainingTime === durations.checkStatus) {
+            await this.checkGameStatus();
+            this.gameDefinition.bot && (await this.gameDefinition.bot.reset());
+        }
+
+        if (!this.gameData.disabled) {
+            this.gameData.remainingTime--;
+        }
+
+        if (this.gameData.remainingTime < 0) {
+            this.gameData.remainingTime = durations.checkStatus;
+
+            //TODO settle expired rounds
+        }
+    }
 }

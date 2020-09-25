@@ -18,7 +18,11 @@ export default class BlackJackSocketRouter extends Table.TableSocketRouter {
         placeBetConsumer = null,
         userSignInPublisher = null,
         historyQuery = null,
-        roundQuery = null
+        roundQuery = null,
+        userStandConsumer = null,
+        userHitConsumer = null,
+        userDoubleConsumer = null,
+        userSplitConsumer = null
     ) {
         super(
             definition,
@@ -33,6 +37,10 @@ export default class BlackJackSocketRouter extends Table.TableSocketRouter {
         );
 
         this.inGameConsumer = inGameConsumer;
+        this.userStandConsumer = userStandConsumer;
+        this.userHitConsumer = userHitConsumer;
+        this.userDoubleConsumer = userDoubleConsumer;
+        this.userSplitConsumer = userSplitConsumer;
         //TODO add hit, stand consumers
     }
 }

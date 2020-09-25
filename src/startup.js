@@ -1,7 +1,6 @@
 import { Core, Table } from "sc-game-base";
-
-import PlaceBetConsumer from "./consumers/place-bet-consumer";
 import initDatabase from "./models";
+import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 
 export default class Startup extends Table.TableGameStartup {
     /**
@@ -15,17 +14,7 @@ export default class Startup extends Table.TableGameStartup {
      * @param {socketIo.Socket} socketClient
      */
     initSocketRouter(socketClient) {
-        const router = new Table.Routers.SocketRouter(
-            this.definition,
-            this.gameData,
-            null,
-            null,
-            null,
-            new PlaceBetConsumer(this.definition, this.gameData),
-            null,
-            null,
-            null
-        );
+        const router = new BlackJackSocketRouter(this.definition, this.gameData, null, null, null, null, null, null, null);
 
         router.init(socketClient);
     }

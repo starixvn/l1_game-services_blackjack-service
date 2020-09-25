@@ -1,7 +1,9 @@
 export default {
     id: 23,
     name: "BlackJack",
-    durations: {},
-    actions: ["double", "stand", "split"],
-    defaultBetTracks: {},
+    durations: {
+        wholeAction: 60,
+        checkStatus: 60,
+    },
+    actions: ["double", "stand", "split", "hit"],
 };

@@ -12,4 +12,6 @@ const Schema = new mongoose.Schema({
 
 Schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });
 
-export default mongoose.model(modelName, Schema);
+const rounds = mongoose.model("BlackJack_cuoc", Schema);
+
+export { rounds as BlackJackRounds };

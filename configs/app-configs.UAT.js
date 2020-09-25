@@ -30,8 +30,8 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "http://846d748df9dd4592804e04f950ea9dfb@10.99.99.187:800/122",
-        logIdentifier: "vipsedie",
+        sentryUrl: "http://84728a26e6d64d499bcb8e99fa9bce9b@10.99.99.187:800/133",
+        logIdentifier: "blackjack",
         env: "UAT",
     },
     authenticateSettings: {

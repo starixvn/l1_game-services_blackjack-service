@@ -30,8 +30,8 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "https://c9800a77cde44628ae983c6dfabfc7d9@sentryuat.sabagame.com/120",
-        logIdentifier: "vipsedie",
+        sentryUrl: "https://3e83be2959554962ba5ee12fde73db99@sentryuat.sabagame.com/131",
+        logIdentifier: "blackjack",
         env: "LOCAL",
     },
     authenticateSettings: {

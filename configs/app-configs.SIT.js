@@ -29,8 +29,8 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "http://ad4ae5bf7b34446daddaa328b3c59e47@10.99.99.187:800/121",
-        logIdentifier: "vipsedie",
+        sentryUrl: "http://0fe6ee6fcc1440b6906d7b3eff11f732@10.99.99.187:800/132",
+        logIdentifier: "blackjack",
         env: "SIT",
     },
     authenticateSettings: {

@@ -1,5 +1,5 @@
 export default {
-    hostingPort: 8083,
+    hostingPort: 8084,
     apiSettings: {
         enabledApi: true,
         apiUrl: "http://api.lumigame.com",
@@ -30,7 +30,7 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "https://2f1c5c3152b24eadb231ba5aae4c38f5@sentryuat.sabagame.com/120",
+        sentryUrl: "https://3e83be2959554962ba5ee12fde73db99@sentryuat.sabagame.com/131",
         logIdentifier: "blackjack",
         env: "LOCAL",
     },

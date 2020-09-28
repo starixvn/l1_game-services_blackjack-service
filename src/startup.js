@@ -28,10 +28,11 @@ export default class Startup extends Table.TableGameStartup {
             null,
             null,
             null,
-            new UserDealConsumer(),
+            new UserDealConsumer(this.definition, this.gameData),
             new UserHitConsumer(),
             new UserDoubleConsumer(),
-            new UserSplitConsumer()
+            new UserSplitConsumer(),
+            new UserDealConsumer()
         );
 
         router.init(socketClient);

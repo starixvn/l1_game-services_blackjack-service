@@ -21,7 +21,8 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
         userStandConsumer = null,
         userHitConsumer = null,
         userDoubleConsumer = null,
-        userSplitConsumer = null
+        userSplitConsumer = null,
+        userDealConsumer = null
     ) {
         super(
             definition,
@@ -40,5 +41,20 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
         this.userHitConsumer = userHitConsumer;
         this.userDoubleConsumer = userDoubleConsumer;
         this.userSplitConsumer = userSplitConsumer;
+        this.userDealConsumer = userDealConsumer;
+    }
+
+    handlePlaceBet(payload) {
+        try {
+            if (!this.verify()) {
+                return;
+            }
+            
+            if(payload.deal) {
+                this.userDealConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+            }
+        } catch (error) {
+            logger.logError(error);
+        }
     }
 }

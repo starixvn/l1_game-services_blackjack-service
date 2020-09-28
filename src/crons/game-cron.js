@@ -14,7 +14,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
     async proceed() {
         const { durations } = this.gameDefinition;
 
-        if (this.gameData.remainingTime === durations.checkStatus) {
+        if (this.gameData.remainingTime === durations.wholeRound) {
             await this.checkGameStatus();
             this.gameDefinition.bot && (await this.gameDefinition.bot.reset());
         }
@@ -24,7 +24,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         }
 
         if (this.gameData.remainingTime < 0) {
-            this.gameData.remainingTime = durations.checkStatus;
+            this.gameData.remainingTime = durations.wholeRound;
 
             //TODO settle expired rounds
         }

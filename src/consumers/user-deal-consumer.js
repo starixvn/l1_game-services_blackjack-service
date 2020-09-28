@@ -115,7 +115,7 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
                 time: new Date(),
                 phien: roundId,
                 uid: player.UID,
-                name: player.session.name,
+                name: player.profile.name,
                 memberId: player.session?.memberId,
                 siteId: player.session?.siteId,
                 pos: hands.pos,

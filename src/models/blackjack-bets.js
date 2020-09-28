@@ -12,7 +12,6 @@ const schema = new mongoose.Schema({
     actions: { type: Object },
     cards: { type: Object },
     splitFrom: { type: Number, default: null },
-    pos: { type: Number, default: 0 },
     thanhtoan: { type: Boolean, default: false },
     bet: { type: Number, default: 0 },
     betwin: { type: Number, default: 0 },

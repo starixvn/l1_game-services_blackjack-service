@@ -12,6 +12,6 @@ const Schema = new mongoose.Schema({
 
 Schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });
 
-const rounds = mongoose.model("BlackJack_cuoc", Schema);
+const rounds = mongoose.model("BlackJack_round", Schema);
 
 export { rounds as BlackJackRounds };

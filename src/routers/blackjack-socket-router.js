@@ -1,13 +1,12 @@
-import { logger } from "sc-common";
 import { Table } from "sc-game-base";
 
-import TableGameData from "./../table-game-data";
-import TableGameDefinition from "./table-game-definition";
+import BlackJackGameData from "./../table-game-data";
+import TableGameDefinition from "./../table-game-definition";
 
-export default class BlackJackSocketRouter extends Table.TableSocketRouter {
+export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
     /**
      * @param {TableGameDefinition} definition
-     * @param {TableGameData} gameData
+     * @param {BlackJackGameData} gameData
      */
     constructor(
         definition,
@@ -41,6 +40,5 @@ export default class BlackJackSocketRouter extends Table.TableSocketRouter {
         this.userHitConsumer = userHitConsumer;
         this.userDoubleConsumer = userDoubleConsumer;
         this.userSplitConsumer = userSplitConsumer;
-        //TODO add hit, stand consumers
     }
 }

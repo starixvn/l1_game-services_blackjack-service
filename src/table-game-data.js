@@ -1,6 +1,6 @@
-import { Core } from "sc-game-base";
+import { Table } from "sc-game-base";
 
-export default class TableGameData extends Core.GameData {
+export default class BlackJackGameData extends Table.TableGameData {
     constructor() {
         super(0, {});
     }

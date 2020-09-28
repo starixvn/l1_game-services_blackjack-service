@@ -11,6 +11,19 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         super(gameDefinition, gameData, null);
     }
 
+    async start() {
+        const lastestBet = await this.gameDefinition.betRepository
+            .findOne({}, "id", { sort: { _id: -1 } })
+            .lean()
+            .exec();
+
+        if (lastestBet) {
+            this.gameData.betId = lastestBet.id + 1;
+        }
+
+        super.start();
+    }
+
     async proceed() {
         const { durations } = this.gameDefinition;
 

@@ -4,7 +4,7 @@ const schema = new mongoose.Schema({
     id: { type: Number, default: 0 },
     uid: { type: String, required: true },
     name: { type: String, required: true },
-    phien: { type: Number, required: true },
+    phien: { type: Number, default: 0 },
 
     actions: { type: Object },
     cards: { type: Object },

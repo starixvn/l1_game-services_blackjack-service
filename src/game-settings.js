@@ -4,6 +4,7 @@ export default {
     durations: {
         wholeAction: 60,
         wholeRound: 60,
+        botFrequency: 5,
     },
     actions: ["double", "stand", "split", "hit"],
 };

@@ -21,6 +21,10 @@ export default class GameCron extends Core.Cron.BaseGameCron {
 
         if (!this.gameData.disabled) {
             this.gameData.remainingTime--;
+
+            if (this.gameData.remainingTime % durations.botFrequency === 0) {
+                await this.gameDefinition.bot.run();
+            }
         }
 
         if (this.gameData.remainingTime < 0) {

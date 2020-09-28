@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
+import autoIncrement from "mongoose-auto-increment-reworked";
+
+const modelName = "BlackJack_cuoc";
 
 const schema = new mongoose.Schema({
-    id: { type: Number, default: 0 },
+    pos: { type: Number, default: 0 },
     uid: { type: String, required: true },
     name: { type: String, required: true },
     phien: { type: Number, default: 0 },
@@ -19,6 +22,8 @@ const schema = new mongoose.Schema({
     freeBet: { type: Boolean, default: false },
 });
 
-const bets = mongoose.model("BlackJack_cuoc", schema);
+schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });
+
+const bets = mongoose.model(modelName, schema);
 
 export { bets as BlackJackBets };

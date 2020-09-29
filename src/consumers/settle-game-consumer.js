@@ -7,12 +7,6 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
         this.cardHelper = new CardHelper();
     }
 
-    defaultWinningHands = {
-        win: true,
-        betwin: 0,
-        id: 0,
-    };
-
     defaultDealerStandValue = 17;
 
     async settleRound(roundId, playerName, playerUID) {

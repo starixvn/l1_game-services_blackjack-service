@@ -2,10 +2,14 @@ import { Core } from "sc-game-base";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { BlackJackRounds } from "../models/blackjack-rounds";
 import { helpers } from "sc-common";
+import { cards } from "../card";
+import CardHelper from "../helpers/card-helpers";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
+    cardHelper = new CardHelper();
+
     async proceedBet(player, payload) {
-        if(payload.action === "deal") {
+        if(payload.action === gameSettings.actions.deal) {
             await this.processDeal(player, payload);
         }
     }
@@ -16,6 +20,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             betTracks.hands = [];
             betTracks.deck = helpers.arrayHelper.shuffle([...cards, ...cards, ...cards, ...cards, ...cards, ...cards]);
         let balance = {};
+        let totalBet = 0;
 
         payload.hands.forEach(hand => {
             if (!hand.id) {
@@ -32,6 +37,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     
             if (apiResult.isOk) {
                 betTracks.hands.push({ betwin:0, cards: [], ...hand });
+                totalBet += hand.bet;
                 balance = apiResult.response;
             } else {
                 const insufficientNotice = helpers.noticeHelper.notEnoughMoney;
@@ -60,6 +66,17 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                 cards: x.cards,
                 betwin: x.betwin
             })));
+
+            this.publisher.publishSuccessBet(player.UID, {
+                deal: {
+                    roundId: betTracks.roundId,
+                    totalAmount: totalBet,
+                    uid: player.UID,
+                    dealer: this.cardHelper.isBlackjack(betTracks.dealer.cards) ? [betTracks.dealer.cards[0]] : betTracks.dealer.cards,
+                    hands: betTracks.hands
+                },
+                user: balance
+            });
         }
     }
 
@@ -75,6 +92,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         for (let i = 0; i < hands.length; i++) {
             hands[i].cards.push(deck.shift());
+            hands[i].isStang = this.cardHelper.isBlackjack(hands[i].cards);
         }
 
         dealer.cards.push(deck.shift());

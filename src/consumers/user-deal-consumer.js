@@ -1,5 +1,6 @@
 import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
+import gameSettings from "../game-settings";
 
 export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, deal) {
@@ -74,6 +75,6 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
             this.gameData.ingame[name] = newPlayer;
         }
 
-        this.gameData.ingame[name].betQueue.push({ player, payload: { action: "deal", hands: deal.hands } });
+        this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.deal, hands: deal.hands } });
     }
 }

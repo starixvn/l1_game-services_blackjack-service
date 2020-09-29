@@ -4,6 +4,7 @@ import { BlackJackRounds } from "../models/blackjack-rounds";
 import { helpers } from "sc-common";
 import { cards } from "../card";
 import CardHelper from "../helpers/card-helpers";
+import gameSettings from "../game-settings";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     cardHelper = new CardHelper();

@@ -26,7 +26,7 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
             time: new Date(),
         };
 
-        await this.settleBets(finish, playerUID);
+        await this.settleBets({ ...finish, playerName, playerUID });
 
         await this.gameDefinition.roundRepository.update(
             { id: roundId },
@@ -57,7 +57,7 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
         return bets;
     }
 
-    async settleBets({ result, settlementResult, roundId, time }, playerUID) {
+    async settleBets({ result, settlementResult, roundId, time, playerName, playerUID }) {
         const bets = await this.queryBets(roundId);
         let winningHands = [];
 
@@ -80,6 +80,8 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
                     winningHands.push({ id: bet.id, betWin: bet.betWin });
                 })
             );
+
+            delete this.gameData.ingame[playerName];
 
             this.userBetResultPublisher.publish(playerUID, this.collectRoundResult(result, settlementResult, winningHands));
         }

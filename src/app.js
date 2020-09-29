@@ -20,7 +20,9 @@ const run = async () => {
         gameSettings,
         BlackJackRounds,
         BlackJackBets,
-        new BlackJackBot(gameSettings.name, gameData, BlackJackBets)
+        new BlackJackBot(gameSettings.name, gameData, BlackJackBets),
+        gameSettings.actions,
+        gameSettings.payouts
     );
 
     const gameCron = new GameCron(definition, gameData);

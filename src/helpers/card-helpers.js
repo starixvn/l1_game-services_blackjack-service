@@ -24,6 +24,12 @@ export default class CardHelper {
         return [0];
     }
 
+    calculateFinalValue(cards) {
+        const handValues = this.calculate(cards);
+
+        return handValues.length > 1 ? handValues[1] : handValues[0];
+    }
+
     isBlackjack(cards) {
         return cards.length === 2 && this.calculate(cards)[0] === this.blackjackValue;
     }

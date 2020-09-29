@@ -13,4 +13,8 @@ export default {
         hit: "hit",
         deal: "deal",
     },
+    payouts: {
+        blackjack: "blackjack",
+        regular: "normal",
+    },
 };

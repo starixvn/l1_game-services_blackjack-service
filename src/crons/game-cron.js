@@ -1,10 +1,10 @@
 import { Core } from "sc-game-base";
-import BlackJackGameData from "./../table-game-data";
-import TableGameDefinition from "./../table-game-definition";
+import BlackJackGameData from "../blackjack-game-data";
+import BlackjackGameDefinition from "../blackjack-game-definition";
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**
-     * @param {TableGameDefinition} gameDefinition
+     * @param {BlackjackGameDefinition} gameDefinition
      * @param {BlackJackGameData} gameData
      */
     constructor(gameDefinition, gameData) {

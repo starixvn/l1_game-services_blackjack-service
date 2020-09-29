@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
     name: { type: String, required: true },
     phien: { type: Number, default: 0 },
 
-    actions: { type: Object },
+    actions: { type: Array },
     cards: { type: Object },
     splitFrom: { type: Number, default: null },
     thanhtoan: { type: Boolean, default: false },

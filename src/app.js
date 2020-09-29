@@ -9,6 +9,7 @@ import TableGameDefinition from "./table-game-definition";
 import TableGameData from "./table-game-data";
 import GameCron from "./crons/game-cron";
 import BlackJackBot from "./crons/blackjack-bot";
+import BlackJackProcessBetQueue from "./crons/process-bet-queue";
 
 export class BlackJackApp extends Table.TableGameApp {}
 
@@ -23,7 +24,7 @@ const run = async () => {
     );
 
     const gameCron = new GameCron(definition, gameData);
-    const startup = new Startup(appConfigs, definition, gameData, gameCron);
+    const startup = new Startup(appConfigs, definition, gameData, gameCron, new BlackJackProcessBetQueue(definition, gameData));
     const app = new BlackJackApp(appConfigs, definition, gameData, startup);
     await app.run();
 };

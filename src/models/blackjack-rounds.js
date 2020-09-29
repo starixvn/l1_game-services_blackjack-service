@@ -4,7 +4,7 @@ import autoIncrement from "mongoose-auto-increment-reworked";
 const modelName = "BlackJack_phien";
 
 const Schema = new mongoose.Schema({
-    result: { type: Object },
+    result: { type: Array },
     roundStartTime: { type: Date, default: new Date() },
     time: { type: Date, default: new Date() },
     ended: { type: Boolean, default: false },

@@ -11,6 +11,6 @@ export default {
         stand: "stand",
         split: "split",
         hit: "hit",
-        stand: "stand",
+        deal: "deal",
     },
 };

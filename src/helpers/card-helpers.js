@@ -9,7 +9,7 @@ export default class CardHelper {
             let handValue = cards.reduce((acc, total) => acc + total);
 
             if (this.hasAce(cards)) {
-                if (handValue < this.blackjackValue) {
+                if (handValue <= this.blackjackValue) {
                     return handValue === this.blackjackValue ? [handValue] : [handValue - this.reduceValueOfAce, handValue];
                 } else {
                     while (handValue > this.blackjackValue) {

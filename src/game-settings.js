@@ -6,5 +6,11 @@ export default {
         wholeRound: 60,
         botFrequency: 5,
     },
-    actions: ["double", "stand", "split", "hit"],
+    actions: {
+        double: "double",
+        stand: "stand",
+        split: "split",
+        hit: "hit",
+        stand: "stand",
+    },
 };

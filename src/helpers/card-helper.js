@@ -57,7 +57,7 @@ export const getValue = (card) => {
             value: 10,
         },
         {
-            matchRank: !isAce(card) && !isJQK,
+            matchRank: !isAce(card) && !isJQK(card),
             value: parseInt(card.rank),
         },
     ];

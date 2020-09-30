@@ -1,7 +1,8 @@
 import { Table } from "sc-game-base";
+import { logger } from "sc-common";
 
-import BlackJackGameData from "./../table-game-data";
-import TableGameDefinition from "./../table-game-definition";
+import BlackJackGameData from "./../blackjack-game-data";
+import TableGameDefinition from "./../blackjack-game-definition";
 
 export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
     /**
@@ -49,12 +50,12 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
             if (!this.verify()) {
                 return;
             }
-            
-            if(payload.deal) {
+
+            if (payload.deal) {
                 this.userDealConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
             }
 
-            if(payload.hit){
+            if (payload.hit) {
                 this.userHitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
             }
         } catch (error) {

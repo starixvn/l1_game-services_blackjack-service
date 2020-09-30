@@ -5,8 +5,8 @@ const modelName = "BlackJack_phien";
 
 const Schema = new mongoose.Schema({
     result: { type: Array },
-    roundStartTime: { type: Date, default: new Date() },
-    time: { type: Date, default: new Date() },
+    roundStartTime: { type: Date },
+    time: { type: Date },
     ended: { type: Boolean, default: false },
 });
 

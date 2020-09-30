@@ -6,7 +6,7 @@ import { BlackJackBets } from "./models/blackjack-bets";
 import { BlackJackRounds } from "./models/blackjack-rounds";
 import Startup from "./startup";
 import BlackJackGameDefinition from "./blackjack-game-definition";
-import TableGameData from "./table-game-data";
+import TableGameData from "./blackjack-game-data";
 import GameCron from "./crons/game-cron";
 import BlackJackBot from "./crons/blackjack-bot";
 import BlackJackProcessBetQueue from "./crons/process-bet-queue";

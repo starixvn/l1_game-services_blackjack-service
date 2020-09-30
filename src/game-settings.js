@@ -16,6 +16,5 @@ export default {
     payouts: {
         blackjack: "blackjack",
         regular: "normal",
-        push: "push",
     },
 };

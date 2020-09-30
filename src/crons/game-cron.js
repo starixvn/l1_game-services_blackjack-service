@@ -7,8 +7,8 @@ export default class GameCron extends Core.Cron.BaseGameCron {
      * @param {BlackjackGameDefinition} gameDefinition
      * @param {BlackJackGameData} gameData
      */
-    constructor(gameDefinition, gameData) {
-        super(gameDefinition, gameData, null);
+    constructor(gameDefinition, gameData, settleGameConsumer) {
+        super(gameDefinition, gameData, settleGameConsumer);
     }
 
     async start() {
@@ -43,7 +43,11 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeRound;
 
-            //TODO settle expired rounds
+            this.gameData.ingame.forEach((userBet) => {
+                if (userBet?.betTracks?.roundStartTime < new Date().setDate(-1)) {
+                    this.settleGameRoundConsumer.settleRound(userBet.name);
+                }
+            });
         }
     }
 }

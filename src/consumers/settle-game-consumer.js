@@ -1,21 +1,19 @@
 import { Core } from "sc-game-base";
-import { calculateFinalValue, isBlackjack, isBust } from "../helpers/card-helper";
+import { calculateFinalValue } from "../helpers/card-helper";
 
-export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
+export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
     constructor(gameDefinition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
         super(gameDefinition, gameData, roundResultPublisher, userBetResultPublisher);
     }
 
-    defaultDealerStandValue = 17;
-
-    async settleRound(roundId, playerName, playerUID) {
-        const betTrack = this.gameData.ingame[playerName];
+    async settleRound(playerName) {
+        const betTrack = this.gameData.ingame[playerName].betTracks;
         const { result, settlementResult } = this.gameDefinition.generateResult(betTrack.dealer.cards, betTrack.decks);
 
         const finish = {
             settlementResult,
             result,
-            roundId,
+            roundId: betTrack.roundId,
             time: new Date(),
         };
 
@@ -29,7 +27,7 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
             }
         );
 
-        await this.settleBets({ ...finish, playerName, playerUID });
+        await this.settleBets({ ...finish, playerName, playerUID: betTrack.uid });
     }
 
     async queryBets(roundId) {
@@ -67,8 +65,7 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
                 })
             );
 
-            delete this.gameData.ingame[playerName];
-
+            this.gameData.ingame[playerName] = {};
             this.userBetResultPublisher.publish(playerUID, this.collectRoundResult(result, settlementResult, winningHands));
         }
     }

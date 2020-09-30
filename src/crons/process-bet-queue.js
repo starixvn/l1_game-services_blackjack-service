@@ -3,7 +3,7 @@ import { placeBet as placeBetApi } from "sc-base-apis";
 import { BlackJackRounds } from "../models/blackjack-rounds";
 import { helpers } from "sc-common";
 import { cards } from "../card";
-import CardHelper from "../helpers/card-helpers";
+import CardHelper from "../helpers/card-helper";
 import gameSettings from "../game-settings";
 import Chance from "chance";
 

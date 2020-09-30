@@ -1,5 +1,6 @@
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
+import { calculateFinalValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 import { BlackJackBets } from "../models/blackjack-bets";
 
@@ -20,7 +21,7 @@ export default class UserStandConsumer extends Core.BaseEventConsumers.PlaceBetC
             return false;
         }
 
-        const criteria = this.composeValidationCriteria(player, payload.stand);
+        const criteria = this.composeValidationCriteria(player, payload);
         const failedCriterion = criteria.find((criterion) => criterion.failure);
 
         if (failedCriterion) {
@@ -41,6 +42,7 @@ export default class UserStandConsumer extends Core.BaseEventConsumers.PlaceBetC
         const { betTracks } = this.gameData.ingame[name];
         const hand = betTracks.hands.find((x) => x.id === payload.stand.id);
         hand.isStand = true;
+        hand.total = calculateFinalValue(hand.cards);
 
         const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
         bet.actions.push(gameSettings.actions.stand);

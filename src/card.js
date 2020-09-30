@@ -224,7 +224,3 @@ export const cardValues = {
     Q: 10,
     K: 10,
 };
-
-export function isBlackJack(cardsOnHand) {
-    return cardsOnHand.length === 2 && cardsOnHand.some((card) => card.rank === "A") && cardsOnHand.some((card) => cardValues[card.rank] === 10);
-}

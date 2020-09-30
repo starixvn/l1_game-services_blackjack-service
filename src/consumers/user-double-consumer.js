@@ -1,5 +1,6 @@
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
+import noticeHelper from "../helpers/notice-helper";
 
 export default class UserDoubleConsumerextends extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
@@ -18,7 +19,7 @@ export default class UserDoubleConsumerextends extends Core.BaseEventConsumers.P
             return false;
         }
 
-        const criteria = this.composeValidationCriteria(player, payload.double);
+        const criteria = this.composeValidationCriteria(player, payload);
         const failedCriterion = criteria.find((criterion) => criterion.failure);
 
         if (failedCriterion) {
@@ -31,9 +32,8 @@ export default class UserDoubleConsumerextends extends Core.BaseEventConsumers.P
 
     consume(player, payload) {
         const name = player.profile.name;
-        const { deal } = payload;
 
-        if (!this.validateBetRequest(player, deal)) {
+        if (!this.validateBetRequest(player, payload)) {
             return;
         }
 

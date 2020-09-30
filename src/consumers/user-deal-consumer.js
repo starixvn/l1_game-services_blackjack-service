@@ -10,8 +10,9 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
         return bettingTimeValidationCriteria.concat(betAmountValidationCriteria);
     }
 
-    composeBetAmountValidationCriteria(deal) {
+    composeBetAmountValidationCriteria(payload) {
         const configs = this.gameData.gameConfigs;
+        const { deal } = payload;
 
         return [
             {
@@ -40,12 +41,14 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
         ];
     }
 
-    validateBetRequest(player, deal) {
+    validateBetRequest(player, payload) {
+        const { deal } = payload;
+
         if (!deal.hands || deal.hands.length < 1 || deal.hands.length > 3) {
             return false;
         }
 
-        const criteria = this.composeValidationCriteria(player, deal);
+        const criteria = this.composeValidationCriteria(player, payload);
         const failedCriterion = criteria.find((criterion) => criterion.failure);
 
         if (failedCriterion) {
@@ -61,7 +64,7 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
         const name = player.profile.name;
         const { deal } = payload;
 
-        if (!this.validateBetRequest(player, deal)) {
+        if (!this.validateBetRequest(player, payload)) {
             return;
         }
 

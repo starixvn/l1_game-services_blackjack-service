@@ -7,29 +7,16 @@ import { BlackJackBets } from "../models/blackjack-bets";
 
 export default class UserHitConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
-        const bettingTimeValidationCriteria = this.composeBettingTimeValidationCriteria() ?? [];
-        const betAmountValidationCriteria = this.composeHandIdValidationCriteria(player, payload) || [];
-
-        return bettingTimeValidationCriteria.concat(betAmountValidationCriteria);
-    }
-
-    composeHandIdValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
 
         return [
             {
-                failure:
-                    !playerData.betTracks ||
-                    !playerData.betTracks.hands ||
-                    !playerData.betTracks.hands.some((x) => x.id === payload.hit.id),
+                failure: playerData?.betTracks?.hands?.some((x) => x.id === payload.hit.id),
                 notice: noticeHelper.invalidHandId,
             },
         ];
     }
 
-    composeBettingTimeValidationCriteria() {
-        return [];
-    }
     validateBetRequest(player, payload) {
         if (!payload.hit || !payload.hit.id) {
             return false;
@@ -54,7 +41,7 @@ export default class UserHitConsumer extends Core.BaseEventConsumers.PlaceBetCon
         }
 
         const { betTracks } = this.gameData.ingame[name];
-        const hand = betTracks.hands.find((x) => (x.id = payload.hit.id));
+        const hand = betTracks.hands.find((x) => x.id === payload.hit.id);
         const newCard = betTracks.deck.shif();
         hand.cards.push(newCard);
         hand.total = calculate(hand.cards);

@@ -2,18 +2,54 @@ import { Core } from "sc-game-base";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { BlackJackRounds } from "../models/blackjack-rounds";
 import { helpers } from "sc-common";
-import { cards } from "../card";
+import { cards, isBlackJack } from "../card";
 import { isBlackjack, calculate } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
 import Chance from "chance";
+import { calculate } from "../helpers/card-helper";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
     chance = new Chance();
 
     async proceedBet(player, payload) {
-        if (payload.action === gameSettings.actions.deal) {
-            await this.processDeal(player, payload);
+        switch(payload.action) {
+            case gameSettings.actions.deal:
+                await this.processDeal(player, payload);
+                break;
+            case gameSettings.actions.double:
+                await this.processDouble(player, payload);
+                break;
+        }
+
+    }
+
+    async processDouble(player, payload) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        const hand = betTracks.hands.find((x) => x.id === payload.stand.id);
+        const betInfo = {
+            amount: hand.bet,
+            gameId: this.definition.id,
+            gameRoundId: hand.id,
+        };
+
+        const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
+
+        if (apiResult.isOk) {
+            hand.bet += hand.bet;
+            await this.betRepository.updateOne({id: hand.id}, {bet: hand.bet }).exec();
+
+            this.publisher.publishSuccessBet(player.UID, {
+                double: {
+                    hand
+                },
+                endBet: betInfo.amount,
+                user: apiResult.response
+            });
+        } else {
+            const insufficientNotice = helpers.noticeHelper.notEnoughMoney;
+            const notice = apiResult.response.inSufficientBalance ? insufficientNotice : apiResult.response;
+            this.handleFailedBet(player, notice);
         }
     }
 
@@ -54,6 +90,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             this.dealCards(betTracks);
             const newRound = await BlackJackRounds.create({
                 results: betTracks.dealer.cards,
+                roundStartTime: new Date(),
+                time: new Date()
             });
             betTracks.roundId = this.gameData.roundId = newRound.id;
 
@@ -69,8 +107,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                     bet: x.bet,
                     cards: x.cards,
                     total: x.total,
-                    actions: isBlackjack(x.cards) ? [gameSettings.actions.stand] : [],
-                }))
+                time: new Date(),
+                actions: isBlackJack(x.cards) ? [gameSettings.actions.stand] : []
             );
 
             this.publisher.publishSuccessBet(player.UID, {
@@ -81,6 +119,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                     dealer: isBlackjack(betTracks.dealer.cards) ? [betTracks.dealer.cards[0]] : betTracks.dealer.cards,
                     hands: betTracks.hands,
                 },
+                endBet: totalBet,
                 user: balance,
             });
         }
@@ -102,14 +141,5 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         dealer.cards.push(deck.shift());
-    }
-
-    generatePlacingBetResult(player, balance, hand) {
-        const { bet } = hand;
-
-        return {
-            endBet: bet,
-            user: { ...balance },
-        };
     }
 }

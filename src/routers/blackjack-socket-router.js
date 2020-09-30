@@ -53,10 +53,17 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
 
             if (payload.deal) {
                 this.userDealConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                return;
             }
 
             if (payload.hit) {
                 this.userHitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                return;
+            }
+
+            if (payload.stand) {
+                this.userStandConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                return;
             }
         } catch (error) {
             logger.logError(error);

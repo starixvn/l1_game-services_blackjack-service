@@ -3,6 +3,7 @@ import UserDealConsumer from "./consumers/user-deal-consumer";
 import UserDoubleConsumer from "./consumers/user-double-consumer";
 import UserHitConsumer from "./consumers/user-hit-consumer";
 import UserSplitConsumer from "./consumers/user-split-consumer";
+import UserStandConsumer from "./consumers/user-stand-consumer";
 import initDatabase from "./models";
 import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 
@@ -28,11 +29,11 @@ export default class Startup extends Table.TableGameStartup {
             null,
             null,
             null,
-            new UserDealConsumer(this.definition, this.gameData),
+            new UserStandConsumer(this.definition, this.gameData),
             new UserHitConsumer(this.definition, this.gameData),
-            new UserDoubleConsumer(),
-            new UserSplitConsumer(),
-            new UserDealConsumer()
+            new UserDoubleConsumer(this.definition, this.gameData),
+            new UserSplitConsumer(this.definition, this.gameData),
+            new UserDealConsumer(this.definition, this.gameData)
         );
 
         router.init(socketClient);

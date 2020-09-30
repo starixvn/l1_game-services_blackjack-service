@@ -19,8 +19,6 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
             time: new Date(),
         };
 
-        await this.settleBets({ ...finish, playerName, playerUID });
-
         await this.gameDefinition.roundRepository.update(
             { id: roundId },
             {
@@ -30,6 +28,8 @@ export default class TableSettleGameRoundConsumer extends Core.BaseEventConsumer
                 ended: true,
             }
         );
+
+        await this.settleBets({ ...finish, playerName, playerUID });
     }
 
     async queryBets(roundId) {

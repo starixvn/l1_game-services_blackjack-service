@@ -210,7 +210,7 @@ export const cards = [
 ];
 
 export const cardValues = {
-    A: [1, 11],
+    A: 11,
     2: 2,
     3: 3,
     4: 4,

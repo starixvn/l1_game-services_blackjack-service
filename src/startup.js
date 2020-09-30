@@ -29,7 +29,7 @@ export default class Startup extends Table.TableGameStartup {
             null,
             null,
             new UserDealConsumer(this.definition, this.gameData),
-            new UserHitConsumer(),
+            new UserHitConsumer(this.definition, this.gameData),
             new UserDoubleConsumer(),
             new UserSplitConsumer(),
             new UserDealConsumer()

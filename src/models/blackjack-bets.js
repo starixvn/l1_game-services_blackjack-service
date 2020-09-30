@@ -9,8 +9,9 @@ const schema = new mongoose.Schema({
     name: { type: String, required: true },
     phien: { type: Number, default: 0 },
 
-    actions: { type: Array },
-    cards: { type: Object },
+    actions: { type: Array, default: [] },
+    cards: { type: Array, default: [] },
+    total: { type: Array, default: [] },
     splitFrom: { type: Number, default: null },
     thanhtoan: { type: Boolean, default: false },
     bet: { type: Number, default: 0 },

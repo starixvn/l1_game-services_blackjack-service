@@ -61,7 +61,7 @@ export default class CardHelper {
                 value: 10,
             },
             {
-                matchRank: !this.isAce(card) && !this.isJQK,
+                matchRank: !this.isAce(card) && !this.isJQK(card),
                 value: parseInt(card.rank),
             },
         ];

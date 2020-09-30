@@ -5,9 +5,12 @@ import { helpers } from "sc-common";
 import { cards } from "../card";
 import CardHelper from "../helpers/card-helpers";
 import gameSettings from "../game-settings";
+import Chance from "chance";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     cardHelper = new CardHelper();
+    baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
+    chance = new Chance();
 
     async proceedBet(player, payload) {
         if(payload.action === gameSettings.actions.deal) {
@@ -19,7 +22,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const { betTracks } = this.gameData.ingame[player.profile.name];
             betTracks.dealer = { cards: [] };
             betTracks.hands = [];
-            betTracks.deck = helpers.arrayHelper.shuffle([...cards, ...cards, ...cards, ...cards, ...cards, ...cards]);
+            betTracks.deck = this.chance.shuffle(this.baseDeck);
         let balance = {};
         let totalBet = 0;
 
@@ -65,7 +68,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                 pos: x.pos,
                 bet: x.bet,
                 cards: x.cards,
-                betwin: x.betwin
+                total: x.total,
+                actions: this.cardHelper.isBlackjack(x.cards) ? [gameSettings.actions.stand] : []
             })));
 
             this.publisher.publishSuccessBet(player.UID, {
@@ -85,7 +89,6 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         for (let i = 0; i <= hands.length; i++) {
             if (i < hands.length) {
                 hands[i].cards.push(deck.shift());
-
             } else {
                 dealer.cards.push(deck.shift());
             }
@@ -93,7 +96,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         for (let i = 0; i < hands.length; i++) {
             hands[i].cards.push(deck.shift());
-            hands[i].isStang = this.cardHelper.isBlackjack(hands[i].cards);
+            hands[i].isStand = this.cardHelper.isBlackjack(hands[i].cards);
+            hands[i].total = this.cardHelper.calculate(hands[i].cards);
         }
 
         dealer.cards.push(deck.shift());

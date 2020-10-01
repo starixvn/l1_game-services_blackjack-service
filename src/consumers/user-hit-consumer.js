@@ -8,13 +8,22 @@ import { BlackJackBets } from "../models/blackjack-bets";
 export default class UserHitConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
+        const criteria = [];
+        const hand = playerData?.betTracks?.hands?.find((x) => x.id === payload.double.id);
 
-        return [
-            {
-                failure: playerData?.betTracks?.hands?.some((x) => x.id === payload.hit.id),
+        if (hand) {
+            criteria.push({
+                failure: calculate(hand.cards).some((x) => x >= constants.blackJack),
+                notice: noticeHelper.cantHit,
+            });
+        } else {
+            criteria.push({
+                failure: true,
                 notice: noticeHelper.invalidHandId,
-            },
-        ];
+            });
+        }
+
+        return criteria;
     }
 
     validateBetRequest(player, payload) {

@@ -1,17 +1,27 @@
 import { Core } from "sc-game-base";
+import constants from "../constants";
 import gameSettings from "../game-settings";
+import { calculate } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 
 export default class UserDoubleConsumerextends extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
-
-        return [
-            {
-                failure: !playerData?.betTracks?.hands?.some((x) => x.id === payload.double.id),
+        const criteria = [];
+        const hand = playerData?.betTracks?.hands?.find((x) => x.id === payload.double.id);
+        if (hand) {
+            criteria.push({
+                failure: !calculate(hand.cards).some((x) => constants.allowDoubleValues.includes(x)),
+                notice: noticeHelper.cantDoubleHand,
+            });
+        } else {
+            criteria.push({
+                failure: true,
                 notice: noticeHelper.invalidHandId,
-            },
-        ];
+            });
+        }
+
+        return criteria;
     }
 
     validateBetRequest(player, payload) {

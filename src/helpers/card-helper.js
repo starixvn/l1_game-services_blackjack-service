@@ -2,19 +2,35 @@ import constants from "./../constants";
 
 export const calculate = (cards) => {
     if (cards?.length > 0) {
-        let handValue = cards.reduce((acc, total) => acc + total);
+        let handValues = [];
+        // let secondHandValue = 0;
+        // cards.forEach((card) => {
+        //     secondHandValue += getValue(card);
+        // });
+        const secondHandValue = cards.reduce((total, acc) => {
+            return getValue(acc) + total;
+        }, 0);
 
         if (hasAce(cards)) {
-            if (handValue <= constants.blackjackValue) {
-                return handValue === constants.blackjackValue ? [handValue] : [handValue - constants.reduceValueOfAce, handValue];
+            let aceCount = cards.filter((card) => isAce(card)).length;
+            let firstValue = secondHandValue;
+
+            if (secondHandValue <= constants.blackJack) {
+                return secondHandValue === constants.blackJack
+                    ? [secondHandValue]
+                    : [secondHandValue - constants.reduceValueOfAce, secondHandValue];
             } else {
-                while (handValue > constants.blackjackValue) {
-                    handValue -= constants.reduceValueOfAce;
+                while (firstValue > constants.blackJack && aceCount > 0 && firstValue < constants.blackJack) {
+                    firstValue -= constants.reduceValueOfAce;
+                    aceCount--;
                 }
+                handValues.push(firstValue);
             }
         }
 
-        return [handValue];
+        handValues.push(secondHandValue);
+
+        return handValues;
     }
 
     return [0];
@@ -35,7 +51,7 @@ export const isBust = (cards) => {
 };
 
 export const hasAce = (cards) => {
-    return cards.include((card) => card.rank === "A");
+    return cards.includes((card) => card.rank === "A");
 };
 
 export const isAce = (card) => {
@@ -62,5 +78,5 @@ export const getValue = (card) => {
         },
     ];
 
-    return cardValue.filter((filterCard) => filterCard.matchRank);
+    return cardValue.filter((filterCard) => filterCard.matchRank)[0].value;
 };

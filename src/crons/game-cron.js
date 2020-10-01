@@ -38,20 +38,24 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                 usedCards.push(hand.cards);
                 return {
                     ...hand,
-                    isStand: hand.actions.include(gameSettings.actions.stand),
+                    isStand: hand.actions.includes(gameSettings.actions.stand),
                 };
             });
 
-            const betTrack = {
-                roundId: round.id,
-                roundStartTime: round.roundStartTime,
-                uid: round.uid,
-                deck: generateDecks(usedCards),
-                dealer: { cards: round.result },
-                hands: userHands,
+            const newPlayer = {
+                name: round.name,
+                betTracks: {
+                    roundId: round.id,
+                    roundStartTime: round.roundStartTime,
+                    uid: round.uid,
+                    deck: generateDecks(usedCards),
+                    dealer: { cards: round.result },
+                    hands: userHands,
+                },
+                betQueue: [],
             };
 
-            this.gameData.ingame[round.name] = betTrack;
+            this.gameData.ingame[round.name] = newPlayer;
         });
     }
 
@@ -74,15 +78,11 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeRound;
 
-            try {
-                Object.values(this.gameData.ingame).forEach(async (userBet) => {
-                    if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
-                        await this.settleGameRoundConsumer.settleRound(userBet.name);
-                    }
-                });
-            } catch (err) {
-                const msg = err;
-            }
+            Object.values(this.gameData.ingame).forEach(async (userBet) => {
+                if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
+                    await this.settleGameRoundConsumer.settleRound(userBet.name);
+                }
+            });
         }
     }
 }

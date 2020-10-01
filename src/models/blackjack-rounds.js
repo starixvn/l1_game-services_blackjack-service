@@ -8,6 +8,8 @@ const Schema = new mongoose.Schema({
     roundStartTime: { type: Date },
     time: { type: Date },
     ended: { type: Boolean, default: false },
+    uid: { type: String, required: true },
+    name: { type: String, required: true },
 });
 
 Schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });

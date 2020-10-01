@@ -1,7 +1,7 @@
 import { Core } from "sc-game-base";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { BlackJackRounds } from "../models/blackjack-rounds";
-import { helpers } from "sc-common";
+import { helpers, logger } from "sc-common";
 import { cards } from "../card";
 import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
@@ -45,7 +45,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             hand.isStand = isBlackjack(hand.cards);
             hand.total = hand.isStand ? calculateFinalValue(hand.cards) : calculate(hand.cards);
 
-            const bet = await this.betRepository.findOne({ id: hand.id }).exec();
+            const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
             bet.bet = hand.bet;
             bet.total = calculateFinalValue(hand.cards);
             bet.cards = hand.cards;
@@ -68,7 +68,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
             betTracks.hands.push(splitHand);
 
-            await this.betRepository.create({
+            await this.definition.betRepository.create({
                 id: splitHand.id,
                 phien: betTracks.roundId,
                 uid: player.UID,
@@ -114,7 +114,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             hand.total = calculateFinalValue(hand.cards);
             hand.isStand = true;
 
-            const bet = await this.betRepository.findOne({ id: hand.id }).exec();
+            const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
             bet.bet = hand.bet;
             bet.total = hand.total;
             bet.cards = hand.cards;
@@ -166,29 +166,30 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         if (betTracks.hands.length > 0) {
             this.dealCards(betTracks);
-            const newRound = await BlackJackRounds.create({
-                results: betTracks.dealer.cards,
+            const newRound = await this.definition.roundRepository.create({
+                result: betTracks.dealer.cards,
                 roundStartTime: new Date(),
-                time: new Date(),
+                uid: player.UID,
+                name: player.profile.name,
             });
             betTracks.roundId = this.gameData.roundId = newRound.id;
 
-            await this.betRepository.insertMany(
-                betTracks.hands.map((x) => ({
-                    id: x.id,
-                    phien: betTracks.roundId,
-                    uid: player.UID,
-                    name: player.profile.name,
-                    memberId: player.session?.memberId,
-                    siteId: player.session?.siteId,
-                    pos: x.pos,
-                    bet: x.bet,
-                    cards: x.cards,
-                    total: calculateFinalValue(x.cards),
-                    time: new Date(),
-                    actions: x.isStand ? [gameSettings.actions.stand] : [],
-                }))
-            );
+            const betEntities = betTracks.hands.map((x) => ({
+                id: x.id,
+                phien: betTracks.roundId,
+                uid: player.UID,
+                name: player.profile.name,
+                memberId: player.session?.memberId,
+                siteId: player.session?.siteId,
+                pos: x.pos,
+                bet: x.bet,
+                cards: x.cards,
+                total: calculateFinalValue(x.cards),
+                time: new Date(),
+                actions: x.isStand ? [gameSettings.actions.stand] : [],
+            }));
+
+            await this.definition.betRepository.insertMany(betEntities).catch((err) => logger.logError(err));
 
             this.publisher.publishToUser(player.UID, {
                 data: {

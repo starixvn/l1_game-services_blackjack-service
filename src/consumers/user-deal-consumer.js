@@ -1,16 +1,10 @@
 import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
+import constants from "../constants";
 import gameSettings from "../game-settings";
 
 export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
-    composeValidationCriteria(player, deal) {
-        const bettingTimeValidationCriteria = this.composeBettingTimeValidationCriteria() ?? [];
-        const betAmountValidationCriteria = this.composeBetAmountValidationCriteria(deal) || [];
-
-        return bettingTimeValidationCriteria.concat(betAmountValidationCriteria);
-    }
-
-    composeBetAmountValidationCriteria(payload) {
+    composeValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
 
@@ -26,25 +20,10 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
         ];
     }
 
-    composeBettingTimeValidationCriteria() {
-        const configs = this.gameData.gameConfigs;
-
-        return [
-            {
-                failure: !configs.enabled,
-                notice: helpers.noticeHelper.placeBetNextRound,
-            },
-            {
-                failure: this.gameData.remainingTime < 0,
-                notice: helpers.noticeHelper.invalidBet,
-            },
-        ];
-    }
-
     validateBetRequest(player, payload) {
         const { deal } = payload;
 
-        if (!deal.hands || deal.hands.length < 1 || deal.hands.length > 3) {
+        if (!deal.hands || deal.hands.length < constants.minPlayerHand || deal.hands.length > constants.maxPlayerHand) {
             return false;
         }
 

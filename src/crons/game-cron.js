@@ -32,10 +32,11 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         const runningRounds = await this.gameDefinition.roundRepository.find({ ended: false }).lean().exec();
 
         runningRounds.forEach(async (round) => {
-            let usedCards = round.result;
+            let usedCards = [...round.result];
             const hands = await this.gameDefinition.betRepository.find({ phien: round.id }).lean().exec();
             const userHands = hands.map((hand) => {
-                usedCards.push(hand.cards);
+                usedCards.push(...hand.cards);
+
                 return {
                     ...hand,
                     isStand: hand.actions.includes(gameSettings.actions.stand),
@@ -49,7 +50,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                     roundStartTime: round.roundStartTime,
                     uid: round.uid,
                     deck: generateDecks(usedCards),
-                    dealer: { cards: round.result },
+                    dealer: { cards: [...round.result] },
                     hands: userHands,
                 },
                 betQueue: [],

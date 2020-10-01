@@ -68,15 +68,6 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
             betTracks.hands.push(splitHand);
 
-            this.publisher.publishToUser(player.UID, {
-                data: {
-                    newCard,
-                    ...hand,
-                },
-                endBet: betInfo.amount,
-                user: apiResult.response,
-            });
-
             await this.betRepository.create({
                 id: splitHand.id,
                 phien: betTracks.roundId,

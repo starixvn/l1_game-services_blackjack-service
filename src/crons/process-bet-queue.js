@@ -78,7 +78,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             });
 
             await this.betRepository.create({
-                id: x.id,
+                id: splitHand.id,
                 phien: betTracks.roundId,
                 uid: player.UID,
                 name: player.profile.name,

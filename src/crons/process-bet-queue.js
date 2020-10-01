@@ -6,7 +6,6 @@ import { cards } from "../card";
 import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
 import Chance from "chance";
-import { calculate } from "../helpers/card-helper";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -29,7 +28,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     async processSplit(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const hand = betTracks.hands.find((x) => x.id === payload.id);
-        const newHandId = ++this.gameData.betId;
+        this.gameData.betId++;
+        const newHandId = this.gameData.betId;
 
         const betInfo = {
             amount: hand.bet,
@@ -152,9 +152,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let totalBet = 0;
 
         payload.hands.forEach(async (hand) => {
-            if (!hand.id) {
-                hand.id = ++this.gameData.betId;
-            }
+            this.gameData.betId++;
+            hand.id = this.gameData.betId;
 
             const betInfo = {
                 amount: hand.bet,

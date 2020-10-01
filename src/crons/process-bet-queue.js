@@ -151,7 +151,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let balance = {};
         let totalBet = 0;
 
-        payload.hands.forEach(async (hand) => {
+        for(let i = 0; i< payload.hands.length; i++) {
+            const hand = payload.hands[i];
             this.gameData.betId++;
             hand.id = this.gameData.betId;
 
@@ -170,7 +171,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             } else {
                 this.handleFailPlaceBetResponse(player, apiResult);
             }
-        });
+        }
 
         if (betTracks.hands.length > 0) {
             this.dealCards(betTracks);

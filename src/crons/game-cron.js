@@ -1,6 +1,7 @@
 import { Core } from "sc-game-base";
 import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
+import UserDealConsumer from "../consumers/user-deal-consumer";
 import gameSettings from "../game-settings";
 import { generateDecks } from "./../helpers/deck-helper";
 
@@ -73,11 +74,15 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeRound;
 
-            this.gameData.ingame.forEach((userBet) => {
-                if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
-                    this.settleGameRoundConsumer.settleRound(userBet.name);
-                }
-            });
+            try {
+                Object.values(this.gameData.ingame).forEach(async (userBet) => {
+                    if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
+                        await this.settleGameRoundConsumer.settleRound(userBet.name);
+                    }
+                });
+            } catch (err) {
+                const msg = err;
+            }
         }
     }
 }

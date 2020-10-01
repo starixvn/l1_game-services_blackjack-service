@@ -151,7 +151,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let balance = {};
         let totalBet = 0;
 
-        for(let i = 0; i< payload.hands.length; i++) {
+        for (let i = 0; i < payload.hands.length; i++) {
             const hand = payload.hands[i];
             this.gameData.betId++;
             hand.id = this.gameData.betId;
@@ -220,11 +220,11 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     dealCards({ dealer, hands, deck }) {
-        const turn = 1;
+        let turn = 1;
         while (turn <= 2) {
             for (let i = 0; i < hands.length; i++) {
                 hands[i].cards.push(deck.shift());
-                if (routurnnd === 2) {
+                if (turn === 2) {
                     hands[i].isStand = isBlackjack(hands[i].cards);
                     hands[i].total = calculate(hands[i].cards);
                 }

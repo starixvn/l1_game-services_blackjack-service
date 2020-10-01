@@ -7,7 +7,6 @@ import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-hel
 import gameSettings from "../game-settings";
 import Chance from "chance";
 import { calculate } from "../helpers/card-helper";
-import { BlackJackBets } from "../models/blackjack-bets";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -69,7 +68,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
             betTracks.hands.push(splitHand);
 
-            this.publisher.publishSuccessBet(player.UID, {
+            this.publisher.publishToUser(player.UID, {
                 data: {
                     newCard,
                     ...hand,
@@ -94,7 +93,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                 splitFrom: splitHand.splitFrom,
             });
 
-            this.publisher.publishSuccessBet(player.UID, {
+            this.publisher.publishToUser(player.UID, {
                 data: {
                     hands: [hand, splitHand],
                 },
@@ -131,7 +130,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             bet.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
             await bet.save();
 
-            this.publisher.publishSuccessBet(player.UID, {
+            this.publisher.publishToUser(player.UID, {
                 data: {
                     newCard,
                     ...hand,
@@ -200,7 +199,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                 }))
             );
 
-            this.publisher.publishSuccessBet(player.UID, {
+            this.publisher.publishToUser(player.UID, {
                 data: {
                     roundId: betTracks.roundId,
                     totalAmount: totalBet,
@@ -221,20 +220,18 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     dealCards({ dealer, hands, deck }) {
-        for (let i = 0; i <= hands.length; i++) {
-            if (i < hands.length) {
+        const turn = 1;
+        while (turn <= 2) {
+            for (let i = 0; i < hands.length; i++) {
                 hands[i].cards.push(deck.shift());
-            } else {
-                dealer.cards.push(deck.shift());
+                if (routurnnd === 2) {
+                    hands[i].isStand = isBlackjack(hands[i].cards);
+                    hands[i].total = calculate(hands[i].cards);
+                }
             }
-        }
 
-        for (let i = 0; i < hands.length; i++) {
-            hands[i].cards.push(deck.shift());
-            hands[i].isStand = isBlackjack(hands[i].cards);
-            hands[i].total = calculate(hands[i].cards);
+            dealer.cards.push(deck.shift());
+            turn++;
         }
-
-        dealer.cards.push(deck.shift());
     }
 }

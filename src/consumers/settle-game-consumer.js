@@ -18,7 +18,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
         };
 
         await this.gameDefinition.roundRepository.update(
-            { id: roundId },
+            { id: betTrack.roundId },
             {
                 result,
                 settlementResult,

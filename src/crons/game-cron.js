@@ -1,6 +1,8 @@
 import { Core } from "sc-game-base";
 import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
+import gameSettings from "../game-settings";
+import { generateDecks } from "./../helpers/deck-helper";
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**
@@ -21,7 +23,35 @@ export default class GameCron extends Core.Cron.BaseGameCron {
             this.gameData.betId = lastestBet.id + 1;
         }
 
-        super.start();
+        await super.start();
+        await this.initBetTracks();
+    }
+
+    async initBetTracks() {
+        const runningRounds = await this.gameDefinition.roundRepository.find({ ended: false }).lean().exec();
+
+        runningRounds.forEach(async (round) => {
+            let usedCards = round.result;
+            const hands = await this.gameDefinition.betRepository.find({ phien: round.id }).lean().exec();
+            const userHands = hands.map((hand) => {
+                usedCards.push(hand.cards);
+                return {
+                    ...hand,
+                    isStand: hand.actions.include(gameSettings.actions.stand),
+                };
+            });
+
+            const betTrack = {
+                roundId: round.id,
+                roundStartTime: round.roundStartTime,
+                uid: round.uid,
+                deck: generateDecks(usedCards),
+                dealer: { cards: round.result },
+                hands: userHands,
+            };
+
+            this.gameData.ingame[round.name] = betTrack;
+        });
     }
 
     async proceed() {
@@ -44,7 +74,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
             this.gameData.remainingTime = durations.wholeRound;
 
             this.gameData.ingame.forEach((userBet) => {
-                if (userBet?.betTracks?.roundStartTime < new Date().setDate(-1)) {
+                if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
                     this.settleGameRoundConsumer.settleRound(userBet.name);
                 }
             });

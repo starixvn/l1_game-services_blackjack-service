@@ -61,10 +61,10 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         if (hand.isStand) {
             bet.actions.push(gameSettings.actions.stand);
-            splitCards.push(betTracks.deck.shif());
         }
         await bet.save();
 
+        splitCards.push(betTracks.deck.shif());
         const splitHand = {
             id: newHandId,
             isStand: isBlackjack(splitCards),

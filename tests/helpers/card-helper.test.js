@@ -31,7 +31,7 @@ describe("calculate()", () => {
         });
     });
 
-    it("should reduce ace value correctly", () => {
+    it("when cards has aces, should return value correctly", () => {
         const tests = [
             {
                 cards: [
@@ -55,7 +55,85 @@ describe("calculate()", () => {
                     { rank: "A", suit: 1 },
                     { rank: "A", suit: 1 },
                 ],
+                expected: [5, 15],
+            },
+            {
+                cards: [
+                    { rank: "3", suit: 1 },
+                    { rank: "5", suit: 1 },
+                    { rank: "A", suit: 1 },
+                    { rank: "A", suit: 1 },
+                ],
+                expected: [10, 20],
+            },
+            {
+                cards: [
+                    { rank: "5", suit: 1 },
+                    { rank: "A", suit: 1 },
+                    { rank: "K", suit: 1 },
+                ],
+                expected: [16],
+            },
+            {
+                cards: [
+                    { rank: "5", suit: 1 },
+                    { rank: "A", suit: 1 },
+                    { rank: "K", suit: 1 },
+                    { rank: "7", suit: 1 },
+                ],
+                expected: [23],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(CardHelper.calculate(test.cards)).toEqual(test.expected);
+        });
+    });
+
+    it("should calculate value correctly", () => {
+        const tests = [
+            {
+                cards: [
+                    { rank: "J", suit: 1 },
+                    { rank: "3", suit: 1 },
+                ],
+                expected: [13],
+            },
+            {
+                cards: [
+                    { rank: "2", suit: 1 },
+                    { rank: "3", suit: 1 },
+                ],
                 expected: [5],
+            },
+            {
+                cards: [
+                    { rank: "7", suit: 1 },
+                    { rank: "3", suit: 1 },
+                ],
+                expected: [10],
+            },
+            {
+                cards: [
+                    { rank: "J", suit: 1 },
+                    { rank: "Q", suit: 1 },
+                    { rank: "3", suit: 1 },
+                ],
+                expected: [23],
+            },
+            {
+                cards: [
+                    { rank: "K", suit: 1 },
+                    { rank: "Q", suit: 1 },
+                ],
+                expected: [20],
+            },
+            {
+                cards: [
+                    { rank: "K", suit: 1 },
+                    { rank: "7", suit: 1 },
+                ],
+                expected: [17],
             },
         ];
 

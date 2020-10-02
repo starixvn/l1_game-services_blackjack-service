@@ -7,24 +7,25 @@ export const calculate = (cards) => {
             return getValue(acc) + total;
         }, 0);
 
-        if (hasAce(cards)) {
+        if (hasAce(cards) && secondHandValue != constants.blackJack) {
             let aceCount = cards.filter((card) => isAce(card)).length;
             let firstValue = secondHandValue;
 
-            if (secondHandValue <= constants.blackJack) {
-                return secondHandValue === constants.blackJack
-                    ? [secondHandValue]
-                    : [secondHandValue - constants.reduceValueOfAce, secondHandValue];
-            } else {
-                while (firstValue > constants.blackJack || aceCount > 0) {
-                    firstValue -= constants.reduceValueOfAce;
-                    aceCount--;
-                }
-                handValues.push(firstValue);
+            let reducedValues = [];
+            while (aceCount > 0) {
+                firstValue -= constants.reduceValueOfAce;
+                reducedValues.push(firstValue);
+                aceCount--;
             }
-        }
 
-        if (secondHandValue <= constants.blackJack) {
+            const reversedValues = reducedValues.reverse();
+
+            if (reversedValues.some((value) => value <= constants.blackJack)) {
+                handValues.push(...reversedValues.filter((value) => value <= constants.blackJack));
+            } else {
+                handValues.push(reversedValues[0]);
+            }
+        } else {
             handValues.push(secondHandValue);
         }
 

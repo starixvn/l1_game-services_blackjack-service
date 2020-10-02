@@ -76,6 +76,14 @@ describe("calculate()", () => {
             },
             {
                 cards: [
+                    { rank: "2", suit: 1 },
+                    { rank: "4", suit: 1 },
+                    { rank: "A", suit: 1 },
+                ],
+                expected: [7, 17],
+            },
+            {
+                cards: [
                     { rank: "5", suit: 1 },
                     { rank: "A", suit: 1 },
                     { rank: "K", suit: 1 },
@@ -216,6 +224,14 @@ describe("calculateFinalValue()", () => {
                     { rank: "3", suit: 1 },
                 ],
                 expected: 5,
+            },
+            {
+                cards: [
+                    { rank: "2", suit: 1 },
+                    { rank: "4", suit: 1 },
+                    { rank: "A", suit: 1 },
+                ],
+                expected: 17,
             },
         ];
 

@@ -15,7 +15,7 @@ export const calculate = (cards) => {
 const calculateAce = (cards, total) => {
     let aceCount = cards.filter((card) => isAce(card)).length;
     let firstValue = total;
-    let reducedValues = [];
+    let reducedValues = [total];
 
     while (aceCount > 0) {
         firstValue -= constants.reduceValueOfAce;

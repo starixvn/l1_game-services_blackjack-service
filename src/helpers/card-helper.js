@@ -16,7 +16,7 @@ export const calculate = (cards) => {
                     ? [secondHandValue]
                     : [secondHandValue - constants.reduceValueOfAce, secondHandValue];
             } else {
-                while (firstValue > constants.blackJack || aceCount > 0 || firstValue <= constants.blackJack) {
+                while (firstValue > constants.blackJack || aceCount > 0) {
                     firstValue -= constants.reduceValueOfAce;
                     aceCount--;
                 }
@@ -24,7 +24,9 @@ export const calculate = (cards) => {
             }
         }
 
-        handValues.push(secondHandValue);
+        if (secondHandValue <= constants.blackJack) {
+            handValues.push(secondHandValue);
+        }
 
         return handValues;
     }
@@ -47,7 +49,7 @@ export const isBust = (cards) => {
 };
 
 export const hasAce = (cards) => {
-    return cards.includes((card) => card.rank === "A");
+    return cards.some((card) => card.rank === "A");
 };
 
 export const isAce = (card) => {
@@ -59,20 +61,12 @@ export const isJQK = (card) => {
 };
 
 export const getValue = (card) => {
-    const cardValue = [
-        {
-            matchRank: isAce(card),
-            value: 11,
-        },
-        {
-            matchRank: isJQK(card),
-            value: 10,
-        },
-        {
-            matchRank: !isAce(card) && !isJQK(card),
-            value: parseInt(card.rank),
-        },
-    ];
+    if (isAce(card)) {
+        return constants.aceValue;
+    }
+    if (isJQK(card)) {
+        return constants.JQKValue;
+    }
 
-    return cardValue.filter((filterCard) => filterCard.matchRank)[0].value;
+    return parseInt(card.rank);
 };

@@ -4,5 +4,7 @@ export default {
     reduceValueOfAce: 10,
     minPlayerHand: 1,
     maxPlayerHand: 3,
-    allowDoubleValues: [9, 10, 11]
+    allowDoubleValues: [9, 10, 11],
+    aceValue: 11,
+    JQKValue: 10,
 };

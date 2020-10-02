@@ -11,6 +11,16 @@
             "processId": "${command:PickProcess}",
             "restart": true,
             "protocol": "inspector"
-        }
+        },
+		{
+			"name": "Debug Jest Tests",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+			"args": ["--verbose", "-i", "--no-cache"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"protocol": "inspector",
+		}
     ]
 }

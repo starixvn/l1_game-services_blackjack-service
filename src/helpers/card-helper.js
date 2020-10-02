@@ -10,8 +10,8 @@ export const calculate = (cards) => {
         if (hasAce(cards) && secondHandValue != constants.blackJack) {
             let aceCount = cards.filter((card) => isAce(card)).length;
             let firstValue = secondHandValue;
-
             let reducedValues = [];
+
             while (aceCount > 0) {
                 firstValue -= constants.reduceValueOfAce;
                 reducedValues.push(firstValue);

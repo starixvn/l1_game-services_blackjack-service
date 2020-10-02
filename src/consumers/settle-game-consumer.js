@@ -8,7 +8,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
-        const { result, settlementResult } = this.gameDefinition.generateResult(betTrack.dealer.cards, betTrack.decks);
+        const { result, settlementResult } = this.gameDefinition.generateResult(betTrack.dealer.cards, betTrack.deck);
 
         const finish = {
             settlementResult,
@@ -31,7 +31,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
     }
 
     async queryBets(roundId) {
-        const bets = await this.gameDefinition.betRepository.find({ phien: roundId }).lean().exec();
+        const bets = await this.gameDefinition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
 
         return bets;
     }
@@ -45,7 +45,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
             await Promise.all(
                 bets.map(async (bet) => {
-                    const betResult = this.calculateBetResult(settlementResult, bet, odds);
+                    const betResult = this.calculateBetResult(result, bet, odds);
 
                     if (!bet.actions.includes(this.gameDefinition.actions.stand)) {
                         const actions = [...bet.actions, this.gameDefinition.actions.stand];
@@ -60,7 +60,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                     await this.callEndGame(bet, bet.id, time, betResult);
 
                     if (betResult.netWin > 0) {
-                        winningHands.push({ id: bet.id, betWin: bet.betWin });
+                        winningHands.push({ id: bet.id, betWin: bet.betwin });
                     }
                 })
             );
@@ -72,13 +72,13 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     calculateBetResult(settlementResult, bet, odds) {
         const totalHandValue = calculateFinalValue(bet.cards);
-        const winAmount = bet.amount * this.gameDefinition.settle(settlementResult, bet, odds);
+        const winAmount = bet.bet * this.gameDefinition.settle(settlementResult, bet, odds);
 
         const betResult = {
-            totalBetAmount: bet.amount,
+            totalBetAmount: bet.bet,
             totalWin: winAmount > 0 ? parseFloat(winAmount.toFixed(2)) : 0,
-            netWin: winAmount > 0 ? parseFloat((winAmount - bet.amount).toFixed(2)) : 0,
-            totalLost: winAmount > 0 ? 0 : bet.amount,
+            netWin: winAmount > 0 ? parseFloat((winAmount - bet.bet).toFixed(2)) : 0,
+            totalLost: winAmount > 0 ? 0 : bet.bet,
             result: totalHandValue,
         };
 
@@ -87,9 +87,5 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     collectRoundResult(result, settlementResult, winningHands) {
         return { result, settlementResult, winningHands };
-    }
-
-    isSplitted(bet) {
-        return bet.actions.include(this.gameDefinition.actions.split) || bet.splitFrom > 0;
     }
 }

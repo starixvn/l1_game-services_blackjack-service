@@ -78,9 +78,10 @@ export default class GameCron extends Core.Cron.BaseGameCron {
 
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeRound;
+            const expiredDate = new Date(new Date().setDate(-1));
 
             Object.values(this.gameData.ingame).forEach(async (userBet) => {
-                if (userBet.betTracks?.roundStartTime < new Date().setDate(-1)) {
+                if (userBet.betTracks?.roundStartTime > expiredDate) {
                     await this.settleGameRoundConsumer.settleRound(userBet.name);
                 }
             });

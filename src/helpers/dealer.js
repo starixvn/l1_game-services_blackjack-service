@@ -13,20 +13,27 @@ export const generateResult = (dealerCards, decks) => {
     return { result: dealerCards, settlementResult };
 };
 
-export const settle = (settlementResult, bet, odds) => {
+export const settle = (dealerCards, bet, odds) => {
     const totalHandValue = calculateFinalValue(bet.cards);
+    const totalOfDealer = calculateFinalValue(dealerCards);
 
     if (!isSplitted(bet) && isBlackjack(bet.cards)) {
-        return odds[gameSettings.payouts.blackjack];
+        return isBlackjack(dealerCards) ? 1 : odds[gameSettings.payouts.blackjack];
     }
 
-    if (!isBust(bet.cards) && totalHandValue >= settlementResult) {
-        return totalHandValue > settlementResult ? odds[gameSettings.payouts.regular] : 1;
+    if (isBust(bet.cards)) {
+        return 0;
     }
 
-    return 0;
+    if (isBust(dealerCards)) {
+        return odds[gameSettings.payouts.regular];
+    }
+
+    if (totalHandValue >= totalOfDealer) {
+        return totalHandValue > totalOfDealer ? odds[gameSettings.payouts.regular] : 1;
+    }
 };
 
 export const isSplitted = (bet) => {
-    return bet.actions.include(gameSettings.actions.split) || bet.splitFrom > 0;
+    return bet.actions.includes(gameSettings.actions.split) || bet.splitFrom > 0;
 };

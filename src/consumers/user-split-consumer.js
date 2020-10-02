@@ -1,29 +1,35 @@
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
+import { getValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 
 export default class UserSplitConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
+        const { hands } = playerData.betTracks;
 
         return [
             {
-                failure: !playerData?.betTracks?.hands?.some((x) => x.id === payload.split.id),
+                failure: hands.some((x) => x.id === payload.split.id),
                 notice: noticeHelper.invalidHandId,
             },
             {
-                failure: playerData?.betTracks?.hands?.some((x) => x.splitFrom === payload.split.id),
+                failure: hands.some((x) => x.splitFrom === payload.split.id),
                 notice: noticeHelper.handAlreadySplit,
             },
             {
-                failure: playerData?.betTracks?.hands?.some((x) => x.id === payload.split.id && x.splitFrom),
+                failure: hands.some((x) => x.id === payload.split.id && x.splitFrom),
                 notice: noticeHelper.cantSplitChildHand,
             },
+            {
+                failure: hands.length === 2 && getValue(hands[0]) === getValue(hands[1]),
+                notice: noticeHelper.cardsNotEqual,
+            }
         ];
     }
 
     validateBetRequest(player, payload) {
-        if (!payload.split || !payload.split.id) {
+        if (!payload.split || !payload.split.id || !playerData?.betTracks?.hands) {
             return false;
         }
 

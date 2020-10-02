@@ -3,10 +3,6 @@ import constants from "./../constants";
 export const calculate = (cards) => {
     if (cards?.length > 0) {
         let handValues = [];
-        // let secondHandValue = 0;
-        // cards.forEach((card) => {
-        //     secondHandValue += getValue(card);
-        // });
         const secondHandValue = cards.reduce((total, acc) => {
             return getValue(acc) + total;
         }, 0);
@@ -20,7 +16,7 @@ export const calculate = (cards) => {
                     ? [secondHandValue]
                     : [secondHandValue - constants.reduceValueOfAce, secondHandValue];
             } else {
-                while (firstValue > constants.blackJack && aceCount > 0 && firstValue < constants.blackJack) {
+                while (firstValue > constants.blackJack || aceCount > 0 || firstValue <= constants.blackJack) {
                     firstValue -= constants.reduceValueOfAce;
                     aceCount--;
                 }

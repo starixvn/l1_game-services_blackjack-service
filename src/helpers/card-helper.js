@@ -2,37 +2,32 @@ import constants from "./../constants";
 
 export const calculate = (cards) => {
     if (cards?.length > 0) {
-        let handValues = [];
         const secondHandValue = cards.reduce((total, acc) => {
             return getValue(acc) + total;
         }, 0);
 
-        if (hasAce(cards) && secondHandValue != constants.blackJack) {
-            let aceCount = cards.filter((card) => isAce(card)).length;
-            let firstValue = secondHandValue;
-            let reducedValues = [];
-
-            while (aceCount > 0) {
-                firstValue -= constants.reduceValueOfAce;
-                reducedValues.push(firstValue);
-                aceCount--;
-            }
-
-            const reversedValues = reducedValues.reverse();
-
-            if (reversedValues.some((value) => value <= constants.blackJack)) {
-                handValues.push(...reversedValues.filter((value) => value <= constants.blackJack));
-            } else {
-                handValues.push(reversedValues[0]);
-            }
-        } else {
-            handValues.push(secondHandValue);
-        }
-
-        return handValues;
+        return hasAce(cards) && secondHandValue !== constants.blackJack ? calculateAce(cards, secondHandValue) : [secondHandValue];
     }
 
     return [0];
+};
+
+const calculateAce = (cards, total) => {
+    let aceCount = cards.filter((card) => isAce(card)).length;
+    let firstValue = total;
+    let reducedValues = [];
+
+    while (aceCount > 0) {
+        firstValue -= constants.reduceValueOfAce;
+        reducedValues.push(firstValue);
+        aceCount--;
+    }
+
+    const reversedValues = reducedValues.reverse();
+
+    return reversedValues.some((value) => value <= constants.blackJack)
+        ? reversedValues.filter((value) => value <= constants.blackJack)
+        : [reversedValues[0]];
 };
 
 export const calculateFinalValue = (cards) => {

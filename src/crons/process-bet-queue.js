@@ -57,7 +57,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             dealer: dealer.cards,
         });
 
-        this.settleGameConsumer.settleRound(player.profile.name);
+        await this.settleGameConsumer.settleRound(player.profile.name);
     }
 
     async processStand(player, payload) {

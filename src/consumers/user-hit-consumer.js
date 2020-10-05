@@ -49,24 +49,6 @@ export default class UserHitConsumer extends Core.BaseEventConsumers.PlaceBetCon
             return;
         }
 
-        const { betTracks } = this.gameData.ingame[name];
-        const hand = betTracks.hands.find((x) => x.id === payload.hit.id);
-        const newCard = betTracks.deck.shif();
-        hand.cards.push(newCard);
-        hand.total = calculate(hand.cards);
-
-        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
-        bet.cards = hand.cards;
-        bet.total = calculateFinalValue(bet.cards);
-        bet.actions.push(gameSettings.actions.hit);
-
-        if (bet.total >= constants.blackJack) {
-            hand.isStand = true;
-            hand.total = bet.total;
-            bet.actions.push(gameSettings.actions.stand);
-        }
-
-        await bet.save();
-        this.publisher.publishToUser(player.UID, { newCard, ...hand });
+        this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.hit, id: payload.hit.id } });
     }
 }

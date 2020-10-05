@@ -5,10 +5,20 @@ import { cards } from "../card";
 import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
 import Chance from "chance";
+import SettleGameConsumer from "../consumers/settle-game-consumer";
+import constants from "../constants";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
     chance = new Chance();
+
+    /**
+     * @param {SettleGameConsumer} settleGameConsumer
+     */
+    constructor(definition, gameData, settleGameConsumer) {
+        super(definition, gameData);
+        this.settleGameConsumer = settleGameConsumer;
+    }
 
     async proceedBet(player, payload) {
         switch (payload.action) {
@@ -21,7 +31,68 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             case gameSettings.actions.split:
                 await this.processSplit(player, payload);
                 break;
+            case gameSettings.actions.hit:
+                await this.processHit(player, payload);
+                break;
+            case gameSettings.actions.stand:
+                await this.processStand(player, payload);
+                break;
         }
+
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        if (betTracks.hands.every((hand) => hand.isStand)) {
+            await this.settleRound(player);
+        }
+    }
+
+    async settleRound(player) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        const { dealer } = betTracks;
+
+        while (calculateFinalValue(dealer.cards) < constants.minDealerHand) {
+            dealer.cards.push(betTracks.deck.shift());
+        }
+
+        this.publisher.publishToUser(player.UID, {
+            dealer: dealer.cards,
+        });
+
+        this.settleGameConsumer.settleRound(player.profile.name);
+    }
+
+    async processStand(player, payload) {
+        const { betTracks } = this.gameData.ingame[name];
+        const hand = betTracks.hands.find((x) => x.id === payload.id);
+        hand.isStand = true;
+        hand.total = calculateFinalValue(hand.cards);
+
+        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
+        bet.actions.push(gameSettings.actions.stand);
+
+        await bet.save();
+        this.publisher.publishToUser(player.UID, { ...hand });
+    }
+
+    async processHit(player, payload) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        const hand = betTracks.hands.find((x) => x.id === payload.id);
+        const newCard = betTracks.deck.shif();
+        hand.cards.push(newCard);
+        hand.total = calculate(hand.cards);
+
+        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
+        bet.cards = hand.cards;
+        bet.total = calculateFinalValue(bet.cards);
+        bet.actions.push(gameSettings.actions.hit);
+
+        if (bet.total >= constants.blackJack) {
+            hand.isStand = true;
+            hand.total = bet.total;
+            bet.actions.push(gameSettings.actions.stand);
+        }
+
+        await bet.save();
+        this.publisher.publishToUser(player.UID, { newCard, ...hand });
     }
 
     async processSplit(player, payload) {
@@ -148,8 +219,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let balance = {};
         let totalBet = 0;
 
-        for (let i = 0; i < payload.hands.length; i++) {
-            const hand = payload.hands[i];
+        for (const hand of payload.hands) {
             this.gameData.betId++;
             hand.id = this.gameData.betId;
 
@@ -172,7 +242,10 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         if (betTracks.hands.length > 0) {
             betTracks.deck = this.chance.shuffle(this.baseDeck);
-            await this.createHandEntities(player);
+            betTracks.roundStartTime = new Date();
+            this.dealCards(betTracks);
+
+            await this.createRoundAndHandEntities(player);
             this.publisher.publishToUser(player.UID, {
                 data: {
                     roundId: betTracks.roundId,
@@ -187,10 +260,9 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
     }
 
-    async createHandEntities(player) {
+    async createRoundAndHandEntities(player) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
 
-        this.dealCards(betTracks);
         const newRound = await this.definition.roundRepository.create({
             result: betTracks.dealer.cards,
             roundStartTime: new Date(),
@@ -226,16 +298,22 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     dealCards({ dealer, hands, deck }) {
         let turn = 1;
         while (turn <= 2) {
-            for (let i = 0; i < hands.length; i++) {
-                hands[i].cards.push(deck.shift());
+            for (const hand of hands) {
+                hand.cards.push(deck.shift());
                 if (turn === 2) {
-                    hands[i].isStand = isBlackjack(hands[i].cards);
-                    hands[i].total = calculate(hands[i].cards);
+                    hand.isStand = isBlackjack(hand.cards);
+                    hand.total = calculate(hand.cards);
                 }
             }
 
             dealer.cards.push(deck.shift());
             turn++;
+        }
+
+        if (isBlackjack(dealer.cards)) {
+            for (const hand of hands) {
+                hand.isStand = true;
+            }
         }
     }
 }

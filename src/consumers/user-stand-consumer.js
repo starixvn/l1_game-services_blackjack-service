@@ -39,15 +39,6 @@ export default class UserStandConsumer extends Core.BaseEventConsumers.PlaceBetC
             return;
         }
 
-        const { betTracks } = this.gameData.ingame[name];
-        const hand = betTracks.hands.find((x) => x.id === payload.stand.id);
-        hand.isStand = true;
-        hand.total = calculateFinalValue(hand.cards);
-
-        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
-        bet.actions.push(gameSettings.actions.stand);
-
-        await bet.save();
-        this.publisher.publishToUser(player.UID, { ...hand });
+        this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.stand, id: payload.stand.id } });
     }
 }

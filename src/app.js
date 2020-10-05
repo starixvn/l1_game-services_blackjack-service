@@ -29,8 +29,10 @@ const run = async () => {
         gameSettings.payouts
     );
 
-    const gameCron = new GameCron(definition, gameData, new SettleGameConsumer(definition, gameData));
-    const startup = new Startup(appConfigs, definition, gameData, gameCron, new BlackJackProcessBetQueue(definition, gameData));
+    const settleGameConsumer = new SettleGameConsumer(definition, gameData);
+
+    const gameCron = new GameCron(definition, gameData, settleGameConsumer);
+    const startup = new Startup(appConfigs, definition, gameData, gameCron, new BlackJackProcessBetQueue(definition, gameData, settleGameConsumer));
     const app = new BlackJackApp(appConfigs, definition, gameData, startup);
     await app.run();
 };

@@ -47,7 +47,7 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
             return;
         }
 
-        if (!this.gameData.ingame[name]) {
+        if (!this.gameData.ingame[name]?.roundId) {
             const newPlayer = {
                 name: player.profile.name,
                 betTracks: {},
@@ -57,6 +57,8 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
             this.gameData.ingame[name] = newPlayer;
         }
 
-        this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.deal, hands: deal.hands } });
+        if (this.gameData.ingame[name].roundId) {
+            this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.deal, hands: deal.hands } });
+        }
     }
 }

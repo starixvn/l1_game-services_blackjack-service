@@ -10,7 +10,7 @@ export default class UserSplitConsumer extends Core.BaseEventConsumers.PlaceBetC
 
         return [
             {
-                failure: hands.some((x) => x.id === payload.split.id),
+                failure: !hands.some((x) => x.id === payload.split.id),
                 notice: noticeHelper.invalidHandId,
             },
             {
@@ -24,7 +24,7 @@ export default class UserSplitConsumer extends Core.BaseEventConsumers.PlaceBetC
             {
                 failure: hands.length === 2 && getValue(hands[0]) === getValue(hands[1]),
                 notice: noticeHelper.cardsNotEqual,
-            }
+            },
         ];
     }
 

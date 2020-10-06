@@ -29,7 +29,7 @@ export default class UserSplitConsumer extends Core.BaseEventConsumers.PlaceBetC
     }
 
     validateBetRequest(player, payload) {
-        if (!payload.split || !payload.split.id || !playerData?.betTracks?.hands) {
+        if (!payload.split || !payload.split.id) {
             return false;
         }
 

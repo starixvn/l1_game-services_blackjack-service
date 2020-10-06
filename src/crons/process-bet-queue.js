@@ -51,7 +51,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         hand.isStand = true;
         hand.total = calculateFinalValue(hand.cards);
 
-        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
+        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.actions.push(gameSettings.actions.stand);
 
         await bet.save();
@@ -65,7 +65,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         hand.cards.push(newCard);
         hand.total = calculate(hand.cards);
 
-        const bet = await BlackJackBets.findOne({ id: hand.id }).exec();
+        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.cards = hand.cards;
         bet.total = calculateFinalValue(bet.cards);
         bet.actions.push(gameSettings.actions.hit);

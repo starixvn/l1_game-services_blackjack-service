@@ -1,8 +1,6 @@
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
-import { calculateFinalValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
-import { BlackJackBets } from "../models/blackjack-bets";
 
 export default class UserStandConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {

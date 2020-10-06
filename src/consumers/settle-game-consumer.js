@@ -2,13 +2,13 @@ import { Core } from "sc-game-base";
 import { calculateFinalValue } from "../helpers/card-helper";
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
-    constructor(gameDefinition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
-        super(gameDefinition, gameData, roundResultPublisher, userBetResultPublisher);
+    constructor(definition, gameData, mainServerApiSettings, roundResultPublisher = null, userBetResultPublisher = null) {
+        super(definition, gameData, mainServerApiSettings, roundResultPublisher, userBetResultPublisher);
     }
 
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
-        const { result, settlementResult } = this.gameDefinition.generateResult(betTrack.dealer.cards, betTrack.deck);
+        const { result, settlementResult } = this.definition.generateResult(betTrack.dealer.cards, betTrack.deck);
 
         const finish = {
             settlementResult,
@@ -17,7 +17,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
             time: new Date(),
         };
 
-        await this.gameDefinition.roundRepository.update(
+        await this.definition.roundRepository.update(
             { id: betTrack.roundId },
             {
                 result,
@@ -31,7 +31,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
     }
 
     async queryBets(roundId) {
-        const bets = await this.gameDefinition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
+        const bets = await this.definition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
 
         return bets;
     }
@@ -47,8 +47,8 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                 bets.map(async (bet) => {
                     const betResult = this.calculateBetResult(result, bet, odds);
 
-                    if (!bet.actions.includes(this.gameDefinition.actions.stand)) {
-                        const actions = [...bet.actions, this.gameDefinition.actions.stand];
+                    if (!bet.actions.includes(this.definition.actions.stand)) {
+                        const actions = [...bet.actions, this.definition.actions.stand];
                         bet.actions = actions;
                     }
 
@@ -65,14 +65,14 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                 })
             );
 
-            this.gameData.ingame[playerName] = {};
+            delete this.gameData.ingame[playerName];
             this.userBetResultPublisher.publish(playerUID, this.collectRoundResult(result, settlementResult, winningHands));
         }
     }
 
     calculateBetResult(settlementResult, bet, odds) {
         const totalHandValue = calculateFinalValue(bet.cards);
-        const winAmount = bet.bet * this.gameDefinition.settle(settlementResult, bet, odds);
+        const winAmount = bet.bet * this.definition.settle(settlementResult, bet, odds);
 
         const betResult = {
             totalBetAmount: bet.bet,

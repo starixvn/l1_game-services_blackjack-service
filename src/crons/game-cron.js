@@ -1,21 +1,22 @@
+import moment from "moment";
 import { Core } from "sc-game-base";
 import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
-import UserDealConsumer from "../consumers/user-deal-consumer";
 import gameSettings from "../game-settings";
 import { generateDecks } from "./../helpers/deck-helper";
+import UserDealConsumer from "./../consumers/user-deal-consumer";
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**
-     * @param {BlackjackGameDefinition} gameDefinition
+     * @param {BlackjackGameDefinition} definition
      * @param {BlackJackGameData} gameData
      */
-    constructor(gameDefinition, gameData, settleGameConsumer) {
-        super(gameDefinition, gameData, settleGameConsumer);
+    constructor(definition, gameData, mainServerApiSettings, settleGameConsumer) {
+        super(definition, gameData, mainServerApiSettings, settleGameConsumer);
     }
 
     async start() {
-        const lastestBet = await this.gameDefinition.betRepository
+        const lastestBet = await this.definition.betRepository
             .findOne({}, "id", { sort: { _id: -1 } })
             .lean()
             .exec();
@@ -29,62 +30,69 @@ export default class GameCron extends Core.Cron.BaseGameCron {
     }
 
     async initBetTracks() {
-        const runningRounds = await this.gameDefinition.roundRepository.find({ ended: false }).lean().exec();
+        const runningRounds = await this.definition.roundRepository.find({ ended: false }).lean().exec();
 
-        runningRounds.forEach(async (round) => {
-            let usedCards = [...round.result];
-            const hands = await this.gameDefinition.betRepository.find({ phien: round.id }).lean().exec();
-            const userHands = hands.map((hand) => {
-                usedCards.push(...hand.cards);
+        await Promise.all(
+            runningRounds.map(async (round) => {
+                let usedCards = [...round.result];
+                const hands = await this.definition.betRepository.find({ phien: round.id }).lean().exec();
+                const userHands = hands.map((hand) => {
+                    usedCards.push(...hand.cards);
 
-                return {
-                    ...hand,
-                    isStand: hand.actions.includes(gameSettings.actions.stand),
+                    return {
+                        ...hand,
+                        isStand: hand.actions.includes(gameSettings.actions.stand),
+                    };
+                });
+
+                const newPlayer = {
+                    name: round.name,
+                    betTracks: {
+                        roundId: round.id,
+                        roundStartTime: round.roundStartTime,
+                        uid: round.uid,
+                        deck: generateDecks(usedCards),
+                        dealer: { cards: [...round.result] },
+                        hands: userHands,
+                    },
+                    betQueue: [],
                 };
-            });
 
-            const newPlayer = {
-                name: round.name,
-                betTracks: {
-                    roundId: round.id,
-                    roundStartTime: round.roundStartTime,
-                    uid: round.uid,
-                    deck: generateDecks(usedCards),
-                    dealer: { cards: [...round.result] },
-                    hands: userHands,
-                },
-                betQueue: [],
-            };
-
-            this.gameData.ingame[round.name] = newPlayer;
-        });
+                this.gameData.ingame[round.name] = newPlayer;
+            })
+        );
     }
 
     async proceed() {
-        const { durations } = this.gameDefinition;
+        const { durations } = this.definition;
 
         if (this.gameData.remainingTime === durations.wholeRound) {
             await this.checkGameStatus();
-            this.gameDefinition.bot && (await this.gameDefinition.bot.reset());
+            this.definition.bot && (await this.definition.bot.reset());
         }
 
         if (!this.gameData.disabled) {
             this.gameData.remainingTime--;
 
             if (this.gameData.remainingTime % durations.botFrequency === 0) {
-                await this.gameDefinition.bot.run();
+                await this.definition.bot.run();
             }
         }
 
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeRound;
-            const expiredDate = new Date(new Date().setDate(-1));
+            const expiredDate = moment.utc().add(-1, "days");
+            await Promise.all(
+                Object.values(this.gameData.ingame).map(async (userBet) => {
+                    if (userBet.betTracks) {
+                        const startTime = moment(userBet.betTracks.roundStartTime);
 
-            Object.values(this.gameData.ingame).forEach(async (userBet) => {
-                if (userBet.betTracks?.roundStartTime > expiredDate) {
-                    await this.settleGameRoundConsumer.settleRound(userBet.name);
-                }
-            });
+                        if (startTime < expiredDate) {
+                            await this.settleGameRoundConsumer.settleRound(userBet.name);
+                        }
+                    }
+                })
+            );
         }
     }
 }

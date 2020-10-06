@@ -13,6 +13,17 @@ export default {
         placeBetTimeout: 4500,
         enabledApiLogs: true,
     },
+    mainServerApiSettings: {
+        url: "http://lumigame.com:8080/api",
+        auth: {
+            url: "http://auth.lumigame.com",
+            id: "game-server",
+            secret: "gameserver@20luminet&",
+        },
+        requestTimeout: 10000,
+        placeBetTimeout: 4500,
+        useAuthenticate: true,
+    },
     socketOptions: {
         pingInterval: 60 * 1000,
         pingTimeout: 60 * 1000,

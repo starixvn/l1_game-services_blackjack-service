@@ -9,13 +9,6 @@ import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 
 export default class Startup extends Table.TableGameStartup {
     /**
-     * @param {express.Express} app
-     */
-    initHttpRouter(app) {
-        new Table.Routers.HttpRouter(this.gameData).init(app, this.appConfigs);
-    }
-
-    /**
      * @param {socketIo.Socket} socketClient
      */
     initSocketRouter(socketClient) {

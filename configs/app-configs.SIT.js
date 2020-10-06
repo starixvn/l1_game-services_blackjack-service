@@ -13,6 +13,17 @@ export default {
         placeBetTimeout: 4500,
         enabledApiLogs: true,
     },
+    mainServerApiSettings: {
+        url: "http://10.99.99.101:6200/api",
+        auth: {
+            url: "http://10.99.99.101:6303",
+            id: "game-server",
+            secret: "gameserver@20luminet&",
+        },
+        requestTimeout: 10000,
+        placeBetTimeout: 4500,
+        useAuthenticate: true,
+    },
     socketOptions: {
         pingInterval: 60 * 1000,
         pingTimeout: 60 * 1000,

@@ -41,23 +41,8 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         const { betTracks } = this.gameData.ingame[player.profile.name];
         if (betTracks.hands.every((hand) => hand.isStand)) {
-            await this.settleRound(player);
+            await this.settleGameConsumer.settleRound(player.profile.name);
         }
-    }
-
-    async settleRound(player) {
-        const { betTracks } = this.gameData.ingame[player.profile.name];
-        const { dealer } = betTracks;
-
-        while (calculateFinalValue(dealer.cards) < constants.minDealerHand) {
-            dealer.cards.push(betTracks.deck.shift());
-        }
-
-        this.publisher.publishToUser(player.UID, {
-            dealer: dealer.cards,
-        });
-
-        await this.settleGameConsumer.settleRound(player.profile.name);
     }
 
     async processStand(player, payload) {

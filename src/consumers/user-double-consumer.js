@@ -4,7 +4,7 @@ import gameSettings from "../game-settings";
 import { calculateFinalValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 
-export default class UserDoubleConsumerextends extends Core.BaseEventConsumers.PlaceBetConsumer {
+export default class UserDoubleConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     composeValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const criteria = [];

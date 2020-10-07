@@ -3,7 +3,7 @@ import Chance from "chance";
 import _ from "lodash";
 
 export const generateDecks = (exclusions) => {
-    let baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
+    const baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
 
     if (exclusions) {
         exclusions.forEach((excludeCard) => {

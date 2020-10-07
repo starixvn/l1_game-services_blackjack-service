@@ -32,6 +32,8 @@ export const settle = (dealerCards, bet, odds) => {
     if (totalHandValue >= totalOfDealer) {
         return totalHandValue > totalOfDealer ? odds[gameSettings.payouts.regular] : 1;
     }
+
+    return 0;
 };
 
 export const isSplitted = (bet) => {

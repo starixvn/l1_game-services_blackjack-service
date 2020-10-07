@@ -31,14 +31,12 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
     }
 
     async queryBets(roundId) {
-        const bets = await this.definition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
-
-        return bets;
+        return this.definition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
     }
 
     async settleBets({ result, settlementResult, roundId, time, playerName, playerUID }) {
         const bets = await this.queryBets(roundId);
-        let winningHands = [];
+        const winningHands = [];
 
         if (bets && bets.length) {
             const { odds } = this.gameData.gameConfigs;
@@ -74,15 +72,13 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
         const totalHandValue = calculateFinalValue(bet.cards);
         const winAmount = bet.bet * this.definition.settle(settlementResult, bet, odds);
 
-        const betResult = {
+        return {
             totalBetAmount: bet.bet,
             totalWin: winAmount > 0 ? parseFloat(winAmount.toFixed(2)) : 0,
             netWin: winAmount > 0 ? parseFloat((winAmount - bet.bet).toFixed(2)) : 0,
             totalLost: winAmount > 0 ? 0 : bet.bet,
             result: totalHandValue,
         };
-
-        return betResult;
     }
 
     collectRoundResult(result, settlementResult, winningHands) {

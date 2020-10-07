@@ -4,7 +4,6 @@ import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
 import gameSettings from "../game-settings";
 import { generateDecks } from "./../helpers/deck-helper";
-import UserDealConsumer from "./../consumers/user-deal-consumer";
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**
@@ -34,7 +33,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
 
         await Promise.all(
             runningRounds.map(async (round) => {
-                let usedCards = [...round.result];
+                const usedCards = [...round.result];
                 const hands = await this.definition.betRepository.find({ phien: round.id }).lean().exec();
                 const userHands = hands.map((hand) => {
                     usedCards.push(...hand.cards);

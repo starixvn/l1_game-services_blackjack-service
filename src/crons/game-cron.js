@@ -83,7 +83,11 @@ export default class GameCron extends Core.Cron.BaseGameCron {
             const expiredDate = moment.utc().add(-1, "days");
             await Promise.all(
                 Object.values(this.gameData.ingame).map(async (userBet) => {
-                    if (userBet.betTracks && moment(userBet.betTracks.roundStartTime) < expiredDate) {
+                    if (
+                        !this.gameData.players[userBet.betTracks.uid] &&
+                        userBet.betTracks &&
+                        moment(userBet.betTracks.roundStartTime) < expiredDate
+                    ) {
                         await this.settleGameRoundConsumer.settleRound(userBet.name);
                     }
                 })

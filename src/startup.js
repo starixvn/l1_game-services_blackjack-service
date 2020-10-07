@@ -1,9 +1,5 @@
 import { Core, Table } from "sc-game-base";
-import UserDealConsumer from "./consumers/user-deal-consumer";
-import UserDoubleConsumer from "./consumers/user-double-consumer";
-import UserHitConsumer from "./consumers/user-hit-consumer";
-import UserSplitConsumer from "./consumers/user-split-consumer";
-import UserStandConsumer from "./consumers/user-stand-consumer";
+import { UserHitConsumer, UserStandConsumer, UserDoubleConsumer, UserSplitConsumer, UserDealConsumer } from "./consumers";
 import initDatabase from "./models";
 import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 

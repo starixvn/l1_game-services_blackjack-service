@@ -1,7 +1,8 @@
 import { Core, Table } from "sc-game-base";
-import { UserHitConsumer, UserStandConsumer, UserDoubleConsumer, UserSplitConsumer, UserDealConsumer } from "./consumers";
+import * as Consumers from "./consumers";
 import initDatabase from "./models";
 import BlackJackSocketRouter from "./routers/blackjack-socket-router";
+import HistoryQuery from "./query-apis/history-query";
 
 export default class Startup extends Table.TableGameStartup {
     /**
@@ -13,16 +14,16 @@ export default class Startup extends Table.TableGameStartup {
             this.gameData,
             null,
             null,
+            new Consumers.InGameConsumer(this.definition, this.gameData),
             null,
             null,
+            new HistoryQuery(this.definition),
             null,
-            null,
-            null,
-            new UserStandConsumer(this.definition, this.gameData),
-            new UserHitConsumer(this.definition, this.gameData),
-            new UserDoubleConsumer(this.definition, this.gameData),
-            new UserSplitConsumer(this.definition, this.gameData),
-            new UserDealConsumer(this.definition, this.gameData)
+            new Consumers.UserStandConsumer(this.definition, this.gameData),
+            new Consumers.UserHitConsumer(this.definition, this.gameData),
+            new Consumers.UserDoubleConsumer(this.definition, this.gameData),
+            new Consumers.UserSplitConsumer(this.definition, this.gameData),
+            new Consumers.UserDealConsumer(this.definition, this.gameData)
         );
 
         router.init(socketClient);

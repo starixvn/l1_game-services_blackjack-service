@@ -1,9 +1,9 @@
 import { helpers } from "sc-common";
-import { Core } from "sc-game-base";
 import constants from "../constants";
 import gameSettings from "../game-settings";
+import BaseActionConsumer from "./base-action-consumer";
 
-export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
+export default class UserDealConsumer extends BaseActionConsumer {
     composeValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
@@ -27,38 +27,12 @@ export default class UserDealConsumer extends Core.BaseEventConsumers.PlaceBetCo
             return false;
         }
 
-        const criteria = this.composeValidationCriteria(player, payload);
-        const failedCriterion = criteria.find((criterion) => criterion.failure);
-
-        if (failedCriterion) {
-            this.publisher.publishToUser(player.UID, { endBet: -1, notice: failedCriterion.notice });
-
-            return false;
-        }
-
-        return true;
+        return super.validateBetRequest(player, payload);
     }
 
     consume(player, payload) {
-        const name = player.profile.name;
         const { deal } = payload;
 
-        if (!this.validateBetRequest(player, payload)) {
-            return;
-        }
-
-        if (!this.gameData.ingame[name]?.roundId) {
-            const newPlayer = {
-                name: player.profile.name,
-                betTracks: {},
-                betQueue: [],
-            };
-
-            this.gameData.ingame[name] = newPlayer;
-        }
-
-        if (this.gameData.ingame[name].roundId) {
-            this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.deal, hands: deal.hands } });
-        }
+        super.consume(player, payload, { action: gameSettings.actions.deal, hands: deal.hands });
     }
 }

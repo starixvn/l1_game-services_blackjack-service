@@ -1,10 +1,10 @@
-import { Core } from "sc-game-base";
 import constants from "../constants";
 import gameSettings from "../game-settings";
 import { calculateFinalValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
+import BaseActionConsumer from "./base-action-consumer";
 
-export default class UserDoubleConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
+export default class UserDoubleConsumer extends BaseActionConsumer {
     composeValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const criteria = [];
@@ -29,24 +29,10 @@ export default class UserDoubleConsumer extends Core.BaseEventConsumers.PlaceBet
             return false;
         }
 
-        const criteria = this.composeValidationCriteria(player, payload);
-        const failedCriterion = criteria.find((criterion) => criterion.failure);
-
-        if (failedCriterion) {
-            this.publisher.publishToUser(player.UID, { endBet: -1, notice: failedCriterion.notice });
-            return false;
-        }
-
-        return true;
+        return super.validateBetRequest(player, payload);
     }
 
     consume(player, payload) {
-        const name = player.profile.name;
-
-        if (!this.validateBetRequest(player, payload)) {
-            return;
-        }
-
-        this.gameData.ingame[name].betQueue.push({ player, payload: { action: gameSettings.actions.double, id: payload.double.id } });
+        super.consume(player, payload, { action: gameSettings.actions.double, id: payload.double.id });
     }
 }

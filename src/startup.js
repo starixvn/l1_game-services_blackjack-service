@@ -14,7 +14,7 @@ export default class Startup extends Table.TableGameStartup {
             this.gameData,
             null,
             null,
-            new Consumers.InGameConsumer({this.definition, this.gameData}),
+            new Consumers.InGameConsumer({ definition: this.definition, gameData: this.gameData, roundQuery: null, publisher: null }),
             null,
             null,
             new HistoryQuery(this.definition),

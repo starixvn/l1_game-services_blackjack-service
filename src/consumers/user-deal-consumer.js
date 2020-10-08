@@ -23,7 +23,12 @@ export default class UserDealConsumer extends BaseActionConsumer {
     validateBetRequest(player, payload) {
         const { deal } = payload;
 
-        if (!deal.hands || deal.hands.length < constants.minPlayerHand || deal.hands.length > constants.maxPlayerHand) {
+        if (
+            !deal.hands ||
+            deal.hands.length < constants.minPlayerHand ||
+            deal.hands.length > constants.maxPlayerHand ||
+            this.gameData.ingame[player.profile.name]?.betTracks
+        ) {
             return false;
         }
 

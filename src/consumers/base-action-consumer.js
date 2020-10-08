@@ -21,7 +21,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
     consume(player, payload, queuePayload) {
         const name = player.profile.name;
 
-        if (!this.validateBetRequest(player, payload)) {
+        if (!this.validateBetRequest(player, payload) || this.gameData.ingame[name]?.betQueue.length > 0) {
             return;
         }
 

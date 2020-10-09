@@ -2,11 +2,11 @@ import { Table } from "sc-game-base";
 import { logger } from "sc-common";
 
 import BlackJackGameData from "./../blackjack-game-data";
-import TableGameDefinition from "./../blackjack-game-definition";
+import BlackjackGameDefinition from "./../blackjack-game-definition";
 
 export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
     /**
-     * @param {TableGameDefinition} definition
+     * @param {BlackjackGameDefinition} definition
      * @param {BlackJackGameData} gameData
      */
     constructor(
@@ -25,7 +25,7 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
         userSplitConsumer = null,
         userDealConsumer = null
     ) {
-        super(
+        super({
             definition,
             gameData,
             userSignInConsumer,
@@ -34,8 +34,8 @@ export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
             placeBetConsumer,
             userSignInPublisher,
             historyQuery,
-            roundQuery
-        );
+            roundQuery,
+        });
 
         this.inGameConsumer = inGameConsumer;
         this.userStandConsumer = userStandConsumer;

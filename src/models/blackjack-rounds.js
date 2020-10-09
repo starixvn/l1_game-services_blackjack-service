@@ -5,6 +5,7 @@ const modelName = "BlackJack_phien";
 
 const Schema = new mongoose.Schema({
     result: { type: Array },
+    settlementResult: { type: Number },
     roundStartTime: { type: Date },
     time: { type: Date },
     ended: { type: Boolean, default: false },

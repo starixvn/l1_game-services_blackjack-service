@@ -24,14 +24,20 @@ const run = async () => {
         settle,
         BlackJackRounds,
         BlackJackBets,
-        new BlackJackBot(gameSettings.name, gameData, BlackJackBets),
         gameSettings.actions,
         gameSettings.payouts
     );
 
     const settleGameConsumer = new SettleGameConsumer(definition, gameData, appConfigs.mainServerApiSettings);
 
-    const gameCron = new GameCron(definition, gameData, appConfigs.mainServerApiSettings, settleGameConsumer);
+    const gameCron = new GameCron(
+        definition,
+        gameData,
+        appConfigs.mainServerApiSettings,
+        new BlackJackBot(gameSettings.name, gameData),
+        settleGameConsumer
+    );
+
     const startup = new Startup(
         appConfigs,
         definition,

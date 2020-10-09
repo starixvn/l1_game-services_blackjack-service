@@ -10,7 +10,7 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
                 ? {
                       roundId: payload.ownBets.roundId,
                       totalAmount,
-                      dealer: [payload.ownBets.dealer[0]],
+                      dealer: [payload.ownBets.dealer.cards[0]],
                       hands: payload.ownBets.hands,
                   }
                 : {};

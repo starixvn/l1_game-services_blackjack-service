@@ -77,7 +77,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         await bet.save();
-        this.publisher.publishToUser(player.UID, { split: { newCard, ...hand } });
+        this.publisher.publishToUser(player.UID, { hit: { newCard, ...hand } });
     }
 
     async processSplit(player, payload) {

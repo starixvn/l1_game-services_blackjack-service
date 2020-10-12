@@ -55,7 +55,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         bet.actions.push(gameSettings.actions.stand);
 
         await bet.save();
-        this.publisher.publishToUser(player.UID, { ...hand });
+        this.publisher.publishToUser(player.UID, { stand: { ...hand } });
     }
 
     async processHit(player, payload) {
@@ -77,7 +77,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         await bet.save();
-        this.publisher.publishToUser(player.UID, { newCard, ...hand });
+        this.publisher.publishToUser(player.UID, { split: { newCard, ...hand } });
     }
 
     async processSplit(player, payload) {
@@ -151,7 +151,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         });
 
         this.publisher.publishToUser(player.UID, {
-            data: {
+            split: {
                 hands: [hand, splitHand],
             },
             endBet: hand.bet,
@@ -185,7 +185,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             await bet.save();
 
             this.publisher.publishToUser(player.UID, {
-                data: {
+                double: {
                     newCard,
                     ...hand,
                 },
@@ -232,7 +232,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
             await this.createRoundAndHandEntities(player);
             this.publisher.publishToUser(player.UID, {
-                data: {
+                deal: {
                     roundId: betTracks.roundId,
                     totalAmount: totalBet,
                     uid: player.UID,

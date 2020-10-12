@@ -4,7 +4,7 @@ import { userInfos } from "sc-base-database";
 export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsumer {
     async buildPayload(realPlayer) {
         const payload = await super.buildPayload(realPlayer);
-        const totalAmount = payload.ownBets?.roundId > 0 ? 0 : payload.ownBets.hands.reduce((total, item) => total + item.bet, 0);
+        const totalAmount = payload.ownBets?.roundId > 0 ? payload.ownBets.hands.reduce((total, item) => total + item.bet, 0) : 0;
         const betTracks =
             payload.ownBets?.roundId > 0
                 ? {

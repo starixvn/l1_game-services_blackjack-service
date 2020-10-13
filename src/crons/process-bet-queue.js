@@ -240,6 +240,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         if (betTracks.hands.length > 0) {
+            betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
             betTracks.deck = this.chance.shuffle(this.baseDeck);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);

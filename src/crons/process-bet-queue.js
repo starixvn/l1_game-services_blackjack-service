@@ -134,7 +134,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             bet: hand.bet,
             cards: splitCards,
             pos: hand.pos + 3,
-            splitFrom: hand.pos,
+            splitFrom: hand.id,
             betwin: 0,
             actions: [],
         };

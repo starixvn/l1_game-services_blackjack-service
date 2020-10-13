@@ -1,6 +1,6 @@
 import constants from "../constants";
 import gameSettings from "../game-settings";
-import { calculateFinalValue } from "../helpers/card-helper";
+import { calculate, calculateFinalValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
@@ -11,7 +11,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         const hand = playerData?.betTracks?.hands?.find((x) => x.id === payload.double.id);
         if (hand) {
             criteria.push({
-                failure: !constants.allowDoubleValues.includes(calculateFinalValue(hand.cards)),
+                failure: !calculate(hand.cards).some((x) => constants.allowDoubleValues.includes(x)),
                 notice: noticeHelper.cantDoubleHand,
             });
         } else {

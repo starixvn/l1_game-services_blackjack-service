@@ -57,7 +57,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                     await bet.save();
                     await this.callEndGame(bet, bet.id, time, betResult);
 
-                    if (betResult.netWin > 0) {
+                    if (betResult.netWin > 0 || betResult.totalLost === 0) {
                         winningHands.push({ id: bet.id, betwin: bet.betwin });
                     }
                 })

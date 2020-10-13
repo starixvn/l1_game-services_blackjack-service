@@ -53,6 +53,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.actions.push(gameSettings.actions.stand);
+        bet.total = calculateFinalValue(hand.cards);
 
         await bet.save();
         this.publisher.publishToUser(player.UID, { stand: { ...hand } });

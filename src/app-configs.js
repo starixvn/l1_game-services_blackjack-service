@@ -17,8 +17,8 @@ export default {
         url: "http://localhost:8080/api",
         auth: {
             url: "http://auth.lumigame.com",
-            id: "game-server",
-            secret: "gameserver@20luminet&",
+            id: "admin-api",
+            secret: "adminapi@20luminet&",
         },
         requestTimeout: 10000,
         placeBetTimeout: 4500,
@@ -32,7 +32,7 @@ export default {
     },
     enabledLogs: true,
     database: {
-        url: "mongodb://localhost:27017",
+        url: "mongodb://127.0.0.1:27017",
         options: {
             dbName: "minigame",
             useNewUrlParser: true,

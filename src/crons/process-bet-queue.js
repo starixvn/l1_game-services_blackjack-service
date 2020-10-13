@@ -202,6 +202,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const { betTracks } = this.gameData.ingame[player.profile.name];
         betTracks.dealer = { cards: [] };
         betTracks.hands = [];
+        betTracks.uid = player.UID;
         let balance = {};
         let totalBet = 0;
 

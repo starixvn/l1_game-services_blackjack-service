@@ -12,6 +12,7 @@ import BlackJackBot from "./crons/blackjack-bot";
 import BlackJackProcessBetQueue from "./crons/process-bet-queue";
 import { generateResult, settle } from "./helpers/dealer";
 import SettleGameConsumer from "./consumers/settle-game-consumer";
+import RoundResultPublisher from "./publishers/round-result-publisher";
 
 export class BlackJackApp extends Table.TableGameApp {}
 
@@ -28,7 +29,8 @@ const run = async () => {
         gameSettings.payouts
     );
 
-    const settleGameConsumer = new SettleGameConsumer(definition, gameData, appConfigs.mainServerApiSettings);
+    const roundPublisher = new RoundResultPublisher(gameSettings.name, gameData);
+    const settleGameConsumer = new SettleGameConsumer(definition, gameData, appConfigs.mainServerApiSettings, roundPublisher);
 
     const gameCron = new GameCron(
         definition,

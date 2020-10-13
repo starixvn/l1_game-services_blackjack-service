@@ -58,13 +58,15 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                     await this.callEndGame(bet, bet.id, time, betResult);
 
                     if (betResult.netWin > 0) {
-                        winningHands.push({ id: bet.id, betWin: bet.betwin });
+                        winningHands.push({ id: bet.id, betwin: bet.betwin });
                     }
                 })
             );
 
             delete this.gameData.ingame[playerName];
-            this.userBetResultPublisher.publish(playerUID, this.collectRoundResult(result, settlementResult, winningHands));
+
+            const roundResult = { playerId: playerUID, result: this.collectRoundResult(result, settlementResult, winningHands) };
+            this.roundResultPublisher.publishRoundResult(roundResult);
         }
     }
 

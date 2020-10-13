@@ -50,6 +50,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const hand = betTracks.hands.find((x) => x.id === payload.id);
         hand.isStand = true;
         hand.total = calculate(hand.cards);
+        hand.actions.push(gameSettings.actions.stand);
 
         const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.actions.push(gameSettings.actions.stand);
@@ -65,6 +66,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const newCard = betTracks.deck.shift();
         hand.cards.push(newCard);
         hand.total = calculate(hand.cards);
+        hand.actions.push(gameSettings.actions.hit);
 
         const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.cards = hand.cards;
@@ -73,7 +75,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         if (bet.total >= constants.blackJack) {
             hand.isStand = true;
-            hand.total = bet.total;
+            hand.actions.push(gameSettings.actions.stand);
             bet.actions.push(gameSettings.actions.stand);
         }
 
@@ -107,8 +109,12 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const splitCards = [hand.cards.shift()];
 
         hand.cards.push(betTracks.deck.shift());
-        hand.isStand = isBlackjack(hand.cards);
+        hand.actions.push(gameSettings.actions.split);
         hand.total = calculate(hand.cards);
+        if (isBlackjack(hand.cards)) {
+            hand.actions.push(gameSettings.actions.stand);
+            hand.isStand = true;
+        }
 
         const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
         bet.bet = hand.bet;
@@ -124,14 +130,19 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         splitCards.push(betTracks.deck.shift());
         const splitHand = {
             id: newHandId,
-            isStand: isBlackjack(splitCards),
+            isStand: false,
             bet: hand.bet,
             cards: splitCards,
             pos: hand.pos + 3,
             splitFrom: hand.pos,
             betwin: 0,
+            actions: [],
         };
         splitHand.total = calculate(splitCards);
+        if (isBlackjack(splitCards)) {
+            splitHand.isStand = true;
+            splitHand.actions.push(gameSettings.actions.stand);
+        }
 
         betTracks.hands.push(splitHand);
 
@@ -147,7 +158,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             cards: splitHand.cards,
             total: calculateFinalValue(splitHand.cards),
             time: new Date(),
-            actions: splitHand.isStand ? [gameSettings.actions.stand] : [],
+            actions: splitHand.actions,
             splitFrom: splitHand.splitFrom,
         });
 
@@ -177,6 +188,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             hand.cards.push(newCard);
             hand.total = calculate(hand.cards);
             hand.isStand = true;
+            hand.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
 
             const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
             bet.bet = hand.bet;
@@ -219,7 +231,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
 
             if (apiResult.isOk) {
-                betTracks.hands.push({ betwin: 0, cards: [], ...hand });
+                betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
                 totalBet += hand.bet;
                 balance = apiResult.response;
             } else {
@@ -270,7 +282,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             cards: x.cards,
             total: calculateFinalValue(x.cards),
             time: new Date(),
-            actions: x.isStand ? [gameSettings.actions.stand] : [],
+            actions: x.actions,
         }));
 
         await this.definition.betRepository.insertMany(betEntities).catch((err) => logger.logError(err));
@@ -288,7 +300,10 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             for (const hand of hands) {
                 hand.cards.push(deck.shift());
                 if (turn === 2) {
-                    hand.isStand = isBlackjack(hand.cards);
+                    if (isBlackjack(hand.cards)) {
+                        hand.isStand = true;
+                        hand.actions.push(gameSettings.actions.stand);
+                    }
                     hand.total = calculate(hand.cards);
                 }
             }
@@ -298,8 +313,9 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         if (isBlackjack(dealer.cards)) {
-            for (const hand of hands) {
+            for (const hand of hands.filter((x) => !x.isStand)) {
                 hand.isStand = true;
+                hand.actions.push(gameSettings.actions.stand);
             }
         }
     }

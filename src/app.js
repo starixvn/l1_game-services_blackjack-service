@@ -9,7 +9,7 @@ import BlackJackGameDefinition from "./blackjack-game-definition";
 import TableGameData from "./blackjack-game-data";
 import GameCron from "./crons/game-cron";
 import BlackJackBot from "./crons/blackjack-bot";
-import BlackJackProcessBetQueue from "./crons/process-bet-queue";
+import BlackJackProcessBetQueue from "./crons/blackjack-process-bet-queue";
 import { generateResult, settle } from "./helpers/dealer";
 import SettleGameConsumer from "./consumers/settle-game-consumer";
 import RoundResultPublisher from "./publishers/round-result-publisher";

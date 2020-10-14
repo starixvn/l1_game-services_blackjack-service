@@ -3,7 +3,7 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserStandConsumer extends BaseActionConsumer {
-    composeValidationCriteria(player, payload) {
+    composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
 
         return [

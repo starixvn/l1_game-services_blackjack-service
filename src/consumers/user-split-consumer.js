@@ -4,7 +4,7 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserSplitConsumer extends BaseActionConsumer {
-    composeValidationCriteria(player, payload) {
+    composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const { hands } = playerData.betTracks;
 

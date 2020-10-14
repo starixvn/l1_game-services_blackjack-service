@@ -4,7 +4,7 @@ import gameSettings from "../game-settings";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDealConsumer extends BaseActionConsumer {
-    composeValidationCriteria(player, payload) {
+    composeActionValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
 

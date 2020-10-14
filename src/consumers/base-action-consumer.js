@@ -1,3 +1,4 @@
+import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
 
@@ -14,8 +15,26 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
         return true;
     }
 
-    composeValidationCriteria(player, payload) {
+    composeActionValidationCriteria(player, payload) {
         return [];
+    }
+
+    composeValidationCriteria(player, payload) {
+        const bettingTimeValidationCriteria = this.composeBettingTimeValidationCriteria() ?? [];
+        const actionValidationCriteria = this.composeActionValidationCriteria(player, payload) || [];
+
+        return bettingTimeValidationCriteria.concat(actionValidationCriteria);
+    }
+
+    composeBettingTimeValidationCriteria() {
+        const configs = this.gameData.gameConfigs;
+
+        return [
+            {
+                failure: !configs.enabled,
+                notice: configs.disabled_message,
+            },
+        ];
     }
 
     consume(player, payload, queuePayload) {

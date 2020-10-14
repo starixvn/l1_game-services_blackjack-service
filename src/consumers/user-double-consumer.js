@@ -1,11 +1,11 @@
 import constants from "../constants";
 import gameSettings from "../game-settings";
-import { calculate, calculateFinalValue } from "../helpers/card-helper";
+import { calculate } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDoubleConsumer extends BaseActionConsumer {
-    composeValidationCriteria(player, payload) {
+    composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const criteria = [];
         const hand = playerData?.betTracks?.hands?.find((x) => x.id === payload.double.id);

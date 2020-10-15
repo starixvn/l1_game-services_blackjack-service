@@ -1,10 +1,11 @@
-import moment from "moment";
-import { Core } from "sc-game-base";
-import BlackJackGameData from "../blackjack-game-data";
-import BlackjackGameDefinition from "../blackjack-game-definition";
-import gameSettings from "../game-settings";
-import { calculate } from "../helpers/card-helper";
-import { generateDecks } from "./../helpers/deck-helper";
+import moment from 'moment';
+import { Core } from 'sc-game-base';
+
+import BlackJackGameData from '../blackjack-game-data';
+import BlackjackGameDefinition from '../blackjack-game-definition';
+import gameSettings from '../game-settings';
+import { calculate } from '../helpers/card-helper';
+import { generateDecks } from './../helpers/deck-helper';
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**
@@ -67,7 +68,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
     async proceed() {
         const { durations } = this.definition;
 
-        if (this.gameData.remainingTime === durations.wholeRound) {
+        if (this.gameData.remainingTime === durations.wholeAction) {
             await this.checkGameStatus();
             this.bot && (await this.bot.reset());
         }
@@ -81,15 +82,15 @@ export default class GameCron extends Core.Cron.BaseGameCron {
         }
 
         if (this.gameData.remainingTime < 0) {
-            this.gameData.remainingTime = durations.wholeRound;
+            this.gameData.remainingTime = durations.wholeAction;
             const expiredDate = moment.utc().add(-1, "days");
 
             await Promise.all(
                 Object.values(this.gameData.ingame)
                     .filter(
                         (userBet) =>
-                            !this.gameData.players[userBet.betTracks.uid] &&
                             userBet.betTracks &&
+                            !this.gameData.players[userBet.betTracks.uid] &&
                             moment(userBet.betTracks.roundStartTime) < expiredDate
                     )
                     .map((userBet) => this.settleGameRoundConsumer.settleRound(userBet.name))

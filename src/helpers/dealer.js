@@ -2,8 +2,13 @@ import constants from "./../constants";
 import gameSettings from "./../game-settings";
 import { calculateFinalValue, isBlackjack, isBust } from "./card-helper";
 
-export const generateResult = (dealerCards, decks) => {
+export const generateResult = (dealerCards, decks, isUpCard) => {
     let settlementResult = calculateFinalValue(dealerCards);
+
+    if (isUpCard) {
+        settlementResult = calculateFinalValue(dealerCards);
+        return { result: dealerCards, settlementResult };
+    }
 
     while (settlementResult < constants.minDealerHand) {
         dealerCards.push(decks.shift());

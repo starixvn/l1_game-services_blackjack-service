@@ -1,46 +1,31 @@
-import { Core } from "sc-game-base";
-import { userInfos } from "sc-base-database";
+import { getBalance } from 'sc-base-apis';
+import { Core } from 'sc-game-base';
 
 export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsumer {
     async buildPayload(realPlayer) {
-        const payload = await super.buildPayload(realPlayer);
-        const totalAmount = payload.ownBets?.roundId > 0 ? payload.ownBets.hands.reduce((total, item) => total + item.bet, 0) : 0;
-        const betTracks =
-            payload.ownBets?.roundId > 0
+        const { minbet, maxbet, choices_maxbet, odds, enableFreeBet } = this.gameData.gameConfigs;
+        const gameConfigs = { minbet, maxbet, choices_maxbet, odds, enableFreeBet };
+        const { betTracks } = this.gameData.ingame[realPlayer.profile.name] || { betTracks: {} };
+        const totalAmount = betTracks.roundId > 0 ? betTracks.hands.reduce((total, item) => total + item.bet, 0) : 0;
+
+        const ownBets =
+            betTracks.roundId > 0
                 ? {
-                      roundId: payload.ownBets.roundId,
+                      roundId: betTracks.roundId,
                       totalAmount,
-                      dealer: [payload.ownBets.dealer.cards[0]],
-                      hands: payload.ownBets.hands,
+                      dealer: [betTracks.dealer.cards[0]],
+                      hands: betTracks.hands,
                   }
                 : {};
 
-        return {
-            gameConfigs: payload.gameConfigs,
-            roundHistory: payload.roundHistory,
-            user: payload.user,
-            ownBets: betTracks,
-        };
-    }
+        await getBalance(realPlayer, true);
 
-    getUserInfo(uid) {
-        return userInfos
-            .findOne(
-                { id: uid },
-                {
-                    _id: false,
-                    UID: true,
-                    name: true,
-                    avatarId: true,
-                    red: true,
-                    scoins: true,
-                    joinedOn: true,
-                    security: true,
-                    currency: true,
-                    type: true,
-                }
-            )
-            .lean()
-            .exec();
+        const user = await this.getUserInfo(realPlayer.UID);
+
+        return {
+            gameConfigs,
+            ownBets,
+            user,
+        };
     }
 }

@@ -27,7 +27,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
             !deal.hands ||
             deal.hands.length < constants.minPlayerHand ||
             deal.hands.length > constants.maxPlayerHand ||
-            this.gameData.ingame[player.profile.name]?.betTracks
+            this.gameData.ingame[player.profile.name]?.roundId
         ) {
             return false;
         }

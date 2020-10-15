@@ -1,6 +1,6 @@
 import { Core } from "sc-game-base";
 import { placeBet as placeBetApi } from "sc-base-apis";
-import { helpers, logger } from "sc-common";
+import { helpers } from "sc-common";
 import { cards } from "../card";
 import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
@@ -45,42 +45,123 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
     }
 
-    async processStand(player, payload) {
+    async processDeal(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
-        const hand = betTracks.hands.find((x) => x.id === payload.id);
-        hand.isStand = true;
-        hand.total = calculate(hand.cards);
-        hand.actions.push(gameSettings.actions.stand);
+        betTracks.dealer = { cards: [] };
+        betTracks.hands = [];
+        betTracks.uid = player.UID;
+        let balance = {};
+        let totalBet = 0;
 
-        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
-        bet.actions.push(gameSettings.actions.stand);
-        bet.total = calculateFinalValue(hand.cards);
+        for (const hand of payload.hands) {
+            this.gameData.betId++;
+            hand.id = this.gameData.betId;
 
-        await bet.save();
-        this.publisher.publishToUser(player.UID, { stand: { ...hand } });
-    }
+            const betInfo = {
+                amount: hand.bet,
+                gameId: this.definition.id,
+                gameRoundId: hand.id,
+            };
 
-    async processHit(player, payload) {
-        const { betTracks } = this.gameData.ingame[player.profile.name];
-        const hand = betTracks.hands.find((x) => x.id === payload.id);
-        const newCard = betTracks.deck.shift();
-        hand.cards.push(newCard);
-        hand.total = calculate(hand.cards);
-        hand.actions.push(gameSettings.actions.hit);
+            const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
 
-        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
-        bet.cards = hand.cards;
-        bet.total = calculateFinalValue(bet.cards);
-        bet.actions.push(gameSettings.actions.hit);
-
-        if (bet.total >= constants.blackJack) {
-            hand.isStand = true;
-            hand.actions.push(gameSettings.actions.stand);
-            bet.actions.push(gameSettings.actions.stand);
+            if (apiResult.isOk) {
+                betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
+                totalBet += hand.bet;
+                balance = apiResult.response;
+            } else {
+                this.handleFailPlaceBetResponse(player, apiResult);
+            }
         }
 
-        await bet.save();
-        this.publisher.publishToUser(player.UID, { hit: { newCard, ...hand } });
+        if (betTracks.hands.length > 0) {
+            betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
+            betTracks.deck = this.chance.shuffle(this.baseDeck);
+            betTracks.roundStartTime = new Date();
+            this.dealCards(betTracks);
+
+            await this.createRoundAndHandEntities(player);
+            this.publisher.publishToUser(player.UID, {
+                deal: {
+                    roundId: betTracks.roundId,
+                    totalAmount: totalBet,
+                    uid: player.UID,
+                    dealer: isBlackjack(betTracks.dealer.cards) ? betTracks.dealer.cards : [betTracks.dealer.cards[0]],
+                    hands: betTracks.hands,
+                },
+                endBet: totalBet,
+                user: balance,
+            });
+        }
+    }
+
+    async createRoundAndHandEntities(player) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+
+        const newRound = await this.definition.roundRepository.create({
+            result: betTracks.dealer.cards,
+            roundStartTime: new Date(),
+            uid: player.UID,
+            name: player.profile.name,
+        });
+        betTracks.roundId = newRound.id;
+        this.gameData.roundId = newRound.id;
+
+        const betEntities = betTracks.hands.map((x) => ({
+            id: x.id,
+            phien: betTracks.roundId,
+            uid: player.UID,
+            name: player.profile.name,
+            memberId: player.session?.memberId,
+            siteId: player.session?.siteId,
+            pos: x.pos,
+            bet: x.bet,
+            cards: x.cards,
+            total: calculateFinalValue(x.cards),
+            time: new Date(),
+            actions: x.actions,
+        }));
+
+        await this.definition.betRepository.insertMany(betEntities);
+    }
+
+    async processDouble(player, payload) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        const hand = betTracks.hands.find((x) => x.id === payload.id);
+        const betInfo = {
+            amount: hand.bet,
+            gameId: this.definition.id,
+            gameRoundId: hand.id,
+        };
+
+        const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
+
+        if (apiResult.isOk) {
+            const newCard = betTracks.deck.shift();
+            hand.bet += hand.bet;
+            hand.cards.push(newCard);
+            hand.total = calculate(hand.cards);
+            hand.isStand = true;
+            hand.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
+
+            const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
+            bet.bet = hand.bet;
+            bet.total = calculateFinalValue(hand.cards);
+            bet.cards = hand.cards;
+            bet.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
+            await bet.save();
+
+            this.publisher.publishToUser(player.UID, {
+                double: {
+                    newCard,
+                    ...hand,
+                },
+                endBet: betInfo.amount,
+                user: apiResult.response,
+            });
+        } else {
+            this.handleFailPlaceBetResponse(player, apiResult);
+        }
     }
 
     async processSplit(player, payload) {
@@ -171,122 +252,42 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         });
     }
 
-    async processDouble(player, payload) {
+    async processHit(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const hand = betTracks.hands.find((x) => x.id === payload.id);
-        const betInfo = {
-            amount: hand.bet,
-            gameId: this.definition.id,
-            gameRoundId: hand.id,
-        };
+        const newCard = betTracks.deck.shift();
+        hand.cards.push(newCard);
+        hand.total = calculate(hand.cards);
+        hand.actions.push(gameSettings.actions.hit);
 
-        const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
+        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
+        bet.cards = hand.cards;
+        bet.total = calculateFinalValue(bet.cards);
+        bet.actions.push(gameSettings.actions.hit);
 
-        if (apiResult.isOk) {
-            const newCard = betTracks.deck.shift();
-            hand.bet += hand.bet;
-            hand.cards.push(newCard);
-            hand.total = calculate(hand.cards);
+        if (bet.total >= constants.blackJack) {
             hand.isStand = true;
-            hand.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
-
-            const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
-            bet.bet = hand.bet;
-            bet.total = calculateFinalValue(hand.cards);
-            bet.cards = hand.cards;
-            bet.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
-            await bet.save();
-
-            this.publisher.publishToUser(player.UID, {
-                double: {
-                    newCard,
-                    ...hand,
-                },
-                endBet: betInfo.amount,
-                user: apiResult.response,
-            });
-        } else {
-            this.handleFailPlaceBetResponse(player, apiResult);
+            hand.actions.push(gameSettings.actions.stand);
+            bet.actions.push(gameSettings.actions.stand);
         }
+
+        await bet.save();
+        this.publisher.publishToUser(player.UID, { hit: { newCard, ...hand } });
     }
 
-    async processDeal(player, payload) {
+    async processStand(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
-        betTracks.dealer = { cards: [] };
-        betTracks.hands = [];
-        betTracks.uid = player.UID;
-        let balance = {};
-        let totalBet = 0;
+        const hand = betTracks.hands.find((x) => x.id === payload.id);
+        hand.isStand = true;
+        hand.total = calculate(hand.cards);
+        hand.actions.push(gameSettings.actions.stand);
 
-        for (const hand of payload.hands) {
-            this.gameData.betId++;
-            hand.id = this.gameData.betId;
+        const bet = await this.definition.betRepository.findOne({ id: hand.id }).exec();
+        bet.actions.push(gameSettings.actions.stand);
+        bet.total = calculateFinalValue(hand.cards);
 
-            const betInfo = {
-                amount: hand.bet,
-                gameId: this.definition.id,
-                gameRoundId: hand.id,
-            };
-
-            const apiResult = await placeBetApi({ id: player.UID, session: player.session }, betInfo);
-
-            if (apiResult.isOk) {
-                betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
-                totalBet += hand.bet;
-                balance = apiResult.response;
-            } else {
-                this.handleFailPlaceBetResponse(player, apiResult);
-            }
-        }
-
-        if (betTracks.hands.length > 0) {
-            betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
-            betTracks.deck = this.chance.shuffle(this.baseDeck);
-            betTracks.roundStartTime = new Date();
-            this.dealCards(betTracks);
-
-            await this.createRoundAndHandEntities(player);
-            this.publisher.publishToUser(player.UID, {
-                deal: {
-                    roundId: betTracks.roundId,
-                    totalAmount: totalBet,
-                    uid: player.UID,
-                    dealer: isBlackjack(betTracks.dealer.cards) ? betTracks.dealer.cards : [betTracks.dealer.cards[0]],
-                    hands: betTracks.hands,
-                },
-                endBet: totalBet,
-                user: balance,
-            });
-        }
-    }
-
-    async createRoundAndHandEntities(player) {
-        const { betTracks } = this.gameData.ingame[player.profile.name];
-
-        const newRound = await this.definition.roundRepository.create({
-            result: betTracks.dealer.cards,
-            roundStartTime: new Date(),
-            uid: player.UID,
-            name: player.profile.name,
-        });
-        betTracks.roundId = this.gameData.roundId = newRound.id;
-
-        const betEntities = betTracks.hands.map((x) => ({
-            id: x.id,
-            phien: betTracks.roundId,
-            uid: player.UID,
-            name: player.profile.name,
-            memberId: player.session?.memberId,
-            siteId: player.session?.siteId,
-            pos: x.pos,
-            bet: x.bet,
-            cards: x.cards,
-            total: calculateFinalValue(x.cards),
-            time: new Date(),
-            actions: x.actions,
-        }));
-
-        await this.definition.betRepository.insertMany(betEntities).catch((err) => logger.logError(err));
+        await bet.save();
+        this.publisher.publishToUser(player.UID, { stand: { ...hand } });
     }
 
     handleFailPlaceBetResponse(player, apiResult) {
@@ -296,8 +297,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     dealCards({ dealer, hands, deck }) {
-        let turn = 1;
-        while (turn <= 2) {
+        for (let turn = 1; turn <= 2; turn++) {
             for (const hand of hands) {
                 hand.cards.push(deck.shift());
                 if (turn === 2) {
@@ -310,7 +310,6 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             }
 
             dealer.cards.push(deck.shift());
-            turn++;
         }
 
         if (isBlackjack(dealer.cards)) {

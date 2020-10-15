@@ -1,4 +1,3 @@
-import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
 import gameSettings from "../game-settings";
 

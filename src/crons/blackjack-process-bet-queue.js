@@ -106,7 +106,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
     async splitSelectedHand(player, hand, newHandId, balance) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
-        const splitCards = [hand.cards.shift()];
+        const splitCards = [hand.cards.pop()];
 
         hand.cards.push(betTracks.deck.shift());
         hand.actions.push(gameSettings.actions.split);

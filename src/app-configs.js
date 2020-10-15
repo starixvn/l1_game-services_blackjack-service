@@ -17,8 +17,8 @@ export default {
         url: "http://localhost:8080/api",
         auth: {
             url: "http://auth.lumigame.com",
-            id: "admin-api",
-            secret: "adminapi@20luminet&",
+            id: "game-services",
+            secret: "gameservices@20luminet&",
         },
         requestTimeout: 10000,
         placeBetTimeout: 4500,

@@ -17,8 +17,8 @@ export default {
         url: "http://10.99.99.51:8200/api",
         auth: {
             url: "http://10.99.99.51:8303",
-            id: "game-server",
-            secret: "gameserver@20luminet&",
+            id: "game-services",
+            secret: "gameservices@20luminet&",
         },
         requestTimeout: 10000,
         placeBetTimeout: 4500,

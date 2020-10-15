@@ -30,7 +30,7 @@ const run = async () => {
     );
 
     const roundPublisher = new RoundResultPublisher(gameSettings.name, gameData);
-    const settleGameConsumer = new SettleGameConsumer(definition, gameData, appConfigs.mainServerApiSettings, roundPublisher);
+    const settleGameConsumer = new SettleGameConsumer(definition, gameData, roundPublisher);
 
     const gameCron = new GameCron(
         definition,

@@ -2,8 +2,8 @@ import { Core } from "sc-game-base";
 import { calculateFinalValue } from "../helpers/card-helper";
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
-    constructor(definition, gameData, mainServerApiSettings, roundResultPublisher = null, userBetResultPublisher = null) {
-        super(definition, gameData, mainServerApiSettings, roundResultPublisher, userBetResultPublisher);
+    constructor(definition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
+        super(definition, gameData, roundResultPublisher, userBetResultPublisher);
     }
 
     async settleRound(playerName) {

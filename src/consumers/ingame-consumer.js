@@ -1,5 +1,5 @@
-import { getBalance } from 'sc-base-apis';
-import { Core } from 'sc-game-base';
+import { getBalance } from "sc-base-apis";
+import { Core } from "sc-game-base";
 
 export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsumer {
     async buildPayload(realPlayer) {
@@ -11,11 +11,11 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
         const ownBets =
             betTracks.roundId > 0
                 ? {
-                      roundId: betTracks.roundId,
-                      totalAmount,
-                      dealer: [betTracks.dealer.cards[0]],
-                      hands: betTracks.hands,
-                  }
+                    roundId: betTracks.roundId,
+                    totalAmount,
+                    dealer: [betTracks.dealer.cards[0]],
+                    hands: betTracks.hands,
+                }
                 : {};
 
         await getBalance(realPlayer, true);

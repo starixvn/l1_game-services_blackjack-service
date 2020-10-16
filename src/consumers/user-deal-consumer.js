@@ -1,6 +1,6 @@
-import noticeHelper from "../helpers/notice-helper";
 import constants from "../constants";
 import gameSettings from "../game-settings";
+import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDealConsumer extends BaseActionConsumer {
@@ -48,9 +48,10 @@ export default class UserDealConsumer extends BaseActionConsumer {
         }
 
         const criteria = this.composeValidationCriteria(player, payload);
+        const failedCriterons = criteria.filter(crit => crit.failure);
 
-        if (criteria.length > 0) {
-            this.publisher.publishToUser(player.UID, { endBet: -1, failedDealHands: criteria.map((crit) => crit.notice) });
+        if (failedCriterons.length > 0) {
+            this.publisher.publishToUser(player.UID, { endBet: -1, failedDealHands: failedCriterons.map((crit) => crit.notice) });
             return false;
         }
 

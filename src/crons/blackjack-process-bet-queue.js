@@ -1,12 +1,13 @@
-import { Core } from "sc-game-base";
-import { placeBet as placeBetApi } from "sc-base-apis";
-import { cards } from "../card";
-import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
-import gameSettings from "../game-settings";
 import Chance from "chance";
-import SettleGameConsumer from "../consumers/settle-game-consumer";
-import constants from "../constants";
+import { placeBet as placeBetApi } from "sc-base-apis";
 import { helpers } from "sc-common";
+import { Core } from "sc-game-base";
+
+import { cards } from "../card";
+import constants from "../constants";
+import SettleGameConsumer from "../consumers/settle-game-consumer";
+import gameSettings from "../game-settings";
+import { calculate, calculateFinalValue, isBlackjack } from "../helpers/card-helper";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -308,7 +309,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             const response = failedHands.apiResult.response;
             failedDealHands.push({
                 pos: failedHand.pos,
-                message: response.inSufficientBalance ? helpers.noticeHelper.notEnoughMoney : response.apiError || response.kickedOut,
+                message: response.inSufficientBalance ? helpers.noticeHelper.notEnoughMoney : "",
                 apiError: response.apiError,
                 kickedOut: response.kickedOut,
             });

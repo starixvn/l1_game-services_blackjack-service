@@ -1,5 +1,7 @@
-import { Core } from "sc-game-base";
-import { calculateFinalValue, isBust } from "../helpers/card-helper";
+import { gameNotifications } from 'sc-base-database';
+import { Core } from 'sc-game-base';
+
+import { calculateFinalValue, isBust } from '../helpers/card-helper';
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
     constructor(definition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
@@ -29,6 +31,8 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
         );
 
         await this.settleBets({ ...finish, playerName, playerUID: betTrack.uid });
+
+        await gameNotifications.findOneAndRemove({ uid: betTrack.uid, roundId: betTrack.roundId });
     }
 
     async queryBets(roundId) {

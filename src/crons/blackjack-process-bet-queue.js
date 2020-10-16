@@ -1,12 +1,12 @@
 import { Core } from "sc-game-base";
 import { placeBet as placeBetApi } from "sc-base-apis";
-import { helpers } from "sc-common";
 import { cards } from "../card";
 import { isBlackjack, calculate, calculateFinalValue } from "../helpers/card-helper";
 import gameSettings from "../game-settings";
 import Chance from "chance";
 import SettleGameConsumer from "../consumers/settle-game-consumer";
 import constants from "../constants";
+import { helpers } from "sc-common";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -52,6 +52,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         betTracks.uid = player.UID;
         let balance = {};
         let totalBet = 0;
+        const failedHands = [];
 
         for (const hand of payload.hands) {
             this.gameData.betId++;
@@ -70,8 +71,12 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
                 totalBet += hand.bet;
                 balance = apiResult.response;
             } else {
-                this.handleFailPlaceBetResponse(player, apiResult);
+                failedHands.push({ pos: hand.pos, apiResult });
             }
+        }
+
+        if (failedHands.length > 0) {
+            this.handleFailedDealHands(player, failedHands);
         }
 
         if (betTracks.hands.length > 0) {
@@ -295,6 +300,21 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const insufficientNotice = helpers.noticeHelper.notEnoughMoney;
         const notice = apiResult.response.inSufficientBalance ? insufficientNotice : apiResult.response;
         this.handleFailedBet(player, notice);
+    }
+
+    handleFailedDealHands(player, failedHands) {
+        const failedDealHands = [];
+        for (const failedHand of failedHands) {
+            const response = failedHands.apiResult.response;
+            failedDealHands.push({
+                pos: failedHand.pos,
+                message: response.inSufficientBalance ? helpers.noticeHelper.notEnoughMoney : response.apiError || response.kickedOut,
+                apiError: response.apiError,
+                kickedOut: response.kickedOut,
+            });
+        }
+
+        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, failedDealHands });
     }
 
     dealCards({ dealer, hands, deck }) {

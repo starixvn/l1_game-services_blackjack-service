@@ -1,4 +1,4 @@
-import { helpers } from "sc-common";
+import noticeHelper from "../helpers/notice-helper";
 import constants from "../constants";
 import gameSettings from "../game-settings";
 import BaseActionConsumer from "./base-action-consumer";
@@ -7,17 +7,32 @@ export default class UserDealConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
+        const result = [];
 
-        return [
-            {
-                failure: deal.hands.some((hand) => hand.bet < configs.minBet),
-                notice: helpers.noticeHelper.minBet(configs.minbet),
-            },
-            {
-                failure: deal.hands.some((hand) => hand.bet > configs.maxBet),
-                notice: helpers.noticeHelper.maxBet(configs.maxbet),
-            },
-        ];
+        const handViolateMinBet = deal.hands.find((hand) => hand.bet < configs.minBet);
+
+        if (handViolateMinBet) {
+            result.push({
+                failure: true,
+                notice: {
+                    pos: handViolateMinBet.pos,
+                    message: noticeHelper.minBet(configs.minbet),
+                },
+            });
+        }
+
+        const handViolateMaxBet = deal.hands.find((hand) => hand.bet > configs.maxBet);
+
+        if (handViolateMaxBet) {
+            result.push({
+                failure: true,
+                notice: {
+                    pos: handViolateMaxBet.pos,
+                    message: noticeHelper.maxBet(configs.maxbet),
+                },
+            });
+        }
+        return result;
     }
 
     validateBetRequest(player, payload) {
@@ -32,7 +47,14 @@ export default class UserDealConsumer extends BaseActionConsumer {
             return false;
         }
 
-        return super.validateBetRequest(player, payload);
+        const criteria = this.composeValidationCriteria(player, payload);
+
+        if (criteria.length > 0) {
+            this.publisher.publishToUser(player.UID, { endBet: -1, failedDealHands: criteria.map((crit) => crit.notice) });
+            return false;
+        }
+
+        return true;
     }
 
     consume(player, payload) {

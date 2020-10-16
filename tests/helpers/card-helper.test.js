@@ -1,4 +1,4 @@
-import * as CardHelper from "../../src/helpers/card-helper";
+import * as CardHelper from '../../src/helpers/card-helper';
 
 describe("calculate()", () => {
     it("should return blackjack", () => {
@@ -90,6 +90,15 @@ describe("calculate()", () => {
                     { rank: "7", suit: 1 },
                 ],
                 expected: [23],
+            },
+            {
+                cards: [
+                    { rank: "5", suit: 1 },
+                    { rank: "A", suit: 1 },
+                    { rank: "A", suit: 1 },
+                    { rank: "7", suit: 1 },
+                ],
+                expected: [14],
             },
         ];
 

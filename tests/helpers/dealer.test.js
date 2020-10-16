@@ -1,6 +1,6 @@
-import * as Dealer from "../../src/helpers/dealer";
-import * as Deck from "../../src/helpers/deck-helper";
-import constants from "../../src/constants";
+import constants from '../../src/constants';
+import * as Dealer from '../../src/helpers/dealer';
+import * as Deck from '../../src/helpers/deck-helper';
 
 describe("generateResult()", () => {
     it("should auto deal until it reach min value of dealer", () => {
@@ -101,7 +101,7 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
             expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(1);
@@ -124,7 +124,7 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
             expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(odds.blackjack);
@@ -161,10 +161,10 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
-            expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(odds.normal);
+            expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(odds.regular);
         });
     });
 
@@ -200,7 +200,7 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
             expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(0);
@@ -252,10 +252,10 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
-            expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(odds.normal);
+            expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(odds.regular);
         });
     });
 
@@ -317,7 +317,7 @@ describe("settle()", () => {
                 },
             },
         ];
-        const odds = { normal: 2, blackjack: 3.5 };
+        const odds = { regular: 2, blackjack: 3.5 };
 
         tests.forEach((test) => {
             expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(1);

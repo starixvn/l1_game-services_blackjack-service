@@ -10,11 +10,11 @@ export default class UserDealConsumer extends BaseActionConsumer {
 
         return [
             {
-                failure: deal.hands.some((x) => x.bet < configs.minBet),
+                failure: deal.hands.some((hand) => hand.bet < configs.minBet),
                 notice: helpers.noticeHelper.minBet(configs.minbet),
             },
             {
-                failure: deal.hands.some((x) => x.bet > configs.maxBet),
+                failure: deal.hands.some((hand) => hand.bet > configs.maxBet),
                 notice: helpers.noticeHelper.maxBet(configs.maxbet),
             },
         ];

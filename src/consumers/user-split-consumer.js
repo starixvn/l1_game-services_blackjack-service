@@ -10,15 +10,15 @@ export default class UserSplitConsumer extends BaseActionConsumer {
 
         return [
             {
-                failure: !hands.some((x) => x.id === payload.split.id),
+                failure: !hands.some((hand) => hand.id === payload.split.id),
                 notice: noticeHelper.invalidHandId,
             },
             {
-                failure: hands.some((x) => x.splitFrom === payload.split.id),
+                failure: hands.some((hand) => hand.splitFrom === payload.split.id),
                 notice: noticeHelper.handAlreadySplit,
             },
             {
-                failure: hands.some((x) => x.id === payload.split.id && x.splitFrom),
+                failure: hands.some((hand) => hand.id === payload.split.id && hand.splitFrom),
                 notice: noticeHelper.cantSplitChildHand,
             },
             {

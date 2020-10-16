@@ -8,7 +8,7 @@ export default class UserStandConsumer extends BaseActionConsumer {
 
         return [
             {
-                failure: !playerData?.betTracks?.hands?.some((x) => x.id === payload.stand.id),
+                failure: !playerData?.betTracks?.hands?.some((hand) => hand.id === payload.stand.id),
                 notice: noticeHelper.invalidHandId,
             },
         ];

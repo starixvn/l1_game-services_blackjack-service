@@ -1,8 +1,9 @@
 import { Core, Table } from "sc-game-base";
+
 import * as Consumers from "./consumers";
 import initDatabase from "./models";
-import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 import HistoryQuery from "./query-apis/history-query";
+import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 
 export default class Startup extends Table.TableGameStartup {
     /**
@@ -13,7 +14,7 @@ export default class Startup extends Table.TableGameStartup {
             this.definition,
             this.gameData,
             null,
-            null,
+            new Consumers.OutGameConsumer(this.definition, this.gameData),
             new Consumers.InGameConsumer({ definition: this.definition, gameData: this.gameData, roundQuery: null, publisher: null }),
             null,
             null,

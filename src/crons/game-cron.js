@@ -12,8 +12,8 @@ export default class GameCron extends Core.Cron.BaseGameCron {
      * @param {BlackjackGameDefinition} definition
      * @param {BlackJackGameData} gameData
      */
-    constructor(definition, gameData, mainServerApiSettings, bot, settleGameConsumer) {
-        super(definition, gameData, mainServerApiSettings, bot, settleGameConsumer);
+    constructor(definition, gameData, bot, settleGameConsumer) {
+        super(definition, gameData, bot, settleGameConsumer);
     }
 
     async start() {

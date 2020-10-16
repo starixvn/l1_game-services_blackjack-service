@@ -4,6 +4,7 @@ import { Core } from "sc-game-base";
 export default class OutGameConsumer extends Core.BaseEventConsumers.UserDisconnectConsumer {
     constructor(definition, gameData, publisher = null) {
         super(gameData);
+        this.definition = definition;
         this.publisher = publisher ?? new Core.BaseEventPublishers.BasePublisher(definition.name, gameData);
     }
 

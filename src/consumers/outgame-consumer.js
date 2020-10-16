@@ -1,5 +1,5 @@
-import { gameNotifications } from 'sc-base-database';
-import { Core } from 'sc-game-base';
+import { gameNotifications } from "sc-base-database";
+import { Core } from "sc-game-base";
 
 export default class OutGameConsumer extends Core.BaseEventConsumers.UserDisconnectConsumer {
     constructor(definition, gameData, publisher = null) {

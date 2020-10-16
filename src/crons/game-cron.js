@@ -1,11 +1,11 @@
-import moment from 'moment';
-import { Core } from 'sc-game-base';
+import moment from "moment";
+import { Core } from "sc-game-base";
 
-import BlackJackGameData from '../blackjack-game-data';
-import BlackjackGameDefinition from '../blackjack-game-definition';
-import gameSettings from '../game-settings';
-import { calculate } from '../helpers/card-helper';
-import { generateDecks } from './../helpers/deck-helper';
+import BlackJackGameData from "../blackjack-game-data";
+import BlackjackGameDefinition from "../blackjack-game-definition";
+import gameSettings from "../game-settings";
+import { calculate } from "../helpers/card-helper";
+import { generateDecks } from "./../helpers/deck-helper";
 
 export default class GameCron extends Core.Cron.BaseGameCron {
     /**

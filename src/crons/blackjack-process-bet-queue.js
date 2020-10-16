@@ -306,7 +306,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     handleFailedDealHands(player, failedHands) {
         const failedDealHands = [];
         for (const failedHand of failedHands) {
-            const response = failedHands.apiResult.response;
+            const response = failedHand.apiResult.response;
             failedDealHands.push({
                 pos: failedHand.pos,
                 message: response.inSufficientBalance ? helpers.noticeHelper.notEnoughMoney : "",

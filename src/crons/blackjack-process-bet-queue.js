@@ -1,4 +1,5 @@
 import Chance from "chance";
+import e from "express";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
@@ -304,18 +305,25 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     handleFailedDealHands(player, failedHands) {
-        const failedDealHands = [];
+        const errorApiHands = {
+            pos: [],
+        };
+        const invalidBetAmountHands = {
+            pos: [],
+            message: helpers.noticeHelper.notEnoughMoney,
+        };
+
         for (const failedHand of failedHands) {
             const response = failedHand.apiResult.response;
-            failedDealHands.push({
-                pos: failedHand.pos,
-                message: response.inSufficientBalance ? helpers.noticeHelper.notEnoughMoney : "",
-                apiError: response.apiError,
-                kickedOut: response.kickedOut,
-            });
+            if (response.inSufficientBalance) {
+                invalidBetAmountHands.pos.push(failedHand.pos);
+            } else {
+                errorApiHands.apiError = response.apiError;
+                errorApiHands.pos.push(failedHand.pos);
+            }
         }
 
-        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, failedDealHands });
+        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice: { errorApiHands, invalidBetAmountHands } });
     }
 
     dealCards({ dealer, hands, deck }) {

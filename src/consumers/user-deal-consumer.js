@@ -14,10 +14,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMinBet) {
             result.push({
                 failure: true,
-                notice: {
-                    pos: handViolateMinBet.pos,
-                    message: noticeHelper.minBet(configs.minbet),
-                },
+                notice: noticeHelper.minBet(configs.minbet, handViolateMinBet.pos),
             });
         }
 
@@ -26,10 +23,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMaxBet) {
             result.push({
                 failure: true,
-                notice: {
-                    pos: handViolateMaxBet.pos,
-                    message: noticeHelper.maxBet(configs.maxbet),
-                },
+                notice: noticeHelper.maxBet(configs.maxbet, handViolateMaxBet.pos),
             });
         }
         return result;
@@ -46,16 +40,8 @@ export default class UserDealConsumer extends BaseActionConsumer {
         ) {
             return false;
         }
-
-        const criteria = this.composeValidationCriteria(player, payload);
-        const failedCriterons = criteria.filter(crit => crit.failure);
-
-        if (failedCriterons.length > 0) {
-            this.publisher.publishToUser(player.UID, { endBet: -1, failedDealHands: failedCriterons.map((crit) => crit.notice) });
-            return false;
-        }
-
-        return true;
+        
+        return super.validateBetRequest(player, payload);
     }
 
     consume(player, payload) {

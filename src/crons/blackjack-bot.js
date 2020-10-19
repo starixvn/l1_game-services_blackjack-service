@@ -8,7 +8,7 @@ export default class BlackJackBot extends Core.BaseBot {
     }
 
     async run() {
-        if (this.gameData.gameConfigs?.botenabled) {
+        if (this.gameData.gameConfigs?.botenabled && this.maxNumberOfBots > 0) {
             this.gameData.betId += this.chance.integer({ min: 1, max: this.maxNumberOfBots });
         }
     }

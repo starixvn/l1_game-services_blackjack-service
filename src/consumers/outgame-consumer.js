@@ -22,18 +22,21 @@ export default class OutGameConsumer extends Core.BaseEventConsumers.UserDisconn
 
     async updateRunningRound(realPlayer) {
         const { betTracks } = this.gameData.ingame[realPlayer.profile.name] || { betTracks: {} };
-        const gameInfo = {
-            uid: realPlayer.UID,
-            gameId: this.definition.id,
-            gameInfo: { roundId: betTracks.roundId, roundStartTime: betTracks.roundStartTime },
-        };
 
-        await gameNotifications
-            .updateOne(
-                { uid: realPlayer.UID, gameId: this.definition.id },
-                { $setOnInsert: gameInfo },
-                { upsert: true, setDefaultsOnInsert: true }
-            )
-            .exec();
+        if (betTracks.roundId) {
+            const gameInfo = {
+                uid: realPlayer.UID,
+                gameId: this.definition.id,
+                gameInfo: { roundId: betTracks.roundId, roundStartTime: betTracks.roundStartTime },
+            };
+
+            await gameNotifications
+                .updateOne(
+                    { uid: realPlayer.UID, gameId: this.definition.id },
+                    { $setOnInsert: gameInfo },
+                    { upsert: true, setDefaultsOnInsert: true }
+                )
+                .exec();
+        }
     }
 }

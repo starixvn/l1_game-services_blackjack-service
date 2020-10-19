@@ -2,8 +2,8 @@ export default {
     hostingPort: 6001,
     apiSettings: {
         enabledApi: true,
-        apiUrl: "http://10.99.99.101:6300",
-        authUrl: "http://10.99.99.101:6303",
+        apiUrl: "http://10.2.189.51:6300",
+        authUrl: "http://10.2.189.51:6303",
         client: {
             id: "game-server",
             secret: "gameserver@20luminet&",
@@ -14,9 +14,9 @@ export default {
         enabledApiLogs: true,
     },
     mainServerApiSettings: {
-        url: "http://10.99.99.101:6200/api",
+        url: "http://10.2.189.65:7777/sit/main/api",
         auth: {
-            url: "http://10.99.99.101:6303",
+            url: "http://10.2.189.51:6303",
             id: "game-services",
             secret: "gameservices@20luminet&",
         },

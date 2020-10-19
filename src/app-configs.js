@@ -1,5 +1,5 @@
 export default {
-    hostingPort: 8084,
+    hostingPort: 8005,
     apiSettings: {
         enabledApi: true,
         apiUrl: "http://api.lumigame.com",

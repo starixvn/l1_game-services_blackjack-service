@@ -1,5 +1,5 @@
 export default {
-    hostingPort: 8001,
+    hostingPort: 8003,
     apiSettings: {
         enabledApi: true,
         apiUrl: "http://10.99.99.51:8300",
@@ -42,7 +42,7 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "http://26db550e29da4d038d1bb78ce1b79330@10.99.99.187:803/108",
+        sentryUrl: "http://a983bd0c1502412887e17c2205e8bc70@10.99.99.187:803/110",
         logIdentifier: "blackjack",
         env: "PROD",
     },

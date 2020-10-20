@@ -43,7 +43,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
             return;
         }
 
-        if (queuePayload.action === gameSettings.actions.deal && !this.gameData.ingame[name]?.roundId) {
+        if (queuePayload.action === gameSettings.actions.deal && !this.gameData.ingame[name]) {
             const newPlayer = {
                 name: player.profile.name,
                 betTracks: {},

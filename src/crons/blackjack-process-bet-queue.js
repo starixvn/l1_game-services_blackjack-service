@@ -8,7 +8,7 @@ import { cards } from "../card";
 import constants from "../constants";
 import SettleGameConsumer from "../consumers/settle-game-consumer";
 import gameSettings from "../game-settings";
-import { calculate, calculateFinalValue, isBlackjack } from "../helpers/card-helper";
+import { calculate, calculateFinalValue, isAce, isBlackjack } from "../helpers/card-helper";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -199,7 +199,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         hand.cards.push(betTracks.deck.shift());
         hand.actions.push(gameSettings.actions.split);
         hand.total = calculate(hand.cards);
-        if (isBlackjack(hand.cards)) {
+        if (isBlackjack(hand.cards) || isAce(hand.cards[0])) {
             hand.actions.push(gameSettings.actions.stand);
             hand.isStand = true;
         }
@@ -228,7 +228,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             total: calculate(splitCards),
         };
 
-        if (isBlackjack(splitCards)) {
+        if (isBlackjack(splitCards) || isAce(splitCards[0])) {
             splitHand.isStand = true;
             splitHand.actions.push(gameSettings.actions.stand);
         }

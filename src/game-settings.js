@@ -17,4 +17,5 @@ export default {
         blackjack: "blackjack",
         regular: "regular",
     },
+    posOrder: [1, 4, 2, 5, 3, 6]
 };

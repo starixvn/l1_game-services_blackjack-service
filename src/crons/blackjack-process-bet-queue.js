@@ -13,6 +13,7 @@ import { calculate, calculateFinalValue, isAce, isBlackjack } from "../helpers/c
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
     chance = new Chance();
+    posOrder = [1, 4, 2, 5, 3, 6];
 
     /**
      * @param {SettleGameConsumer} settleGameConsumer
@@ -44,6 +45,20 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const { betTracks } = this.gameData.ingame[player.profile.name];
         if (betTracks.hands.every((hand) => hand.isStand)) {
             await this.settleGameConsumer.settleRound(player.profile.name);
+        } else {
+            this.updateActiveHand(player);
+        }
+    }
+
+    updateActiveHand(player) {
+        const { betTracks } = this.gameData.ingame[player.profile.name];
+        const activeHand = betTracks.hands.find((hand) => hand.id === betTracks.activeHandId);
+
+        if (activeHand.isStand) {
+            const nextActiveHand = betTracks.hands.find(
+                (hand) => !hand.isStand && gameSettings.posOrder.indexOf(hand.pos) > gameSettings.posOrder.indexOf(activeHand.pos)
+            );
+            betTracks.activeHandId = nextActiveHand?.id;
         }
     }
 
@@ -56,7 +71,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let totalBet = 0;
         const failedHands = [];
 
-        for (const hand of _.uniqBy(payload.hands, hand => hand.pos)) {
+        for (const hand of _.uniqBy(payload.hands, (hand) => hand.pos)) {
             this.gameData.betId++;
             hand.id = this.gameData.betId;
 
@@ -86,6 +101,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             betTracks.deck = this.chance.shuffle(this.baseDeck);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);
+            betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand).id;
 
             await this.createRoundAndHandEntities(player);
             this.publisher.publishToUser(player.UID, {
@@ -234,6 +250,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         betTracks.hands.push(splitHand);
+        betTracks.hands.sort((hand1, hand2) => gameSettings.posOrder.indexOf(hand1.pos) - gameSettings.posOrder.indexOf(hand2.pos));
 
         await this.definition.betRepository.create({
             id: splitHand.id,

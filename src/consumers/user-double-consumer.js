@@ -22,6 +22,10 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                 {
                     failure: hand.isStand,
                     notice: noticeHelper.handIsStand,
+                },
+                {
+                    failure: hand.id !== playerData.betTracks.activeHandId,
+                    notice: noticeHelper.handNotActive,
                 }
             );
         } else {

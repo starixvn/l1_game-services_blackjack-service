@@ -46,6 +46,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                         total: calculate(hand.cards),
                     };
                 });
+                userHands.sort((hand1, hand2) => gameSettings.posOrder.indexOf(hand1.pos) - gameSettings.posOrder.indexOf(hand2.pos));
 
                 const newPlayer = {
                     name: round.name,
@@ -56,6 +57,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                         deck: generateDecks(usedCards),
                         dealer: { cards: [...round.result] },
                         hands: userHands,
+                        activeHandId: userHands.find(x => !x.isStand)?.id
                     },
                     betQueue: [],
                 };

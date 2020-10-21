@@ -26,6 +26,13 @@ export default class UserDealConsumer extends BaseActionConsumer {
                 notice: noticeHelper.maxBet(configs.maxbet, handViolateMaxBet.pos),
             });
         }
+
+        if (deal.hands.some(hand => hand.pos < 1 || hand.pos > 3)) {
+            result.push({
+                failure: true,
+                notice: noticeHelper.invalidPosition,
+            });
+        }
         return result;
     }
 

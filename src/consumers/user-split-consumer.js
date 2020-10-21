@@ -7,7 +7,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const { hands } = playerData.betTracks;
-        const selectedHand = hands.find(hand => hand.id === payload.split.id);
+        const selectedHand = hands.find((hand) => hand.id === payload.split.id);
 
         return [
             {
@@ -24,11 +24,15 @@ export default class UserSplitConsumer extends BaseActionConsumer {
             },
             {
                 failure: selectedHand && selectedHand.isStand,
-                notice: noticeHelper.handIsStand
+                notice: noticeHelper.handIsStand,
             },
             {
                 failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.cards[1]),
                 notice: noticeHelper.cardsNotEqual,
+            },
+            {
+                failure: selectedHand && selectedHand.id !== playerData.betTracks.activeHandId,
+                notice: noticeHelper.handNotActive,
             },
         ];
     }

@@ -19,8 +19,12 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: noticeHelper.handAlreadySplit,
             },
             {
-                failure: hands.some((hand) => hand.id === payload.split.id && hand.splitFrom),
+                failure: selectedHand && selectedHand.splitFrom,
                 notice: noticeHelper.cantSplitChildHand,
+            },
+            {
+                failure: selectedHand && selectedHand.isStand,
+                notice: noticeHelper.handIsStand
             },
             {
                 failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.cards[1]),

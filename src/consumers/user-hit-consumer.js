@@ -11,10 +11,16 @@ export default class UserHitConsumer extends BaseActionConsumer {
         const hand = playerData?.betTracks?.hands?.find((hand) => hand.id === payload.hit.id);
 
         if (hand) {
-            criteria.push({
-                failure: calculate(hand.cards).some((hand) => hand >= constants.blackJack),
-                notice: noticeHelper.cantHit,
-            });
+            criteria.push(
+                {
+                    failure: calculate(hand.cards).some((hand) => hand >= constants.blackJack),
+                    notice: noticeHelper.cantHit,
+                },
+                {
+                    failure: hand.isStand,
+                    notice: noticeHelper.handIsStand,
+                }
+            );
         } else {
             criteria.push({
                 failure: true,

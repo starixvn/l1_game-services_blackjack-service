@@ -11,13 +11,19 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         const criteria = [];
         const hand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
         if (hand) {
-            criteria.push({
-                failure:
-                    !calculate(hand.cards).some((hand) => constants.allowDoubleValues.includes(hand)) ||
-                    betTracks.hands?.some((hand) => hand.splitFrom === hand.id) ||
-                    hand.splitFrom,
-                notice: noticeHelper.cantDoubleHand,
-            });
+            criteria.push(
+                {
+                    failure:
+                        !calculate(hand.cards).some((hand) => constants.allowDoubleValues.includes(hand)) ||
+                        betTracks.hands?.some((hand) => hand.splitFrom === hand.id) ||
+                        hand.splitFrom,
+                    notice: noticeHelper.cantDoubleHand,
+                },
+                {
+                    failure: hand.isStand,
+                    notice: noticeHelper.handIsStand,
+                }
+            );
         } else {
             criteria.push({
                 failure: true,

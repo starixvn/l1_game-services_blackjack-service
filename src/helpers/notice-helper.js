@@ -9,4 +9,5 @@ export default {
     cardsNotEqual: "Hai lá bài không cùng giá trị.",
     minBet: (min, pos) => `Tiền cược tối thiểu của tụ ${pos} là ${helpers.numberHelper.formatNumberWithComma(min)}`,
     maxBet: (max, pos) => `Tổng tiền cược tối đa của tụ ${pos} là ${helpers.numberHelper.formatNumberWithComma(max)}`,
+    handIsStand: "Tụ đã dừng.",
 };

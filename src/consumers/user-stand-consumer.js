@@ -5,12 +5,16 @@ import BaseActionConsumer from "./base-action-consumer";
 export default class UserStandConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
-
+        const hand = playerData?.betTracks?.hands?.some((hand) => hand.id === payload.stand.id);
         return [
             {
-                failure: !playerData?.betTracks?.hands?.some((hand) => hand.id === payload.stand.id),
+                failure: !hand,
                 notice: noticeHelper.invalidHandId,
             },
+            {
+                failure: hand && hand.isStand,
+                notice: noticeHelper.handIsStand
+            }
         ];
     }
 

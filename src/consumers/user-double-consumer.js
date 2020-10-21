@@ -30,7 +30,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                 },
                 {
                     failure: hand.bet * 2 > configs.maxbet,
-                    notice: noticeHelper.maxbet(configs.maxbet, hand.pos),
+                    notice: noticeHelper.maxBet(configs.maxbet, hand.pos),
                 }
             );
         } else {

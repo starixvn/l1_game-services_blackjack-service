@@ -9,7 +9,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         const { deal } = payload;
         const result = [];
 
-        const handViolateMinBet = deal.hands.find((hand) => hand.bet < configs.minBet);
+        const handViolateMinBet = deal.hands.find((hand) => hand.bet < configs.minbet);
 
         if (handViolateMinBet) {
             result.push({
@@ -18,7 +18,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
             });
         }
 
-        const handViolateMaxBet = deal.hands.find((hand) => hand.bet > configs.maxBet);
+        const handViolateMaxBet = deal.hands.find((hand) => hand.bet > configs.maxbet);
 
         if (handViolateMaxBet) {
             result.push({

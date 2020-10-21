@@ -9,7 +9,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         const { deal } = payload;
         const result = [];
 
-        const handViolateMinBet = deal.hands.find((hand) => hand.bet < configs.minbet);
+        const handViolateMinBet = deal.hands.find((hand) => !hand.bet || hand.bet < configs.minbet);
 
         if (handViolateMinBet) {
             result.push({
@@ -18,7 +18,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
             });
         }
 
-        const handViolateMaxBet = deal.hands.find((hand) => hand.bet > configs.maxbet);
+        const handViolateMaxBet = deal.hands.find((hand) => !hand.bet || hand.bet > configs.maxbet);
 
         if (handViolateMaxBet) {
             result.push({
@@ -27,7 +27,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
             });
         }
 
-        if (deal.hands.some(hand => hand.pos < 1 || hand.pos > 3)) {
+        if (deal.hands.some((hand) => !hand.pos || hand.pos < 1 || hand.pos > 3)) {
             result.push({
                 failure: true,
                 notice: noticeHelper.invalidPosition,
@@ -47,7 +47,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         ) {
             return false;
         }
-        
+
         return super.validateBetRequest(player, payload);
     }
 

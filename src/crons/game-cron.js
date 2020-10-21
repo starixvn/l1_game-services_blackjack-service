@@ -57,7 +57,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                         deck: generateDecks(usedCards),
                         dealer: { cards: [...round.result] },
                         hands: userHands,
-                        activeHandId: userHands.find(x => !x.isStand)?.id
+                        activeHandId: userHands.find(hand => !hand.isStand)?.id
                     },
                     betQueue: [],
                 };

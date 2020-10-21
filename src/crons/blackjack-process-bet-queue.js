@@ -101,7 +101,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             betTracks.deck = this.chance.shuffle(this.baseDeck);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);
-            betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand).id;
+            betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand)?.id;
 
             await this.createRoundAndHandEntities(player);
             this.publisher.publishToUser(player.UID, {

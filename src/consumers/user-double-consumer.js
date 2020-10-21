@@ -6,6 +6,7 @@ import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDoubleConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
+        const configs = this.gameData.gameConfigs;
         const playerData = this.gameData.ingame[player.profile.name];
         const { betTracks } = playerData;
         const criteria = [];
@@ -26,6 +27,10 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                 {
                     failure: hand.id !== playerData.betTracks.activeHandId,
                     notice: noticeHelper.handNotActive,
+                },
+                {
+                    failure: hand.bet * 2 > configs.maxbet,
+                    notice: noticeHelper.maxbet(configs.maxbet, hand.pos),
                 }
             );
         } else {

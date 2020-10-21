@@ -23,7 +23,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: noticeHelper.cantSplitChildHand,
             },
             {
-                failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.card[1]),
+                failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.cards[1]),
                 notice: noticeHelper.cardsNotEqual,
             },
         ];

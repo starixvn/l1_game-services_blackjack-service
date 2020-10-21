@@ -7,8 +7,8 @@ export default {
     cantDoubleHand: "Không thể gấp đôi tiền cược.",
     cantHit: "Không thể rút thêm bài.",
     cardsNotEqual: "Hai lá bài không cùng giá trị.",
-    minBet: (min, pos) => `Tiền cược tối thiểu của tụ ${pos} là ${helpers.numberHelper.formatNumberWithComma(min)}`,
-    maxBet: (max, pos) => `Tổng tiền cược tối đa của tụ ${pos} là ${helpers.numberHelper.formatNumberWithComma(max)}`,
+    minBet: (min) => `Tiền cược tối thiểu của tay bài này là ${helpers.numberHelper.formatNumberWithComma(min)}`,
+    maxBet: (max) => `Tổng tiền cược tối đa của tay bài này là ${helpers.numberHelper.formatNumberWithComma(max)}`,
     handIsStand: "Tụ đã dừng.",
     invalidPosition: "Vị trí tụ không đúng.",
     handNotActive: "Tụ chưa tới lượt."

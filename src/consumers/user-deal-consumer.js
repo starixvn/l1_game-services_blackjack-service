@@ -23,7 +23,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMaxBet) {
             result.push({
                 failure: true,
-                notice: noticeHelper.maxBet(configs.maxbet, handViolateMaxBet.pos),
+                notice: noticeHelper.maxBet(configs.maxbet),
             });
         }
 

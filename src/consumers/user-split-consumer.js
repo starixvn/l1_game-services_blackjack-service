@@ -7,10 +7,11 @@ export default class UserSplitConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const { hands } = playerData.betTracks;
+        const selectedHand = hands.find(hand => hand.id === payload.split.id);
 
         return [
             {
-                failure: !hands.some((hand) => hand.id === payload.split.id),
+                failure: !selectedHand,
                 notice: noticeHelper.invalidHandId,
             },
             {
@@ -22,7 +23,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: noticeHelper.cantSplitChildHand,
             },
             {
-                failure: hands.length === 2 && getValue(hands[0]) === getValue(hands[1]),
+                failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.card[1]),
                 notice: noticeHelper.cardsNotEqual,
             },
         ];

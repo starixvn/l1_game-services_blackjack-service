@@ -1,5 +1,5 @@
 import Chance from "chance";
-import { uniqBy } from "lodash";
+import { uniqBy } from "lodash/array";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { helpers } from "sc-common";
 import { Core } from "sc-game-base";

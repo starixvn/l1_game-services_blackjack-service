@@ -1,5 +1,5 @@
 import Chance from "chance";
-import { uniqBy } from "lodash/array";
+import _ from "lodash";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
@@ -56,7 +56,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         let totalBet = 0;
         const failedHands = [];
 
-        for (const hand of uniqBy(payload.hands, hand => hand.pos)) {
+        for (const hand of _.uniqBy(payload.hands, hand => hand.pos)) {
             this.gameData.betId++;
             hand.id = this.gameData.betId;
 

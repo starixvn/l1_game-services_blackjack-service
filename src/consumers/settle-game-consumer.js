@@ -1,7 +1,7 @@
 import { gameNotifications } from "sc-base-database";
 import { Core } from "sc-game-base";
 
-import { calculateFinalValue, isBust } from "../helpers/card-helper";
+import { calculateFinalValue, isBlackjack, isBust } from "../helpers/card-helper";
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
     constructor(definition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
@@ -10,7 +10,8 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
-        const isDealerUpCards = betTrack.hands.every((hand) => isBust(hand.cards));
+        const isDealerUpCards =
+            betTrack.hands.every((hand) => isBust(hand.cards)) || betTrack.hands.every((hand) => isBlackjack(hand.cards));
         const { result, settlementResult } = this.definition.generateResult(betTrack.dealer.cards, betTrack.deck, isDealerUpCards);
 
         const finish = {

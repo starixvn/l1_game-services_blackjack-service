@@ -11,5 +11,6 @@ export default {
     maxBet: (max) => `Tổng tiền cược tối đa của tay bài này là ${helpers.numberHelper.formatNumberWithComma(max)}`,
     handIsStand: "Tụ đã dừng.",
     invalidPosition: "Vị trí tụ không đúng.",
-    handNotActive: "Tụ chưa tới lượt."
+    handNotActive: "Tụ chưa tới lượt.",
+    processing: "Chưa xử lí xong.",
 };

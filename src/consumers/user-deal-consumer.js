@@ -1,3 +1,5 @@
+import { logger } from "sc-common";
+
 import constants from "../constants";
 import gameSettings from "../game-settings";
 import noticeHelper from "../helpers/notice-helper";
@@ -45,6 +47,12 @@ export default class UserDealConsumer extends BaseActionConsumer {
             deal.hands.length > constants.maxPlayerHand ||
             this.gameData.ingame[player.profile.name]?.betTracks?.roundId
         ) {
+            logger.log(
+                `player ${player.profile.name} deal failed. invalid hands length or has running round. RoundId ${
+                    this.gameData.ingame[player.profile.name]?.betTracks?.roundId
+                }`
+            );
+
             return false;
         }
 

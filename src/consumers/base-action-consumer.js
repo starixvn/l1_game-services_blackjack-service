@@ -1,5 +1,8 @@
+import { logger } from "sc-common";
 import { Core } from "sc-game-base";
+
 import gameSettings from "../game-settings";
+import noticeHelper from "../helpers/notice-helper";
 
 export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     validateBetRequest(player, payload) {
@@ -39,7 +42,17 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
     consume(player, payload, queuePayload) {
         const name = player.profile.name;
 
-        if (!this.validateBetRequest(player, payload) || this.gameData.ingame[name]?.betQueue.length > 0) {
+        if (!this.validateBetRequest(player, payload)) {
+            return;
+        }
+
+        if (this.gameData.ingame[name]?.betQueue.length > 0) {
+            logger.log(
+                `player ${name} action ${queuePayload.action} failed since has processing queue ${this.gameData.ingame[name]?.betQueue}`
+            );
+
+            this.publisher.publishToUser(player.UID, { endBet: -1, notice: noticeHelper.processing });
+
             return;
         }
 

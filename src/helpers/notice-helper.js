@@ -13,4 +13,5 @@ export default {
     invalidPosition: "Vị trí tụ không đúng.",
     handNotActive: "Tụ chưa tới lượt.",
     processing: "Chưa xử lí xong.",
+    cantSplit: "Không thể tách bài.",
 };

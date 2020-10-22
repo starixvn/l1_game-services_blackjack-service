@@ -34,6 +34,10 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 failure: selectedHand && selectedHand.id !== playerData.betTracks.activeHandId,
                 notice: noticeHelper.handNotActive,
             },
+            {
+                failure: selectedHand && selectedHand.cards.length > 2,
+                notice: noticeHelper.cantSplit
+            }
         ];
     }
 

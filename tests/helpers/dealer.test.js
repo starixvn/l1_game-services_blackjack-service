@@ -1,6 +1,6 @@
-import constants from '../../src/constants';
-import * as Dealer from '../../src/helpers/dealer';
-import * as Deck from '../../src/helpers/deck-helper';
+import constants from "../../src/constants";
+import * as Dealer from "../../src/helpers/dealer";
+import * as Deck from "../../src/helpers/deck-helper";
 
 describe("generateResult()", () => {
     it("should auto deal until it reach min value of dealer", () => {
@@ -321,6 +321,151 @@ describe("settle()", () => {
 
         tests.forEach((test) => {
             expect(Dealer.settle(test.dealer, test.bet, odds)).toEqual(1);
+        });
+    });
+});
+
+describe("isUpCards()", () => {
+    it("should be true if all hands are bust", () => {
+        const tests = [
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "8", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "K", suit: 1 },
+                        ],
+                    },
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "8", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "7", suit: 1 },
+                            { rank: "9", suit: 1 },
+                            { rank: "7", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(Dealer.isUpCards(test.hands)).toBeTruthy();
+        });
+    });
+
+    it("should be true if all hands are blackjack", () => {
+        const tests = [
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "A", suit: 1 },
+                            { rank: "K", suit: 1 },
+                        ],
+                    },
+                    {
+                        cards: [
+                            { rank: "J", suit: 1 },
+                            { rank: "A", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "A", suit: 1 },
+                            { rank: "Q", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(Dealer.isUpCards(test.hands)).toBeTruthy();
+        });
+    });
+
+    it("should be true if count of blackjack and bust are equal total hands", () => {
+        const tests = [
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "A", suit: 1 },
+                            { rank: "K", suit: 1 },
+                        ],
+                    },
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "8", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(Dealer.isUpCards(test.hands)).toBeTruthy();
+        });
+    });
+
+    it("should be false if count of blackjack and bust are NOT equal total hands", () => {
+        const tests = [
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "A", suit: 1 },
+                            { rank: "K", suit: 1 },
+                        ],
+                    },
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "2", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "K", suit: 1 },
+                            { rank: "3", suit: 1 },
+                        ],
+                    },
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "2", suit: 1 },
+                        ],
+                    },
+                ],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(Dealer.isUpCards(test.hands)).toBeFalsy();
         });
     });
 });

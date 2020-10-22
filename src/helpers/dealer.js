@@ -44,3 +44,10 @@ export const settle = (dealerCards, bet, odds) => {
 export const isSplitted = (bet) => {
     return bet.actions.includes(gameSettings.actions.split) || bet.splitFrom > 0;
 };
+
+export const isUpCards = (hands) => {
+    const blackjackCount = hands.filter((hand) => isBlackjack(hand.cards)).length;
+    const bustCount = hands.filter((hand) => isBust(hand.cards)).length;
+
+    return blackjackCount + bustCount === hands.length;
+};

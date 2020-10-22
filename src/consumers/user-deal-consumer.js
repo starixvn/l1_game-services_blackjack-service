@@ -16,7 +16,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMinBet) {
             result.push({
                 failure: true,
-                notice: noticeHelper.minBet(configs.minbet, handViolateMinBet.pos),
+                notice: noticeHelper.minBet(configs.minbet),
             });
         }
 

@@ -329,18 +329,27 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             pos: [],
             message: helpers.noticeHelper.notEnoughMoney,
         };
+        const blackjackNotice = {};
 
         for (const failedHand of failedHands) {
             const response = failedHand.apiResult.response;
             if (response.inSufficientBalance) {
                 invalidBetAmountHands.pos.push(failedHand.pos);
             } else {
-                errorApiHands.apiError = response.apiError;
+                errorApiHands.message = response.apiError?.message;
                 errorApiHands.pos.push(failedHand.pos);
             }
         }
 
-        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice: { errorApiHands, invalidBetAmountHands } });
+        if (errorApiHands.pos.length > 0) {
+            blackjackNotice.errorApiHands = errorApiHands;
+        }
+
+        if (invalidBetAmountHands.pos.length > 0) {
+            blackjackNotice.invalidBetAmountHands = invalidBetAmountHands;
+        }
+
+        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });
     }
 
     dealCards({ dealer, hands, deck }) {

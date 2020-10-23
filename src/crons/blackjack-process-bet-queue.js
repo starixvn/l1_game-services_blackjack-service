@@ -53,7 +53,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const activeHand = betTracks.hands.find((hand) => hand.id === betTracks.activeHandId);
 
-        if (activeHand.isStand) {
+        if (activeHand?.isStand) {
             const nextActiveHand = betTracks.hands.find(
                 (hand) => !hand.isStand && gameSettings.posOrder.indexOf(hand.pos) > gameSettings.posOrder.indexOf(activeHand.pos)
             );

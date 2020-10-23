@@ -332,13 +332,14 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             message: helpers.noticeHelper.notEnoughMoney,
         };
         const blackjackNotice = {};
+        const apiFailedHands = failedHands.filter((failedHand) => !failedHand.apiResult.response.inSufficientBalance);
 
-        for (const failedHand of failedHands.filter((failedHand) => !failedHand.apiResult.response.inSufficientBalance)) {
-            const response = failedHand.apiResult.response;
-            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.message === response.apiError.message);
+        for (const apiFailedHand of apiFailedHands) {
+            const { apiError } = apiFailedHand.apiResult.response;
+            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.message === apiError.message);
 
             if (existingErrorApiHand) {
-                existingErrorApiHand.pos.push(failedHand.pos);
+                existingErrorApiHand.pos.push(apiFailedHand.pos);
             } else {
                 errorApiHands.push({
                     ...apiError,

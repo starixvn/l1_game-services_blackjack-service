@@ -1,4 +1,6 @@
+import cron from "cron";
 import moment from "moment";
+import { logger } from "sc-common";
 import { Core } from "sc-game-base";
 
 import BlackJackGameData from "../blackjack-game-data";
@@ -17,8 +19,17 @@ export default class GameCron extends Core.Cron.BaseGameCron {
     }
 
     async start() {
+        const job = new cron.CronJob(
+            "* * * * * *",
+            () => this.proceed().catch(logger.logError),
+            () => {
+                logger.logError(`${this.definition.name} unexpectedly stopped because some other tasks halt it.`);
+                job.start();
+            }
+        );
+
         const lastestBet = await this.definition.betRepository
-            .findOne({}, "id", { sort: { _id: -1 } })
+            .findOne({}, "id", { sort: { id: -1 } })
             .lean()
             .exec();
 
@@ -26,8 +37,8 @@ export default class GameCron extends Core.Cron.BaseGameCron {
             this.gameData.betId = lastestBet.id + 1;
         }
 
-        await super.start();
         await this.initBetTracks();
+        job.start();
     }
 
     async initBetTracks() {
@@ -57,7 +68,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                         deck: generateDecks(usedCards),
                         dealer: { cards: [...round.result] },
                         hands: userHands,
-                        activeHandId: userHands.find(hand => !hand.isStand)?.id
+                        activeHandId: userHands.find((hand) => !hand.isStand)?.id,
                     },
                     betQueue: [],
                 };

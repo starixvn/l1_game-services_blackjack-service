@@ -14,7 +14,7 @@ export default {
         enabledApiLogs: true,
     },
     mainServerApiSettings: {
-        url: "http://10.2.189.65:7777/sit/main/api",
+        url: "http://10.2.189.51:7777/sit/main/api",
         auth: {
             url: "http://10.2.189.51:6303",
             id: "game-services",

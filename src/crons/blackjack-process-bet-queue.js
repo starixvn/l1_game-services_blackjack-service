@@ -340,7 +340,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             if (response.inSufficientBalance) {
                 invalidBetAmountHands.pos.push(failedHand.pos);
             } else {
-                errorApiHands.message = response.apiError?.message;
+                errorApiHands = { ...errorApiHands, ...response.apiError };
                 errorApiHands.pos.push(failedHand.pos);
             }
         }

@@ -46,7 +46,7 @@ export const isSplitted = (bet) => {
 };
 
 export const isUpCards = (hands) => {
-    const blackjackCount = hands.filter((hand) => isBlackjack(hand.cards)).length;
+    const blackjackCount = hands.filter((hand) => isBlackjack(hand.cards) && !isSplitted(hand)).length;
     const bustCount = hands.filter((hand) => isBust(hand.cards)).length;
 
     return blackjackCount + bustCount === hands.length;

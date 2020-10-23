@@ -336,6 +336,7 @@ describe("isUpCards()", () => {
                             { rank: "5", suit: 1 },
                             { rank: "K", suit: 1 },
                         ],
+                        actions: [],
                     },
                     {
                         cards: [
@@ -343,6 +344,7 @@ describe("isUpCards()", () => {
                             { rank: "5", suit: 1 },
                             { rank: "8", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -354,6 +356,7 @@ describe("isUpCards()", () => {
                             { rank: "9", suit: 1 },
                             { rank: "7", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -373,12 +376,14 @@ describe("isUpCards()", () => {
                             { rank: "A", suit: 1 },
                             { rank: "K", suit: 1 },
                         ],
+                        actions: [],
                     },
                     {
                         cards: [
                             { rank: "J", suit: 1 },
                             { rank: "A", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -389,6 +394,7 @@ describe("isUpCards()", () => {
                             { rank: "A", suit: 1 },
                             { rank: "Q", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -408,6 +414,7 @@ describe("isUpCards()", () => {
                             { rank: "A", suit: 1 },
                             { rank: "K", suit: 1 },
                         ],
+                        actions: [],
                     },
                     {
                         cards: [
@@ -415,6 +422,7 @@ describe("isUpCards()", () => {
                             { rank: "5", suit: 1 },
                             { rank: "8", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -434,6 +442,7 @@ describe("isUpCards()", () => {
                             { rank: "A", suit: 1 },
                             { rank: "K", suit: 1 },
                         ],
+                        actions: [],
                     },
                     {
                         cards: [
@@ -441,6 +450,7 @@ describe("isUpCards()", () => {
                             { rank: "5", suit: 1 },
                             { rank: "2", suit: 1 },
                         ],
+                        actions: [],
                     },
                 ],
             },
@@ -452,6 +462,7 @@ describe("isUpCards()", () => {
                             { rank: "K", suit: 1 },
                             { rank: "3", suit: 1 },
                         ],
+                        actions: [],
                     },
                     {
                         cards: [
@@ -459,6 +470,35 @@ describe("isUpCards()", () => {
                             { rank: "5", suit: 1 },
                             { rank: "2", suit: 1 },
                         ],
+                        actions: [],
+                    },
+                ],
+            },
+        ];
+
+        tests.forEach((test) => {
+            expect(Dealer.isUpCards(test.hands)).toBeFalsy();
+        });
+    });
+
+    it("should be false if count of blackjack and bust are equal total hands but blackjack hands were splitted", () => {
+        const tests = [
+            {
+                hands: [
+                    {
+                        cards: [
+                            { rank: "A", suit: 1 },
+                            { rank: "K", suit: 1 },
+                        ],
+                        actions: ["split"],
+                    },
+                    {
+                        cards: [
+                            { rank: "9", suit: 1 },
+                            { rank: "5", suit: 1 },
+                            { rank: "8", suit: 1 },
+                        ],
+                        actions: [],
                     },
                 ],
             },

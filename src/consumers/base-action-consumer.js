@@ -48,7 +48,9 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
 
         if (this.gameData.ingame[name]?.betQueue.length > 0) {
             logger.log(
-                `player ${name} action ${queuePayload.action} failed since has processing queue ${this.gameData.ingame[name]?.betQueue}`
+                `player ${name} action ${queuePayload.action} failed since has processing queue ${JSON.stringify(
+                    this.gameData.ingame[name]?.betQueue
+                )}`
             );
 
             this.publisher.publishToUser(player.UID, { endBet: -1, notice: noticeHelper.processing });

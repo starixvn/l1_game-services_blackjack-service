@@ -25,7 +25,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
             time: new Date(),
         };
 
-        await this.definition.roundRepository.update(
+        await this.definition.roundRepository.updateOne(
             { id: betTrack.roundId },
             {
                 result,

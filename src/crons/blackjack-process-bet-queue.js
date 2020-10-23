@@ -326,7 +326,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     handleFailedDealHands(player, failedHands) {
-        const errorApiHands = {
+        let errorApiHands = {
             pos: [],
         };
         const invalidBetAmountHands = {

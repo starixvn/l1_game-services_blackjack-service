@@ -1,9 +1,11 @@
-import { cards } from "../card";
 import Chance from "chance";
 import _ from "lodash";
 
+import { cards } from "../card";
+
 export const generateDecks = (exclusions) => {
     const baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
+    const chance = new Chance();
 
     if (exclusions) {
         exclusions.forEach((excludeCard) => {
@@ -12,5 +14,5 @@ export const generateDecks = (exclusions) => {
         });
     }
 
-    return new Chance().shuffle(baseDeck);
+    return chance.shuffle(chance.shuffle(chance.shuffle(baseDeck)));
 };

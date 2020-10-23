@@ -1,4 +1,3 @@
-import Chance from "chance";
 import _ from "lodash";
 import { placeBet as placeBetApi } from "sc-base-apis";
 import { helpers } from "sc-common";
@@ -9,10 +8,10 @@ import constants from "../constants";
 import SettleGameConsumer from "../consumers/settle-game-consumer";
 import gameSettings from "../game-settings";
 import { calculate, calculateFinalValue, isAce, isBlackjack } from "../helpers/card-helper";
+import { generateDecks } from "../helpers/deck-helper";
 
 export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
-    chance = new Chance();
     posOrder = [1, 4, 2, 5, 3, 6];
 
     /**
@@ -98,7 +97,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
         if (betTracks.hands.length > 0) {
             betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
-            betTracks.deck = this.chance.shuffle(this.baseDeck);
+            betTracks.deck = generateDecks();
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);
             betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand)?.id;

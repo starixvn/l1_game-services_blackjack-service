@@ -1,4 +1,4 @@
-import { logger } from "sc-common";
+import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
 
 import gameSettings from "../game-settings";
@@ -47,13 +47,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
         }
 
         if (this.gameData.ingame[name]?.betQueue.length > 0) {
-            logger.log(
-                `player ${name} action ${queuePayload.action} failed since has processing queue ${JSON.stringify(
-                    this.gameData.ingame[name]?.betQueue
-                )}`
-            );
-
-            this.publisher.publishToUser(player.UID, { endBet: -1, notice: noticeHelper.processing });
+            this.publisher.publishToUser(player.UID, { endBet: -1, notice: helpers.noticeHelper.cannotPlaceBet });
 
             return;
         }

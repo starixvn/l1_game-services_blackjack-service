@@ -326,27 +326,28 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
     }
 
     handleFailedDealHands(player, failedHands) {
-        const errorApiHands = {};
+        const errorApiHands = [];
         const invalidBetAmountHands = {
-            pos: [],
+            pos: failedHands.filter((failedHand) => failedHand.apiResult.response.inSufficientBalance).map((failedHand) => failedHand.pos),
             message: helpers.noticeHelper.notEnoughMoney,
         };
         const blackjackNotice = {};
 
-        for (const failedHand of failedHands) {
+        for (const failedHand of failedHands.filter((failedHand) => !failedHand.apiResult.response.inSufficientBalance)) {
             const response = failedHand.apiResult.response;
-            if (response.inSufficientBalance) {
-                invalidBetAmountHands.pos.push(failedHand.pos);
-            } else {
-                if (!errorApiHands[response.apiError.message]) {
-                    errorApiHands[response.apiError.message] = { pos: [], ...response.apiError };
-                }
+            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.message === response.apiError.message);
 
-                errorApiHands[response.apiError.message].pos.push(failedHand.pos);
+            if (existingErrorApiHand) {
+                existingErrorApiHand.pos.push(failedHand.pos);
+            } else {
+                errorApiHands.push({
+                    ...apiError,
+                    pos: [apiFailedHand.pos],
+                });
             }
         }
 
-        if (errorApiHands.pos.length > 0) {
+        if (errorApiHands.length > 0) {
             blackjackNotice.errorApiHands = errorApiHands;
         }
 

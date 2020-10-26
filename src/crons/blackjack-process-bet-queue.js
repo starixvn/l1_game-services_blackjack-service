@@ -327,12 +327,15 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
     handleFailedDealHands(player, failedHands) {
         const errorApiHands = [];
+        const kickedOutHands = [];
         const invalidBetAmountHands = {
             pos: failedHands.filter((failedHand) => failedHand.apiResult.response.inSufficientBalance).map((failedHand) => failedHand.pos),
             message: helpers.noticeHelper.notEnoughMoney,
         };
         const blackjackNotice = {};
-        const apiFailedHands = failedHands.filter((failedHand) => !failedHand.apiResult.response.inSufficientBalance);
+        const apiFailedHands = failedHands.filter(
+            (failedHand) => !failedHand.apiResult.response.inSufficientBalance && failedHand.apiResult.response.apiError
+        );
 
         for (const apiFailedHand of apiFailedHands) {
             const { apiError } = apiFailedHand.apiResult.response;
@@ -348,12 +351,33 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             }
         }
 
+        const kickedOutApiHands = failedHands.filter(
+            (failedHand) => !failedHand.apiResult.response.inSufficientBalance && failedHand.apiResult.response.kickedOut
+        );
+        for (const kickedOutApiHand of kickedOutApiHands) {
+            const { kickedOut } = kickedOutApiHand.apiResult.response;
+            const existingKickedOutApiHand = kickedOutHands.find((kickedOutApiHand) => kickedOutApiHand.message === kickedOut.message);
+
+            if (existingKickedOutApiHand) {
+                existingKickedOutApiHand.pos.push(kickedOutApiHand.pos);
+            } else {
+                kickedOutHands.push({
+                    ...kickedOut,
+                    pos: [kickedOutApiHand.pos],
+                });
+            }
+        }
+
         if (errorApiHands.length > 0) {
             blackjackNotice.errorApiHands = errorApiHands;
         }
 
         if (invalidBetAmountHands.pos.length > 0) {
             blackjackNotice.invalidBetAmountHands = invalidBetAmountHands;
+        }
+
+        if (kickedOutHands.length > 0) {
+            blackjackNotice.kickedOutHands = kickedOutHands;
         }
 
         this.publisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });

@@ -10,26 +10,26 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         const playerData = this.gameData.ingame[player.profile.name];
         const { betTracks } = playerData;
         const criteria = [];
-        const hand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
-        if (hand) {
+        const selectedHand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
+        if (selectedHand) {
             criteria.push(
                 {
                     failure:
-                        !calculate(hand.cards).some((hand) => constants.allowDoubleValues.includes(hand)) ||
-                        betTracks.hands?.some((hand) => hand.splitFrom === hand.id) ||
-                        hand.splitFrom,
+                        !calculate(selectedHand.cards).some((hand) => constants.allowDoubleValues.includes(hand)) ||
+                        betTracks.hands.some((hand) => hand.splitFrom === selectedHand.id) ||
+                        selectedHand.splitFrom,
                     notice: noticeHelper.cantDoubleHand,
                 },
                 {
-                    failure: hand.isStand,
+                    failure: selectedHand.isStand,
                     notice: noticeHelper.handIsStand,
                 },
                 {
-                    failure: hand.id !== playerData.betTracks.activeHandId,
+                    failure: selectedHand.id !== playerData.betTracks.activeHandId,
                     notice: noticeHelper.handNotActive,
                 },
                 {
-                    failure: hand.bet * 2 > configs.maxbet,
+                    failure: selectedHand.bet * 2 > configs.maxbet,
                     notice: noticeHelper.maxBet(configs.maxbet),
                 }
             );

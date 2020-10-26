@@ -356,7 +356,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         );
         for (const kickedOutApiHand of kickedOutApiHands) {
             const { kickedOut } = kickedOutApiHand.apiResult.response;
-            const existingKickedOutApiHand = kickedOutHands.find((kickedOutApiHand) => kickedOutApiHand.message === kickedOut.message);
+            const existingKickedOutApiHand = kickedOutHands.find((kickedOutHand) => kickedOutHand.message === kickedOut.message);
 
             if (existingKickedOutApiHand) {
                 existingKickedOutApiHand.pos.push(kickedOutApiHand.pos);

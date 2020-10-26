@@ -57,4 +57,5 @@ export default {
         "http://sit-adm.sabagame.com",
         "https://sit-adm.sabagame.com",
     ],
+    roundMaxDuration: 1
 };

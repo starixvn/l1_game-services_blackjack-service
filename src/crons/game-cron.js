@@ -2,6 +2,7 @@ import cron from "cron";
 import moment from "moment";
 import { logger } from "sc-common";
 import { Core } from "sc-game-base";
+import appConfigs from "../app-configs";
 
 import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
@@ -96,7 +97,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
 
         if (this.gameData.remainingTime < 0) {
             this.gameData.remainingTime = durations.wholeAction;
-            const expiredDate = moment.utc().add(-1, "days");
+            const expiredDate = moment.utc().add(-appConfigs.roundMaxDuration, "hours");
 
             await Promise.all(
                 Object.values(this.gameData.ingame)

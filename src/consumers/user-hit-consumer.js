@@ -1,5 +1,5 @@
-import gameSettings from "../game-settings";
 import constants from "../constants";
+import gameSettings from "../game-settings";
 import { calculate } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
@@ -8,12 +8,12 @@ export default class UserHitConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const criteria = [];
-        const hand = playerData?.betTracks?.hands?.find((hand) => hand.id === payload.hit.id);
+        const hand = playerData?.betTracks?.hands?.find((currentHand) => currentHand.id === payload.hit.id);
 
         if (hand) {
             criteria.push(
                 {
-                    failure: calculate(hand.cards).some((hand) => hand >= constants.blackJack),
+                    failure: calculate(hand.cards).some((currentHand) => currentHand >= constants.blackJack),
                     notice: noticeHelper.cantHit,
                 },
                 {
@@ -22,7 +22,7 @@ export default class UserHitConsumer extends BaseActionConsumer {
                 },
                 {
                     failure: hand.id !== playerData.betTracks.activeHandId,
-                    notice: noticeHelper.handNotActive
+                    notice: noticeHelper.handNotActive,
                 }
             );
         } else {

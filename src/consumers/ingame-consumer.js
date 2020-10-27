@@ -2,6 +2,23 @@ import { getBalance } from "sc-base-apis";
 import { Core } from "sc-game-base";
 
 export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsumer {
+    async consume(realPlayer) {
+        const payload = await this.buildPayload(realPlayer);
+        const player = {
+            id: realPlayer.UID,
+            name: realPlayer.profile.name,
+            red: payload.user.red,
+            avatarId: payload.user.avatarId,
+            type: payload.user.type,
+        };
+
+        if (!this.gameData.players[realPlayer.UID]) {
+            this.gameData.players[realPlayer.UID] = player;
+        }
+
+        realPlayer.socketClient.emit(this.definition.name, payload);
+    }
+
     async buildPayload(realPlayer) {
         const { minbet, maxbet, choices_maxbet, odds, enableFreeBet } = this.gameData.gameConfigs;
         const gameConfigs = { minbet, maxbet, choices_maxbet, odds, enableFreeBet };
@@ -11,11 +28,11 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
         const ownBets =
             betTracks.roundId > 0
                 ? {
-                    roundId: betTracks.roundId,
-                    totalAmount,
-                    dealer: [betTracks.dealer.cards[0]],
-                    hands: betTracks.hands,
-                }
+                      roundId: betTracks.roundId,
+                      totalAmount,
+                      dealer: [betTracks.dealer.cards[0]],
+                      hands: betTracks.hands,
+                  }
                 : {};
 
         await getBalance(realPlayer, true);

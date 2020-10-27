@@ -104,7 +104,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                     .filter(
                         (userBet) =>
                             userBet.betTracks &&
-                            !this.gameData.realPlayers[userBet.betTracks.uid] &&
+                            !this.gameData.players[userBet.betTracks.uid] &&
                             moment(userBet.betTracks.roundStartTime) < expiredDate
                     )
                     .map((userBet) => this.settleGameRoundConsumer.settleRound(userBet.name))

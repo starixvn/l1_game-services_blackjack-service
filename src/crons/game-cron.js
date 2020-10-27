@@ -2,8 +2,8 @@ import cron from "cron";
 import moment from "moment";
 import { logger } from "sc-common";
 import { Core } from "sc-game-base";
-import appConfigs from "../app-configs";
 
+import appConfigs from "../app-configs";
 import BlackJackGameData from "../blackjack-game-data";
 import BlackjackGameDefinition from "../blackjack-game-definition";
 import gameSettings from "../game-settings";
@@ -104,7 +104,7 @@ export default class GameCron extends Core.Cron.BaseGameCron {
                     .filter(
                         (userBet) =>
                             userBet.betTracks &&
-                            !this.gameData.players[userBet.betTracks.uid] &&
+                            !this.gameData.realPlayers[userBet.betTracks.uid] &&
                             moment(userBet.betTracks.roundStartTime) < expiredDate
                     )
                     .map((userBet) => this.settleGameRoundConsumer.settleRound(userBet.name))

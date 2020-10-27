@@ -65,4 +65,5 @@ export default {
         "http://adm.sabagame.com",
         "https://adm.sabagame.com",
     ],
+    roundMaxDuration: 24,
 };

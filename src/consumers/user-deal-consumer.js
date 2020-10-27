@@ -1,5 +1,3 @@
-import { logger } from "sc-common";
-
 import constants from "../constants";
 import gameSettings from "../game-settings";
 import noticeHelper from "../helpers/notice-helper";
@@ -35,28 +33,22 @@ export default class UserDealConsumer extends BaseActionConsumer {
                 notice: noticeHelper.invalidPosition,
             });
         }
-        return result;
-    }
 
-    validateBetRequest(player, payload) {
-        const { deal } = payload;
-
-        if (
-            !deal.hands ||
-            deal.hands.length < constants.minPlayerHand ||
-            deal.hands.length > constants.maxPlayerHand ||
-            this.gameData.ingame[player.profile.name]?.betTracks?.roundId
-        ) {
-            logger.log(
-                `player ${player.profile.name} deal failed. invalid hands length or has running round. RoundId ${
-                    this.gameData.ingame[player.profile.name]?.betTracks?.roundId
-                }`
-            );
-
-            return false;
+        if (!deal.hands || deal.hands.length < constants.minPlayerHand || deal.hands.length > constants.maxPlayerHand) {
+            result.push({
+                failure: true,
+                notice: noticeHelper.invalidDealHands,
+            });
         }
 
-        return super.validateBetRequest(player, payload);
+        if (this.gameData.ingame[player.profile.name]?.betTracks?.roundId) {
+            result.push({
+                failure: true,
+                notice: noticeHelper.invalidDealDueToRunningRound,
+            });
+        }
+
+        return result;
     }
 
     consume(player, payload) {

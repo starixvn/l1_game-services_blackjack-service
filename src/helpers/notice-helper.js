@@ -12,6 +12,7 @@ export default {
     handIsStand: "Tụ đã dừng.",
     invalidPosition: "Vị trí tụ không đúng.",
     handNotActive: "Tụ chưa tới lượt.",
-    processing: "Chưa xử lí xong.",
     cantSplit: "Không thể tách bài.",
+    invalidDealHands: "Số lượng tay bài không hợp lệ.",
+    invalidDealDueToRunningRound: "Cược không hợp lệ do phiên chưa kết thúc.",
 };

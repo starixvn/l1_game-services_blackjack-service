@@ -1,9 +1,9 @@
 export default {
-    hostingPort: 8003,
+    hostingPort: 7003,
     apiSettings: {
         enabledApi: true,
-        apiUrl: "http://10.2.189.50:8300",
-        authUrl: "http://10.2.189.50:8303",
+        apiUrl: "http://10.2.189.51:7300",
+        authUrl: "http://10.2.189.51:7303",
         client: {
             id: "game-server",
             secret: "gameserver@20luminet&",
@@ -14,9 +14,9 @@ export default {
         enabledApiLogs: true,
     },
     mainServerApiSettings: {
-        url: "http://10.2.189.50:8888/main/api",
+        url: "http://10.2.189.51:7777/uat/main/api",
         auth: {
-            url: "http://10.2.189.50:8303",
+            url: "http://10.2.189.51:7303",
             id: "game-services",
             secret: "gameservices@20luminet&",
         },
@@ -32,8 +32,7 @@ export default {
     },
     enabledLogs: true,
     database: {
-        url:
-            "mongodb://lmn_backend:M7K4ttH%2AtZ3ml%3F%29%7CA%5DjN4%3FLBhwF%266IO%3C@10.3.189.54:27101,10.3.189.53:27102,10.3.189.53:27103/?replicaSet=SabaMain",
+        url: "mongodb://lmn_backend:LmnBackend%4022027@10.99.99.187:27201/?replicaSet=SabaUAT",
         options: {
             dbName: "minigame",
             useNewUrlParser: true,
@@ -44,26 +43,13 @@ export default {
     sentry: {
         sentryUrl: "http://a983bd0c1502412887e17c2205e8bc70@10.99.99.187:803/110",
         logIdentifier: "blackjack",
-        env: "PROD",
+        env: "PRO",
     },
     authenticateSettings: {
         audiences: ["api", "admin-api"],
     },
-    adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
+    adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
     enableCorsWs: true,
-    corsUrls: [
-        "http://sabagame.com",
-        "http://www.sabagame.com",
-        "https://sabagame.com",
-        "https://www.sabagame.com",
-        "https://www.gamesaba.com",
-        "https://gamesaba.com",
-        "http://www.gamesaba.com",
-        "http://gamesaba.com",
-        "http://admg.sabagame.com",
-        "https://admg.sabagame.com",
-        "http://adm.sabagame.com",
-        "https://adm.sabagame.com",
-    ],
+    corsUrls: ["http://uat.sabagame.com", "https://uat.sabagame.com", "http://uat-adm.sabagame.com", "https://uat-adm.sabagame.com"],
     roundMaxDuration: 24,
 };

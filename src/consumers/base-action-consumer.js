@@ -2,7 +2,6 @@ import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
 
 import gameSettings from "../game-settings";
-import noticeHelper from "../helpers/notice-helper";
 
 export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     validateBetRequest(player, payload) {

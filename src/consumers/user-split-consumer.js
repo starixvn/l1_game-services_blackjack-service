@@ -1,3 +1,5 @@
+import { logger } from "sc-common";
+
 import gameSettings from "../game-settings";
 import { getValue } from "../helpers/card-helper";
 import noticeHelper from "../helpers/notice-helper";
@@ -6,6 +8,18 @@ import BaseActionConsumer from "./base-action-consumer";
 export default class UserSplitConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
+
+        if (!playerData) {
+            logger.logWarning(`player ${player.profile.name} ingame undefined`);
+
+            return [
+                {
+                    failure: true,
+                    notice: noticeHelper.cantSplit,
+                },
+            ];
+        }
+
         const { hands } = playerData.betTracks;
         const selectedHand = hands.find((hand) => hand.id === payload.split.id);
 
@@ -36,8 +50,8 @@ export default class UserSplitConsumer extends BaseActionConsumer {
             },
             {
                 failure: selectedHand && selectedHand.cards.length > 2,
-                notice: noticeHelper.cantSplit
-            }
+                notice: noticeHelper.cantSplit,
+            },
         ];
     }
 

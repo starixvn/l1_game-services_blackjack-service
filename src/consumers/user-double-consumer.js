@@ -1,3 +1,5 @@
+import { logger } from "sc-common";
+
 import constants from "../constants";
 import gameSettings from "../game-settings";
 import { calculate } from "../helpers/card-helper";
@@ -8,6 +10,18 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const playerData = this.gameData.ingame[player.profile.name];
+
+        if (!playerData) {
+            logger.logWarning(`player ${player.profile.name} ingame undefined`);
+
+            return [
+                {
+                    failure: true,
+                    notice: noticeHelper.cantDoubleHand,
+                },
+            ];
+        }
+
         const { betTracks } = playerData;
         const criteria = [];
         const selectedHand = betTracks.hands?.find((hand) => hand.id === payload.double.id);

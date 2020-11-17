@@ -1,5 +1,5 @@
 # Base image
-FROM node:14-alpine3.10
+FROM git3.nexdev.net:5050/lumi-ops/docker-images/node:14.15-alpine3
 
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV

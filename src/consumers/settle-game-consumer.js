@@ -11,17 +11,19 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
-
         const { result, settlementResult } = this.definition.generateResult(
             betTrack.dealer.cards,
             betTrack.deck,
             isUpCards(betTrack.hands)
         );
 
+        const round = await this.definition.roundRepository.findOne({ id: betTrack.roundId }).lean().exec();
+
         const finish = {
             settlementResult,
             result,
             roundId: betTrack.roundId,
+            odds: round.odds,
             time: new Date(),
         };
 
@@ -44,16 +46,15 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
         return this.definition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
     }
 
-    async settleBets({ result, settlementResult, roundId, time, playerName, playerUID }) {
+    async settleBets({ result, settlementResult, roundId, odds, time, playerName, playerUID }) {
         const bets = await this.queryBets(roundId);
         const winningHands = [];
+        const settleOdds = odds ?? this.gameData.gameConfigs.odds;
 
         if (bets && bets.length) {
-            const { odds } = this.gameData.gameConfigs;
-
             await Promise.all(
                 bets.map(async (bet) => {
-                    const betResult = this.calculateBetResult(result, bet, odds);
+                    const betResult = this.calculateBetResult(result, bet, settleOdds);
 
                     if (!bet.actions.includes(this.definition.actions.stand)) {
                         const actions = [...bet.actions, this.definition.actions.stand];

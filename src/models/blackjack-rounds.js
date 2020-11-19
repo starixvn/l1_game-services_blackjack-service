@@ -11,6 +11,7 @@ const Schema = new mongoose.Schema({
     ended: { type: Boolean, default: false },
     uid: { type: String, required: true },
     name: { type: String, required: true },
+    odds: { type: Object },
 });
 
 Schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });

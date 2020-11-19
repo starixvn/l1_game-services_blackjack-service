@@ -119,12 +119,14 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
 
     async createRoundAndHandEntities(player) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
+        const { odds } = this.gameData.gameConfigs;
 
         const newRound = await this.definition.roundRepository.create({
             result: betTracks.dealer.cards,
             roundStartTime: new Date(),
             uid: player.UID,
             name: player.profile.name,
+            odds,
         });
         betTracks.roundId = newRound.id;
         this.gameData.roundId = newRound.id;

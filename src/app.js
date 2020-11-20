@@ -1,7 +1,7 @@
 import { Table } from "sc-game-base";
 
 import appConfigs from "./app-configs";
-import TableGameData from "./blackjack-game-data";
+import BlackJackGameData from "./blackjack-game-data";
 import BlackJackGameDefinition from "./blackjack-game-definition";
 import SettleGameConsumer from "./consumers/settle-game-consumer";
 import BlackJackBot from "./crons/blackjack-bot";
@@ -17,7 +17,7 @@ import Startup from "./startup";
 export class BlackJackApp extends Table.TableGameApp {}
 
 const run = async () => {
-    const gameData = new TableGameData();
+    const gameData = new BlackJackGameData();
 
     const definition = new BlackJackGameDefinition(
         gameSettings,

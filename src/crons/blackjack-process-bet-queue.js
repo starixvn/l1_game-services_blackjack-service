@@ -42,7 +42,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         }
 
         const { betTracks } = this.gameData.ingame[player.profile.name];
-        if (betTracks.hands.every((hand) => hand.isStand)) {
+        if (betTracks.hands.every((hand) => hand.isStand) && betTracks.hands.length > 0) {
             await this.settleGameConsumer.settleRound(player.profile.name);
         } else {
             this.updateActiveHand(player);

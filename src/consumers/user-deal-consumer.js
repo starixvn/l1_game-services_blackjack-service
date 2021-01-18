@@ -7,7 +7,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
-        const result = [];
+        const result = super.composeActionValidationCriteria(player, payload);
 
         const handViolateMinBet = deal.hands.find((hand) => !hand.bet || hand.bet < configs.minbet);
 

@@ -7,7 +7,7 @@ import BaseActionConsumer from "./base-action-consumer";
 export default class UserHitConsumer extends BaseActionConsumer {
     composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
-        const criteria = [];
+        const criteria = super.composeActionValidationCriteria(player, payload);
         const hand = playerData?.betTracks?.hands?.find((currentHand) => currentHand.id === payload.hit.id);
 
         if (hand) {

@@ -7,6 +7,7 @@ export default class UserStandConsumer extends BaseActionConsumer {
         const playerData = this.gameData.ingame[player.profile.name];
         const hand = playerData?.betTracks?.hands?.find((currentHand) => currentHand.id === payload.stand.id);
         return [
+            ...super.composeActionValidationCriteria(player, payload),
             {
                 failure: !hand,
                 notice: noticeHelper.invalidHandId,

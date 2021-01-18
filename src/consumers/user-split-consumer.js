@@ -24,6 +24,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
         const selectedHand = hands.find((hand) => hand.id === payload.split.id);
 
         return [
+            ...super.composeActionValidationCriteria(player, payload),
             {
                 failure: !selectedHand,
                 notice: noticeHelper.invalidHandId,

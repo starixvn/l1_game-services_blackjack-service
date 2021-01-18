@@ -15,4 +15,5 @@ export default {
     cantSplit: "Không thể tách bài.",
     invalidDealHands: "Số lượng tay bài không hợp lệ.",
     invalidDealDueToRunningRound: "Cược không hợp lệ do phiên chưa kết thúc.",
+    processingAction: "Đang xử lí, vui lòng đợi trong giây lát."
 };

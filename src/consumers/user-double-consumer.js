@@ -23,7 +23,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         }
 
         const { betTracks } = playerData;
-        const criteria = [];
+        const criteria = super.composeActionValidationCriteria(player, payload);
         const selectedHand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
         if (selectedHand) {
             criteria.push(

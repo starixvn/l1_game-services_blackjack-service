@@ -2,6 +2,7 @@ import { helpers } from "sc-common";
 import { Core } from "sc-game-base";
 
 import gameSettings from "../game-settings";
+import noticeHelper from "../helpers/notice-helper";
 
 export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
     validateBetRequest(player, payload) {
@@ -17,7 +18,12 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
     }
 
     composeActionValidationCriteria(player, payload) {
-        return [];
+        return [
+            {
+                failure: this.gameData.ingame[player.profile.name]?.processing,
+                notice: noticeHelper.processingAction,
+            },
+        ];
     }
 
     composeValidationCriteria(player, payload) {
@@ -61,6 +67,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
             this.gameData.ingame[name] = newPlayer;
         }
 
+        this.gameData.ingame[name].processing = true;
         this.gameData.ingame[name].betQueue.push({ player, payload: queuePayload });
     }
 }

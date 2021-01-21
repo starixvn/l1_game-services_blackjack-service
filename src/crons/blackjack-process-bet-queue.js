@@ -75,6 +75,7 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
         for (const hand of _.uniqBy(payload.hands, (currentHand) => currentHand.pos)) {
             this.gameData.betId++;
             hand.id = this.gameData.betId;
+            hand.bet = hand.bet >> 0;
 
             const betInfo = {
                 amount: hand.bet,

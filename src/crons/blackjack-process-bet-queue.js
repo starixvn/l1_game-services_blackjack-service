@@ -411,4 +411,6 @@ export default class BlackJackProcessBetQueue extends Core.Cron.ProcessBetQueue 
             }
         }
     }
+
+    decreaseBetTracks(playerName, bet) {}
 }

@@ -2,21 +2,21 @@ export default {
     hostingPort: 5000,
     apiSettings: {
         enabledApi: true,
-        apiUrl: "http://l1-api1.lumigame.com",
-        authUrl: "http://l1-auth1.lumigame.com",
+        apiUrl: "http://l1_game_api_AWS:5000",
+        authUrl: "http://l1_auth_api_AWS:5000",
         client: {
             id: "game-server",
             secret: "gameserver@20luminet&",
         },
         useAuthenticate: true,
-        requestTimeout: 10000,
         placeBetTimeout: 4500,
+        requestTimeout: 10000, // 10s
         enabledApiLogs: true,
     },
     mainServerApiSettings: {
-        url: "http://haproxy.lumigame.com:7002/main/api",
+        url: "http://l1_game_server_AWS:5000/api",
         auth: {
-            url: "http://l1-auth1.lumigame.com",
+            url: "http://l1_auth_api_AWS:5000",
             id: "game-services",
             secret: "gameservices@20luminet&",
         },
@@ -32,7 +32,7 @@ export default {
     },
     enabledLogs: true,
     database: {
-        url: "mongodb://lmn_backend:LmnBackend@10.10.50.14:17101/?replicaSet=L1pLocal",
+        url: "mongodb://lmn_backend:Sb%7B5r%40Xy4X%256%28%24%5Bt%252HsOxJ%7CQt9jdR%26t@10.99.99.56:27101/?replicaSet=L1_SabaAWS",
         options: {
             dbName: "minigame",
             useNewUrlParser: true,
@@ -41,14 +41,15 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "https://292424572ac2466ba14d19e24c6d2d14@sentryuat.sabagame.com/190",
+        sentryUrl: "http://a983bd0c1502412887e17c2205e8bc70@10.99.99.187:803/110",
         logIdentifier: "blackjack",
-        env: "LOCAL",
+        env: "AWS",
     },
     authenticateSettings: {
         audiences: ["api", "admin-api"],
     },
-    adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
+    adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
     enableCorsWs: true,
-    corsUrls: ["http://localhost:7456", "http://localhost:7000", "http://l1-games1.lumigame.com", "http://l1-admin1.lumigame.com"],
+    corsUrls: ["https://sc1-games.sportsfun.app", "https://sc1-adm.sportsfun.app"],
+    roundMaxDuration: 24,
 };

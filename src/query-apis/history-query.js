@@ -1,6 +1,6 @@
 import { Core } from "sc-game-base";
 
-export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
+export default class HistoryQuery extends HCore.QueryApis.istoryQuery {
     async queryHistory(player, page, pageSize = 8) {
         if (page < 1 || !player) {
             return {};
@@ -19,7 +19,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
             __v: false,
             __archive: false,
         };
-        const bets = await this.betLogsRepository
+        const bets = await this.betsRepository
             .find(filter, betProjection, { sort: { _id: -1 }, skip: numberOfSkippedBets, limit: pageSize })
             .lean()
             .exec();

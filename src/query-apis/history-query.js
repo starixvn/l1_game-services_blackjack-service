@@ -1,6 +1,6 @@
 import { Core } from "sc-game-base";
 
-export default class HistoryQuery extends HCore.QueryApis.istoryQuery {
+export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
     async queryHistory(player, page, pageSize = 8) {
         if (page < 1 || !player) {
             return {};

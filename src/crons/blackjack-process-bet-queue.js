@@ -127,7 +127,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand)?.id;
 
             await this.createRoundAndHandEntities(player);
-            this.publisher.publishToUser(player.UID, {
+            this.placeBetPublisher.publishToUser(player.UID, {
                 deal: {
                     roundId: betTracks.roundId,
                     totalAmount: totalBet,
@@ -201,7 +201,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             bet.actions.push(gameSettings.actions.double, gameSettings.actions.stand);
             await bet.save();
 
-            this.publisher.publishToUser(player.UID, {
+            this.placeBetPublisher.publishToUser(player.UID, {
                 double: {
                     newCard,
                     ...hand,
@@ -301,7 +301,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             splitFrom: splitHand.splitFrom,
         });
 
-        this.publisher.publishToUser(player.UID, {
+        this.placeBetPublisher.publishToUser(player.UID, {
             split: {
                 hands: [hand, splitHand],
             },
@@ -331,7 +331,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         }
 
         await bet.save();
-        this.publisher.publishToUser(player.UID, { hit: { newCard, ...hand } });
+        this.placeBetPublisher.publishToUser(player.UID, { hit: { newCard, ...hand } });
     }
 
     async processStand(player, payload) {
@@ -346,7 +346,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         bet.total = calculateFinalValue(hand.cards);
 
         await bet.save();
-        this.publisher.publishToUser(player.UID, { stand: { ...hand } });
+        this.placeBetPublisher.publishToUser(player.UID, { stand: { ...hand } });
     }
 
     handleFailPlaceBetResponse(player, apiResult) {
@@ -410,7 +410,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             blackjackNotice.kickedOutHands = kickedOutHands;
         }
 
-        this.publisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });
+        this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });
     }
 
     dealCards({ dealer, hands, deck }) {

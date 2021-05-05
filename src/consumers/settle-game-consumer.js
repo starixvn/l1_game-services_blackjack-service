@@ -5,10 +5,6 @@ import { calculateFinalValue } from "../helpers/card-helper";
 import { isUpCards } from "../helpers/dealer";
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
-    constructor(definition, gameData, roundResultPublisher = null, userBetResultPublisher = null) {
-        super(definition, gameData, roundResultPublisher, userBetResultPublisher);
-    }
-
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
         const { result, settlementResult } = this.definition.generateResult(
@@ -17,7 +13,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
             isUpCards(betTrack.hands)
         );
 
-        const round = await this.definition.roundRepository.findOne({ id: betTrack.roundId }).lean().exec();
+        const round = await this.roundsRepository.findOne({ id: betTrack.roundId }).lean().exec();
 
         const finish = {
             settlementResult,
@@ -27,7 +23,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
             time: new Date(),
         };
 
-        await this.definition.roundRepository.updateOne(
+        await this.roundsRepository.updateOne(
             { id: betTrack.roundId },
             {
                 result,
@@ -43,7 +39,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
     }
 
     async queryBets(roundId) {
-        return this.definition.betRepository.find({ phien: roundId, thanhtoan: false }).exec();
+        return this.betsRepository.find({ phien: roundId, thanhtoan: false }).exec();
     }
 
     async settleBets({ result, settlementResult, roundId, odds, time, playerName, playerUID }) {

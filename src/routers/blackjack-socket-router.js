@@ -1,43 +1,42 @@
-import { Table } from "sc-game-base";
+import { Core } from "sc-game-base";
 import { logger } from "sc-common";
 
 import BlackJackGameData from "./../blackjack-game-data";
 import BlackjackGameDefinition from "./../blackjack-game-definition";
 
-export default class BlackJackSocketRouter extends Table.Routers.SocketRouter {
+export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter {
     /**
      * @param {BlackjackGameDefinition} definition
      * @param {BlackJackGameData} gameData
      */
-    constructor(
+    constructor({
         definition,
         gameData,
-        userSignInConsumer = null,
-        userDisconnectConsumer = null,
-        inGameConsumer = null,
-        placeBetConsumer = null,
-        userSignInPublisher = null,
-        historyQuery = null,
-        roundQuery = null,
-        userStandConsumer = null,
-        userHitConsumer = null,
-        userDoubleConsumer = null,
-        userSplitConsumer = null,
-        userDealConsumer = null
-    ) {
+        userSignInConsumer,
+        inGameConsumer,
+        placeBetConsumer,
+        userDisconnectConsumer,
+        userSignInPublisher,
+        historyQuery,
+        logService,
+        userStandConsumer,
+        userHitConsumer,
+        userDoubleConsumer,
+        userSplitConsumer,
+        userDealConsumer,
+    }) {
         super({
             definition,
             gameData,
             userSignInConsumer,
-            userDisconnectConsumer,
             inGameConsumer,
             placeBetConsumer,
+            userDisconnectConsumer,
             userSignInPublisher,
             historyQuery,
-            roundQuery,
+            logService,
         });
 
-        this.inGameConsumer = inGameConsumer;
         this.userStandConsumer = userStandConsumer;
         this.userHitConsumer = userHitConsumer;
         this.userDoubleConsumer = userDoubleConsumer;

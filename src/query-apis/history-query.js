@@ -8,7 +8,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
 
         const filter = { uid: player.UID, thanhtoan: true };
         const numberOfSkippedBets = (page - 1) * pageSize;
-        const total = await this.definition.betRepository.countDocuments(filter).exec();
+        const total = await this.betsRepository.countDocuments(filter).exec();
         const betProjection = {
             _id: false,
             uid: false,
@@ -19,7 +19,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
             __v: false,
             __archive: false,
         };
-        const bets = await this.definition.betRepository
+        const bets = await this.betLogsRepository
             .find(filter, betProjection, { sort: { _id: -1 }, skip: numberOfSkippedBets, limit: pageSize })
             .lean()
             .exec();

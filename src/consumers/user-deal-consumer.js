@@ -8,8 +8,10 @@ export default class UserDealConsumer extends BaseActionConsumer {
         const configs = this.gameData.gameConfigs;
         const { deal } = payload;
         const result = super.composeActionValidationCriteria(player, payload);
+        const minBet = Math.max(player.profile.minBet, configs.minbet);
+        const maxBet = Math.min(player.profile.maxBet, configs.maxbet);
 
-        const handViolateMinBet = deal.hands.find((hand) => !hand.bet || hand.bet < configs.minbet);
+        const handViolateMinBet = deal.hands.find((hand) => !hand.bet || hand.bet < minBet);
 
         if (handViolateMinBet) {
             result.push({
@@ -18,12 +20,12 @@ export default class UserDealConsumer extends BaseActionConsumer {
             });
         }
 
-        const handViolateMaxBet = deal.hands.find((hand) => !hand.bet || hand.bet > configs.maxbet);
+        const handViolateMaxBet = deal.hands.find((hand) => !hand.bet || hand.bet > maxBet);
 
         if (handViolateMaxBet) {
             result.push({
                 failure: true,
-                notice: noticeHelper.maxBet(configs.maxbet),
+                notice: noticeHelper.maxBet(maxBet),
             });
         }
 

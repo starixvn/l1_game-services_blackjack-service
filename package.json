@@ -32,7 +32,7 @@
         "mongoose-auto-increment-reworked": "^1.2.1",
         "morgan": "^1.10.0",
         "nodemon": "^2.0.4",
-        "sc-game-base": "^1.17.5",
+        "sc-game-base": "1.21.1",
         "socket.io": "^2.3.0"
     },
     "devDependencies": {

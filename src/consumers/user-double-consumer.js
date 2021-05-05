@@ -22,6 +22,8 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
             ];
         }
 
+        const maxBet = Math.min(player.profile.maxBet, configs.maxbet);
+
         const { betTracks } = playerData;
         const criteria = super.composeActionValidationCriteria(player, payload);
         const selectedHand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
@@ -43,8 +45,8 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                     notice: noticeHelper.handNotActive,
                 },
                 {
-                    failure: selectedHand.bet * 2 > configs.maxbet,
-                    notice: noticeHelper.maxBet(configs.maxbet),
+                    failure: selectedHand.bet * 2 > maxBet,
+                    notice: noticeHelper.maxBet(maxBet),
                 }
             );
         } else {

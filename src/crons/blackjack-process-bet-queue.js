@@ -92,8 +92,8 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         const failedHands = [];
 
         for (const hand of _.uniqBy(payload.hands, (currentHand) => currentHand.pos)) {
-            this.gameData.betId++;
             hand.id = this.gameData.betId;
+            this.gameData.betId++;
             hand.bet = hand.bet >> 0;
 
             const betInfo = {
@@ -146,6 +146,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         const { odds } = this.gameData.gameConfigs;
 
         const newRound = await this.roundsRepository.create({
+            id: this.gameData.roundId,
             result: betTracks.dealer.cards,
             roundStartTime: new Date(),
             uid: player.UID,
@@ -153,7 +154,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             odds,
         });
         betTracks.roundId = newRound.id;
-        this.gameData.roundId = newRound.id;
+        this.gameData.roundId++;
 
         const betEntities = betTracks.hands.map((hand) => ({
             id: hand.id,
@@ -219,8 +220,8 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     async processSplit(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const hand = betTracks.hands.find((currentHand) => currentHand.id === payload.id);
-        this.gameData.betId++;
         const newHandId = this.gameData.betId;
+        this.gameData.betId++;
 
         const betInfo = {
             amount: hand.bet,

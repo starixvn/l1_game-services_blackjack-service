@@ -23,7 +23,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         logService,
         gameConfigsRepository,
         roundsRepository,
-        betsRepository
+        betsRepository,
     }) {
         super({
             definition,
@@ -57,10 +57,30 @@ export default class GameCron extends Core.Crons.BaseGameCron {
 
         if (lastestBet) {
             this.gameData.betId = lastestBet.id + 1;
+        } else {
+            this.gameData.betId = await this.getLastArchiveBet();
+        }
+
+        const lastRound = await this.roundsRepository
+            .findOne({}, "id", { sort: { id: -1 } })
+            .lean()
+            .exec();
+
+        if (lastRound) {
+            this.gameData.roundId = lastRound.id + 1;
+        } else {
+            this.gameData.roundId = await this.getLastArchiveRound();
         }
 
         await this.initBetTracks();
         job.start();
+    }
+
+    async getLastArchiveBet() {
+        const { configName } = this.definition;
+        const archiveStatus = await this.archiveStatusesRepository.findOne({ name: configName }, "lastArcId").lean().exec();
+
+        return archiveStatus ? archiveStatus.lastArcId["_cuocs"] + 1 : 1;
     }
 
     async initBetTracks() {

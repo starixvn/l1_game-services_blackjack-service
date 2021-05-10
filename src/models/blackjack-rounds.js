@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import autoIncrement from "mongoose-auto-increment-reworked";
 
 const modelName = "BlackJack_phien";
 
 const Schema = new mongoose.Schema({
     result: { type: Array },
+    id: { type: Number },
     settlementResult: { type: Number },
     roundStartTime: { type: Date },
     time: { type: Date },
@@ -13,8 +13,6 @@ const Schema = new mongoose.Schema({
     name: { type: String, required: true },
     odds: { type: Object },
 });
-
-Schema.plugin(autoIncrement.MongooseAutoIncrementID.plugin, { modelName, field: "id" });
 
 const rounds = mongoose.model(modelName, Schema);
 

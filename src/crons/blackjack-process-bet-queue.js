@@ -373,7 +373,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         const kickedOutHands = [];
         const invalidBetAmountHands = {
             pos: failedHands.filter((failedHand) => failedHand.apiResult.response.inSufficientBalance).map((failedHand) => failedHand.pos),
-            message: helpers.noticeHelper.notEnoughMoney,
+            errorCode: helpers.noticeHelper.notEnoughMoney,
         };
         const blackjackNotice = {};
         const apiFailedHands = failedHands.filter(
@@ -382,7 +382,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         for (const apiFailedHand of apiFailedHands) {
             const { apiError } = apiFailedHand.apiResult.response;
-            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.message === apiError.message);
+            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.errorCode === apiError.errorCode);
 
             if (existingErrorApiHand) {
                 existingErrorApiHand.pos.push(apiFailedHand.pos);
@@ -399,7 +399,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         );
         for (const kickedOutApiHand of kickedOutApiHands) {
             const { kickedOut } = kickedOutApiHand.apiResult.response;
-            const existingKickedOutApiHand = kickedOutHands.find((kickedOutHand) => kickedOutHand.message === kickedOut.message);
+            const existingKickedOutApiHand = kickedOutHands.find((kickedOutHand) => kickedOutHand.errorCode === kickedOut.errorCode);
 
             if (existingKickedOutApiHand) {
                 existingKickedOutApiHand.pos.push(kickedOutApiHand.pos);

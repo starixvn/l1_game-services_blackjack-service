@@ -10,15 +10,15 @@ export default class UserStandConsumer extends BaseActionConsumer {
             ...super.composeActionValidationCriteria(player, payload),
             {
                 failure: !hand,
-                notice: noticeHelper.invalidHandId,
+                notice: this.getNoticeObj(noticeHelper.invalidHandId),
             },
             {
                 failure: hand && hand.isStand,
-                notice: noticeHelper.handIsStand,
+                notice: this.getNoticeObj(noticeHelper.handIsStand),
             },
             {
                 failure: hand && hand.id !== playerData.betTracks.activeHandId,
-                notice: noticeHelper.handNotActive,
+                notice: this.getNoticeObj(noticeHelper.handNotActive),
             },
         ];
     }

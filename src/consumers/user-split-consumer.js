@@ -15,7 +15,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
             return [
                 {
                     failure: true,
-                    notice: noticeHelper.cantSplit,
+                    notice: this.getNoticeObj(oticeHelper.cantSplit),
                 },
             ];
         }
@@ -27,31 +27,31 @@ export default class UserSplitConsumer extends BaseActionConsumer {
             ...super.composeActionValidationCriteria(player, payload),
             {
                 failure: !selectedHand,
-                notice: noticeHelper.invalidHandId,
+                notice: this.getNoticeObj(noticeHelper.invalidHandId),
             },
             {
                 failure: hands.some((hand) => hand.splitFrom === payload.split.id),
-                notice: noticeHelper.handAlreadySplit,
+                notice: this.getNoticeObj(noticeHelper.handAlreadySplit),
             },
             {
                 failure: selectedHand && selectedHand.splitFrom,
-                notice: noticeHelper.cantSplitChildHand,
+                notice: this.getNoticeObj(noticeHelper.cantSplitChildHand),
             },
             {
                 failure: selectedHand && selectedHand.isStand,
-                notice: noticeHelper.handIsStand,
+                notice: this.getNoticeObj(noticeHelper.handIsStand),
             },
             {
                 failure: !selectedHand || getValue(selectedHand.cards[0]) !== getValue(selectedHand.cards[1]),
-                notice: noticeHelper.cardsNotEqual,
+                notice: this.getNoticeObj(noticeHelper.cardsNotEqual),
             },
             {
                 failure: selectedHand && selectedHand.id !== playerData.betTracks.activeHandId,
-                notice: noticeHelper.handNotActive,
+                notice: this.getNoticeObj(noticeHelper.handNotActive),
             },
             {
                 failure: selectedHand && selectedHand.cards.length > 2,
-                notice: noticeHelper.cantSplit,
+                notice: this.getNoticeObj(noticeHelper.cantSplit),
             },
         ];
     }

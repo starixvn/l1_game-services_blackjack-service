@@ -14,21 +14,21 @@ export default class UserHitConsumer extends BaseActionConsumer {
             criteria.push(
                 {
                     failure: calculate(hand.cards).some((currentHand) => currentHand >= constants.blackJack),
-                    notice: noticeHelper.cantHit,
+                    notice: this.getNoticeObj(noticeHelper.cantHit),
                 },
                 {
                     failure: hand.isStand,
-                    notice: noticeHelper.handIsStand,
+                    notice: this.getNoticeObj(noticeHelper.handIsStand),
                 },
                 {
                     failure: hand.id !== playerData.betTracks.activeHandId,
-                    notice: noticeHelper.handNotActive,
+                    notice: this.getNoticeObj(noticeHelper.handNotActive),
                 }
             );
         } else {
             criteria.push({
                 failure: true,
-                notice: noticeHelper.invalidHandId,
+                notice: this.getNoticeObj(noticeHelper.invalidHandId),
             });
         }
 

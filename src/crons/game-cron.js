@@ -24,6 +24,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         gameConfigsRepository,
         roundsRepository,
         betsRepository,
+        archiveStatusesRepository
     }) {
         super({
             definition,
@@ -35,6 +36,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             logService,
             gameConfigsRepository,
             roundsRepository,
+            archiveStatusesRepository
         });
 
         this.betsRepository = betsRepository;

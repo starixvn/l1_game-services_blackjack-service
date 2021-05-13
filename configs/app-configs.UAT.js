@@ -41,7 +41,7 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "http://84728a26e6d64d499bcb8e99fa9bce9b@10.99.99.187:800/133",
+        sentryUrl: "http://7ba626fc5eea40709545d4adf36975c6@10.99.99.187:800/29",
         logIdentifier: "blackjack",
         env: "UAT",
     },

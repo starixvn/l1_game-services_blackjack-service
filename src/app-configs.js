@@ -32,7 +32,7 @@ export default {
     },
     enabledLogs: true,
     database: {
-        url: "mongodb://127.0.0.1:27017",
+        url: "mongodb://lmn_backend:LmnBackend@10.10.50.14:17101/?replicaSet=L1pLocal",
         options: {
             dbName: "minigame",
             useNewUrlParser: true,

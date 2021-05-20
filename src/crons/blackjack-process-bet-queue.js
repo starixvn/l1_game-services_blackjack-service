@@ -16,8 +16,18 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     /**
      * @param {SettleGameConsumer} settleGameRoundConsumer
      */
-    constructor({ definition, gameData, placeBetPublisher, placeBet, logService, betsRepository, betLogsRepository, userInfosRepository, settleGameRoundConsumer, roundsRepository }) {
-        
+    constructor({
+        definition,
+        gameData,
+        placeBetPublisher,
+        placeBet,
+        logService,
+        betsRepository,
+        betLogsRepository,
+        userInfosRepository,
+        settleGameRoundConsumer,
+        roundsRepository,
+    }) {
         super({ definition, gameData, placeBetPublisher, placeBet, logService, betsRepository, betLogsRepository, userInfosRepository });
         this.settleGameRoundConsumer = settleGameRoundConsumer;
         this.roundsRepository = roundsRepository;
@@ -66,7 +76,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
     async checkUserStakeChange(apiResult, player) {
         const { response } = apiResult;
-        
+
         if (apiResult.isOk) {
             if (player.profile.minBet !== response.minBet || player.profile.maxBet !== response.maxBet) {
                 await this.updateUserStakeLevel(player, response.minBet, response.maxBet);
@@ -144,17 +154,19 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     async createRoundAndHandEntities(player) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const { odds } = this.gameData.gameConfigs;
+        const { roundId } = this.gameData;
+        this.gameData.roundId++;
 
         const newRound = await this.roundsRepository.create({
-            id: this.gameData.roundId,
+            id: roundId,
             result: betTracks.dealer.cards,
             roundStartTime: new Date(),
             uid: player.UID,
             name: player.profile.name,
             odds,
         });
+
         betTracks.roundId = newRound.id;
-        this.gameData.roundId++;
 
         const betEntities = betTracks.hands.map((hand) => ({
             id: hand.id,

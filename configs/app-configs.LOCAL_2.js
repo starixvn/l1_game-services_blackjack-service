@@ -41,9 +41,9 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "https://292424572ac2466ba14d19e24c6d2d14@sentryuat.sabagame.com/190",
+        sentryUrl: "https://13f39b8359404ed5aec23655e64ccf78@sentry.lumigame.com/2",
         logIdentifier: "blackjack",
-        env: "LOCAL",
+        env: "LOCAL-2",
     },
     authenticateSettings: {
         audiences: ["api", "admin-api"],

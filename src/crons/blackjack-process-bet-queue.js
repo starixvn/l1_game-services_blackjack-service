@@ -450,5 +450,13 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         }
     }
 
-    decreaseBetTracks(playerName, bet) {}
+    handleFailedBet(player, notice) {
+        if (notice.apiError) {
+            this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, apiError: notice.apiError });
+        } else if (notice.kickedOut) {
+            this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, kickedOut: notice.kickedOut });
+        } else {
+            this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, notice });
+        }
+    }
 }

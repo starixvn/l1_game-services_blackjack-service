@@ -363,7 +363,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     }
 
     handleFailPlaceBetResponse(player, apiResult) {
-        const insufficientNotice = helpers.noticeHelper.notEnoughMoney;
+        const insufficientNotice = { errorCode: helpers.noticeHelper.notEnoughMoney };
         const notice = apiResult.response.inSufficientBalance ? insufficientNotice : apiResult.response;
         this.handleFailedBet(player, notice);
     }

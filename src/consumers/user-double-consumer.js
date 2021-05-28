@@ -46,7 +46,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                 },
                 {
                     failure: selectedHand.bet * 2 > maxBet,
-                    notice: this.getNoticeObj(noticeHelper.maxBet),
+                    notice: this.getNoticeObj(noticeHelper.maxBet, { maxBet }),
                 }
             );
         } else {

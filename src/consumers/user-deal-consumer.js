@@ -16,7 +16,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMinBet) {
             result.push({
                 failure: true,
-                notice: this.getNoticeObj(noticeHelper.minBet),
+                notice: this.getNoticeObj(noticeHelper.minBet, { minBet }),
             });
         }
 
@@ -25,7 +25,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMaxBet) {
             result.push({
                 failure: true,
-                notice: this.getNoticeObj(noticeHelper.maxBet),
+                notice: this.getNoticeObj(noticeHelper.maxBet, { maxBet }),
             });
         }
 

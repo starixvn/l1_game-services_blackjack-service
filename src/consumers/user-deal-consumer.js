@@ -16,7 +16,7 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMinBet) {
             result.push({
                 failure: true,
-                notice: noticeHelper.minBet(configs.minbet),
+                notice: this.getNoticeObj(noticeHelper.minBet, { minBet }),
             });
         }
 
@@ -25,28 +25,28 @@ export default class UserDealConsumer extends BaseActionConsumer {
         if (handViolateMaxBet) {
             result.push({
                 failure: true,
-                notice: noticeHelper.maxBet(maxBet),
+                notice: this.getNoticeObj(noticeHelper.maxBet, { maxBet }),
             });
         }
 
         if (deal.hands.some((hand) => !hand.pos || hand.pos < 1 || hand.pos > 3)) {
             result.push({
                 failure: true,
-                notice: noticeHelper.invalidPosition,
+                notice: this.getNoticeObj(noticeHelper.invalidPosition),
             });
         }
 
         if (!deal.hands || deal.hands.length < constants.minPlayerHand || deal.hands.length > constants.maxPlayerHand) {
             result.push({
                 failure: true,
-                notice: noticeHelper.invalidDealHands,
+                notice: this.getNoticeObj(noticeHelper.invalidDealHands),
             });
         }
 
         if (this.gameData.ingame[player.profile.name]?.betTracks?.roundId) {
             result.push({
                 failure: true,
-                notice: noticeHelper.invalidDealDueToRunningRound,
+                notice: this.getNoticeObj(noticeHelper.invalidDealDueToRunningRound),
             });
         }
 

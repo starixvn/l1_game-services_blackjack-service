@@ -1,10 +1,10 @@
 import { helpers } from "sc-common";
-import { Core } from "sc-game-base";
+import { PlaceBetConsumer } from "sc-game-base/src/core/event-consumers";
 
 import gameSettings from "../game-settings";
 import noticeHelper from "../helpers/notice-helper";
 
-export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBetConsumer {
+export default class BaseActionConsumer extends PlaceBetConsumer {
     validateBetRequest(player, payload) {
         const criteria = this.composeValidationCriteria(player, payload);
         const failedCriterion = criteria.find((criterion) => criterion.failure);
@@ -21,7 +21,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
         return [
             {
                 failure: this.gameData.ingame[player.profile.name]?.processing,
-                notice: noticeHelper.processingAction,
+                notice: this.getNoticeObj(noticeHelper.processingAction),
             },
         ];
     }
@@ -52,7 +52,7 @@ export default class BaseActionConsumer extends Core.BaseEventConsumers.PlaceBet
         }
 
         if (this.gameData.ingame[name]?.betQueue.length > 0) {
-            this.publisher.publishToUser(player.UID, { endBet: -1, notice: helpers.noticeHelper.cannotPlaceBet });
+            this.publisher.publishToUser(player.UID, { endBet: -1, notice: this.getNoticeObj(helpers.noticeHelper.cannotPlaceBet) });
 
             return;
         }

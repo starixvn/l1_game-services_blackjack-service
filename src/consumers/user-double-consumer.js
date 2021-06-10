@@ -17,7 +17,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
             return [
                 {
                     failure: true,
-                    notice: noticeHelper.cantDoubleHand,
+                    notice: this.getNoticeObj(noticeHelper.cantDoubleHand),
                 },
             ];
         }
@@ -34,25 +34,25 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
                         !calculate(selectedHand.cards).some((hand) => constants.allowDoubleValues.includes(hand)) ||
                         betTracks.hands.some((hand) => hand.splitFrom === selectedHand.id) ||
                         selectedHand.splitFrom,
-                    notice: noticeHelper.cantDoubleHand,
+                    notice: this.getNoticeObj(noticeHelper.cantDoubleHand),
                 },
                 {
                     failure: selectedHand.isStand,
-                    notice: noticeHelper.handIsStand,
+                    notice: this.getNoticeObj(noticeHelper.handIsStand),
                 },
                 {
                     failure: selectedHand.id !== playerData.betTracks.activeHandId,
-                    notice: noticeHelper.handNotActive,
+                    notice: this.getNoticeObj(noticeHelper.handNotActive),
                 },
                 {
                     failure: selectedHand.bet * 2 > maxBet,
-                    notice: noticeHelper.maxBet(maxBet),
+                    notice: this.getNoticeObj(noticeHelper.maxBet, { maxBet }),
                 }
             );
         } else {
             criteria.push({
                 failure: true,
-                notice: noticeHelper.invalidHandId,
+                notice: this.getNoticeObj(noticeHelper.invalidHandId),
             });
         }
 

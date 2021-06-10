@@ -27,8 +27,19 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         userInfosRepository,
         settleGameRoundConsumer,
         roundsRepository,
+        validateBalance,
     }) {
-        super({ definition, gameData, placeBetPublisher, placeBet, logService, betsRepository, betLogsRepository, userInfosRepository });
+        super({
+            definition,
+            gameData,
+            placeBetPublisher,
+            placeBet,
+            logService,
+            betsRepository,
+            betLogsRepository,
+            userInfosRepository,
+            validateBalance,
+        });
         this.settleGameRoundConsumer = settleGameRoundConsumer;
         this.roundsRepository = roundsRepository;
     }
@@ -111,6 +122,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 gameId: this.definition.id,
                 gameRoundId: hand.id,
             };
+
+            if (!(await this.proceedValidatingBalance(player, betInfo))) {
+                return;
+            }
 
             const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
@@ -196,6 +211,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameRoundId: hand.id,
         };
 
+        if (!(await this.proceedValidatingBalance(player, betInfo))) {
+            return;
+        }
+
         const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
         if (apiResult.isOk) {
@@ -240,6 +259,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameId: this.definition.id,
             gameRoundId: newHandId,
         };
+
+        if (!(await this.proceedValidatingBalance(player, betInfo))) {
+            return;
+        }
 
         const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
@@ -363,7 +386,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     }
 
     handleFailPlaceBetResponse(player, apiResult) {
-        const insufficientNotice = helpers.noticeHelper.notEnoughMoney;
+        const insufficientNotice = { errorCode: helpers.noticeHelper.notEnoughMoney };
         const notice = apiResult.response.inSufficientBalance ? insufficientNotice : apiResult.response;
         this.handleFailedBet(player, notice);
     }
@@ -373,7 +396,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         const kickedOutHands = [];
         const invalidBetAmountHands = {
             pos: failedHands.filter((failedHand) => failedHand.apiResult.response.inSufficientBalance).map((failedHand) => failedHand.pos),
-            message: helpers.noticeHelper.notEnoughMoney,
+            errorCode: helpers.noticeHelper.notEnoughMoney,
         };
         const blackjackNotice = {};
         const apiFailedHands = failedHands.filter(
@@ -382,7 +405,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         for (const apiFailedHand of apiFailedHands) {
             const { apiError } = apiFailedHand.apiResult.response;
-            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.message === apiError.message);
+            const existingErrorApiHand = errorApiHands.find((errorApiHand) => errorApiHand.errorCode === apiError.errorCode);
 
             if (existingErrorApiHand) {
                 existingErrorApiHand.pos.push(apiFailedHand.pos);
@@ -399,7 +422,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         );
         for (const kickedOutApiHand of kickedOutApiHands) {
             const { kickedOut } = kickedOutApiHand.apiResult.response;
-            const existingKickedOutApiHand = kickedOutHands.find((kickedOutHand) => kickedOutHand.message === kickedOut.message);
+            const existingKickedOutApiHand = kickedOutHands.find((kickedOutHand) => kickedOutHand.errorCode === kickedOut.errorCode);
 
             if (existingKickedOutApiHand) {
                 existingKickedOutApiHand.pos.push(kickedOutApiHand.pos);
@@ -458,5 +481,23 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         } else {
             this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, notice });
         }
+    }
+
+    async proceedValidatingBalance(player, betInfo) {
+        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
+
+        if (!balanceResult.isOk) {
+            const { response: balanceResponse } = balanceResult;
+            const insufficientNotice = {
+                errorCode: payload.freeBet ? helpers.noticeHelper.notEnoughScoin : helpers.noticeHelper.notEnoughMoney,
+            };
+            const notice = balanceResponse.inSufficientBalance ? insufficientNotice : balanceResponse;
+
+            this.handleFailedBet(player, notice, payload);
+
+            return false;
+        }
+
+        return true;
     }
 }

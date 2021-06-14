@@ -123,21 +123,23 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 gameRoundId: hand.id,
             };
 
-            if (!(await this.proceedValidatingBalance(player, betInfo))) {
-                return;
-            }
+            const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
 
-            const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
+            if (balanceResult.isOk) {
+                const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
-            if (apiResult.isOk) {
-                betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
-                totalBet += hand.bet;
-                balance = apiResult.response;
+                if (apiResult.isOk) {
+                    betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
+                    totalBet += hand.bet;
+                    balance = apiResult.response;
+                } else {
+                    failedHands.push({ pos: hand.pos, apiResult });
+                }
+
+                await this.checkUserStakeChange(apiResult, player);
             } else {
-                failedHands.push({ pos: hand.pos, apiResult });
+                failedHands.push({ pos: hand.pos, balanceResult });
             }
-
-            await this.checkUserStakeChange(apiResult, player);
         }
 
         if (failedHands.length > 0) {
@@ -211,7 +213,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameRoundId: hand.id,
         };
 
-        if (!(await this.proceedValidatingBalance(player, betInfo))) {
+        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
+
+        if (!balanceResult.isOk) {
+            this.handleFailPlaceBetResponse(player, balanceResult);
             return;
         }
 
@@ -260,7 +265,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameRoundId: newHandId,
         };
 
-        if (!(await this.proceedValidatingBalance(player, betInfo))) {
+        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
+
+        if (!balanceResult.isOk) {
+            this.handleFailPlaceBetResponse(player, balanceResult);
             return;
         }
 
@@ -481,23 +489,5 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         } else {
             this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, notice });
         }
-    }
-
-    async proceedValidatingBalance(player, betInfo) {
-        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
-
-        if (!balanceResult.isOk) {
-            const { response: balanceResponse } = balanceResult;
-            const insufficientNotice = {
-                errorCode: payload.freeBet ? helpers.noticeHelper.notEnoughScoin : helpers.noticeHelper.notEnoughMoney,
-            };
-            const notice = balanceResponse.inSufficientBalance ? insufficientNotice : balanceResponse;
-
-            this.handleFailedBet(player, notice, payload);
-
-            return false;
-        }
-
-        return true;
     }
 }

@@ -138,7 +138,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
                 await this.checkUserStakeChange(apiResult, player);
             } else {
-                failedHands.push({ pos: hand.pos, balanceResult });
+                failedHands.push({ pos: hand.pos, apiResult: balanceResult });
             }
         }
 

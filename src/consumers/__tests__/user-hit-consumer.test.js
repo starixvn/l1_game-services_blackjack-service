@@ -3,9 +3,7 @@ import BlackjackGameData from "../../blackjack-game-data";
 import gameSettings from "../../game-settings";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
 import noticeHelper from "../../helpers/notice-helper";
-import { generateDecks } from "../../helpers/deck-helper";
 import UserHitConsumer from "../user-hit-consumer";
-import constants from "../../constants";
 
 jest.mock("sc-game-base/src/core/event-publishers/base-event-publisher");
 
@@ -58,8 +56,6 @@ beforeEach(() => {
         minbet: 1,
         maxbet: 3000,
         disabledround: 6912,
-        hour_maxbot: [0, 0, 0, 0, 0, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        disabled_message: "Game đang được bảo trì, vui lòng quay lại sau 10 phút.",
         odds: {
             regular: 2,
             blackjack: 2.5,

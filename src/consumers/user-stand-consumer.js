@@ -23,15 +23,7 @@ export default class UserStandConsumer extends BaseActionConsumer {
         ];
     }
 
-    validateBetRequest(player, payload) {
-        if (!payload.stand || !payload.stand.id) {
-            return false;
-        }
-
-        return super.validateBetRequest(player, payload);
-    }
-
-    async consume(player, payload) {
+    consume(player, payload) {
         super.consume(player, payload, { action: gameSettings.actions.stand, id: payload.stand.id });
     }
 }

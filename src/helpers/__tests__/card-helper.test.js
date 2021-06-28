@@ -1,4 +1,4 @@
-import * as CardHelper from '../../src/helpers/card-helper';
+import * as CardHelper from '../card-helper';
 
 describe("calculate()", () => {
     it("should return blackjack", () => {

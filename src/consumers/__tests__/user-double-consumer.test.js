@@ -36,7 +36,7 @@ const mockInGamePlayer = () => ({
                     { rank: "8", suit: 0 },
                     { rank: "A", suit: 1 },
                 ],
-                isdouble: false,
+                isStand: false,
                 actions: [],
             },
         ],

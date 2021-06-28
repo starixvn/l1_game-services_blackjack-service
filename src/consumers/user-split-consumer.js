@@ -34,7 +34,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: this.getNoticeObj(noticeHelper.handAlreadySplit),
             },
             {
-                failure: selectedHand && selectedHand.splitFrom,
+                failure: selectedHand && selectedHand.splitFrom > 0,
                 notice: this.getNoticeObj(noticeHelper.cantSplitChildHand),
             },
             {

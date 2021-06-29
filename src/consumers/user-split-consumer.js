@@ -56,14 +56,6 @@ export default class UserSplitConsumer extends BaseActionConsumer {
         ];
     }
 
-    validateBetRequest(player, payload) {
-        if (!payload.split || !payload.split.id) {
-            return false;
-        }
-
-        return super.validateBetRequest(player, payload);
-    }
-
     consume(player, payload) {
         super.consume(player, payload, { action: gameSettings.actions.split, id: payload.split.id });
     }

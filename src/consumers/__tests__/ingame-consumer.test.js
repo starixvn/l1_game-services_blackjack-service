@@ -2,7 +2,6 @@ import BlackjackGameDefinition from "../../blackjack-game-definition";
 import BlackjackGameData from "../../blackjack-game-data";
 import gameSettings from "../../game-settings";
 import InGameConsumer from "../ingame-consumer";
-import { stubMongooseModelStupidly } from "jest-micro-auto-stub";
 import mongoose from "mongoose";
 import roundQuery from "sc-game-base/src/core/query-apis/round-query";
 

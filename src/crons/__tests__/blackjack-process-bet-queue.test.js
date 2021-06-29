@@ -409,13 +409,25 @@ describe("process stand tests", () => {
             bet: 100,
             isStand: false,
         };
+        const nextHand = {
+            id: 101,
+            pos: 2,
+            actions: [],
+            cards: [
+                { suit: 0, rank: "8" },
+                { suit: 0, rank: "2" },
+            ],
+            bet: 100,
+            isStand: false,
+        };
         const betTracks = {
             roundId: 1,
-            hands: [hand],
+            hands: [hand, nextHand],
             deck: generateDecks(),
             dealer: {
                 cards: [],
             },
+            activeHandId: 100
         };
         gameData.ingame[player.profile.name] = {
             name: player.profile.name,
@@ -430,6 +442,7 @@ describe("process stand tests", () => {
         expect(hand.actions).toContain(gameSettings.actions.stand);
         expect(hand.isStand).toBeTrue();
         expect(hand.cards).toHaveLength(2);
+        expect(betTracks.activeHandId).toEqual(nextHand.id);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
     });
 });
@@ -506,7 +519,7 @@ describe("process split tests", () => {
         expect(betTracks.hands).toHaveLength(1);
         expect(betsRepository.create).not.toHaveBeenCalled();
         expect(betsRepositoryExecMockFunc).not.toHaveBeenCalled();
-         expect(placeBetPublisher.publishToUser).not.toHaveBeenCalled();
+        expect(placeBetPublisher.publishToUser).not.toHaveBeenCalled();
         expect(placeBetPublisher.publishGameFailedBet).toHaveBeenCalled();
     });
 

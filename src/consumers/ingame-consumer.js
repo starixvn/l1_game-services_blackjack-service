@@ -37,7 +37,7 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
         await this.getBalance(realPlayer, true);
 
         const user = await this.getUserInfo(realPlayer.UID);
-        
+
         return {
             gameConfigs,
             ownBets,

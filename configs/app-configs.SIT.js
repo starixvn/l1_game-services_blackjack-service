@@ -40,7 +40,7 @@ export default {
         },
     },
     sentry: {
-        sentryUrl: "http://52368c4019044019885440599c180bda@10.99.99.187:800/24",
+        sentryUrl: "http://52368c4019044019885440599c180bda@10.2.189.51:9009/24",
         logIdentifier: "blackjack",
         env: "SIT",
     },
@@ -57,5 +57,5 @@ export default {
         "http://sit-adm.sabagame.com",
         "https://sit-adm.sabagame.com",
     ],
-    roundMaxDuration: 1
+    roundMaxDuration: 1,
 };

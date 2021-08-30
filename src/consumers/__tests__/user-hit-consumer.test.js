@@ -1,7 +1,8 @@
-import BlackjackGameDefinition from "../../blackjack-game-definition";
-import BlackjackGameData from "../../blackjack-game-data";
-import gameSettings from "../../game-settings";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
+
+import BlackjackGameData from "../../blackjack-game-data";
+import BlackjackGameDefinition from "../../blackjack-game-definition";
+import gameSettings from "../../game-settings";
 import noticeHelper from "../../helpers/notice-helper";
 import UserHitConsumer from "../user-hit-consumer";
 
@@ -15,6 +16,10 @@ const publisher = new BaseEventPublishers();
 
 /** @type {UserHitConsumer}*/
 let consumer = null;
+
+const DATE_TO_USE = new Date("2016");
+const _Date = Date;
+global.Date = jest.fn(() => DATE_TO_USE);
 
 const player = {
     UID: 1,
@@ -78,7 +83,10 @@ describe("consume test", () => {
         consumer.consume(player, payload);
 
         expect(ingamePlayer.processing).toBeTrue();
-        expect(ingamePlayer.betQueue).toContainEqual({ player, payload: { action: gameSettings.actions.hit, id: payload.hit.id } });
+        expect(ingamePlayer.betQueue).toContainEqual({
+            player,
+            payload: { action: gameSettings.actions.hit, id: payload.hit.id, receivedTime: DATE_TO_USE },
+        });
     });
 
     it("invalid payload, publish error to user, not updating betTracs", () => {

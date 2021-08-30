@@ -1,7 +1,8 @@
-import BlackjackGameDefinition from "../../blackjack-game-definition";
-import BlackjackGameData from "../../blackjack-game-data";
-import gameSettings from "../../game-settings";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
+
+import BlackjackGameData from "../../blackjack-game-data";
+import BlackjackGameDefinition from "../../blackjack-game-definition";
+import gameSettings from "../../game-settings";
 import noticeHelper from "../../helpers/notice-helper";
 import UserSplitConsumer from "../user-split-consumer";
 
@@ -15,6 +16,10 @@ const publisher = new BaseEventPublishers();
 
 /** @type {UserSplitConsumer}*/
 let consumer = null;
+
+const DATE_TO_USE = new Date("2016");
+const _Date = Date;
+global.Date = jest.fn(() => DATE_TO_USE);
 
 const player = {
     UID: 1,
@@ -65,7 +70,6 @@ beforeEach(() => {
     consumer = new UserSplitConsumer(definition, gameData, publisher);
 });
 
-
 describe("consume test", () => {
     it("valid payload, add to betQueue, flag processing = true", () => {
         const payload = {
@@ -79,7 +83,10 @@ describe("consume test", () => {
         consumer.consume(player, payload);
 
         expect(ingamePlayer.processing).toBeTrue();
-        expect(ingamePlayer.betQueue).toContainEqual({ player, payload: { action: gameSettings.actions.split, id: payload.split.id } });
+        expect(ingamePlayer.betQueue).toContainEqual({
+            player,
+            payload: { action: gameSettings.actions.split, id: payload.split.id, receivedTime: DATE_TO_USE },
+        });
     });
 
     it("invalid payload, publish error to user, not updating betTracs", () => {
@@ -147,7 +154,6 @@ describe("validation test", () => {
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.handNotActive } });
     });
 
-    
     it("Attempt to split child hand, return correct error", () => {
         const payload = {
             split: {

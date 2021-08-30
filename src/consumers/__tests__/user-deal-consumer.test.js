@@ -1,9 +1,10 @@
-import BlackjackGameDefinition from "../../blackjack-game-definition";
-import BlackjackGameData from "../../blackjack-game-data";
-import gameSettings from "../../game-settings";
-import UserDealConsumer from "../user-deal-consumer";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
+
+import BlackjackGameData from "../../blackjack-game-data";
+import BlackjackGameDefinition from "../../blackjack-game-definition";
+import gameSettings from "../../game-settings";
 import noticeHelper from "../../helpers/notice-helper";
+import UserDealConsumer from "../user-deal-consumer";
 
 jest.mock("sc-game-base/src/core/event-publishers/base-event-publisher");
 
@@ -15,6 +16,10 @@ const publisher = new BaseEventPublishers();
 
 /** @type {UserDealConsumer}*/
 let consumer = null;
+
+const DATE_TO_USE = new Date("2016");
+const _Date = Date;
+global.Date = jest.fn(() => DATE_TO_USE);
 
 beforeEach(() => {
     definition = new BlackjackGameDefinition(gameSettings);
@@ -52,7 +57,10 @@ describe("consume test", () => {
         consumer.consume(player, payload);
         const ingamePlayer = gameData.ingame[player.profile.name];
         expect(ingamePlayer.processing).toBeTrue();
-        expect(ingamePlayer.betQueue).toContainEqual({ player, payload: { action: gameSettings.actions.deal, hands: payload.deal.hands } });
+        expect(ingamePlayer.betQueue).toContainEqual({
+            player,
+            payload: { action: gameSettings.actions.deal, hands: payload.deal.hands, receivedTime: DATE_TO_USE },
+        });
     });
 
     it("invalid bet, publish error to user, not creating ingame", () => {

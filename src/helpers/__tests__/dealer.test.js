@@ -1,6 +1,6 @@
-import constants from "../../src/constants";
-import * as Dealer from "../../src/helpers/dealer";
-import * as Deck from "../../src/helpers/deck-helper";
+import constants from "../../constants";
+import * as Dealer from "../dealer";
+import * as Deck from "../deck-helper";
 
 describe("generateResult()", () => {
     it("should auto deal until it reach min value of dealer", () => {

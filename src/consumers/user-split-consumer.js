@@ -34,7 +34,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: this.getNoticeObj(noticeHelper.handAlreadySplit),
             },
             {
-                failure: selectedHand && selectedHand.splitFrom,
+                failure: selectedHand && selectedHand.splitFrom > 0,
                 notice: this.getNoticeObj(noticeHelper.cantSplitChildHand),
             },
             {
@@ -54,14 +54,6 @@ export default class UserSplitConsumer extends BaseActionConsumer {
                 notice: this.getNoticeObj(noticeHelper.cantSplit),
             },
         ];
-    }
-
-    validateBetRequest(player, payload) {
-        if (!payload.split || !payload.split.id) {
-            return false;
-        }
-
-        return super.validateBetRequest(player, payload);
     }
 
     consume(player, payload) {

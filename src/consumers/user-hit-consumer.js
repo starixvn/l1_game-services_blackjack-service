@@ -35,15 +35,7 @@ export default class UserHitConsumer extends BaseActionConsumer {
         return criteria;
     }
 
-    validateBetRequest(player, payload) {
-        if (!payload.hit || !payload.hit.id) {
-            return false;
-        }
-
-        return super.validateBetRequest(player, payload);
-    }
-
-    async consume(player, payload) {
+    consume(player, payload) {
         super.consume(player, payload, { action: gameSettings.actions.hit, id: payload.hit.id });
     }
 }

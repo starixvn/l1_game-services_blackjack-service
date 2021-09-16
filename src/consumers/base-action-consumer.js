@@ -47,6 +47,10 @@ export default class BaseActionConsumer extends PlaceBetConsumer {
     consume(player, payload, queuePayload) {
         const name = player.profile.name;
 
+        Object.assign(queuePayload, {
+            receivedTime: new Date(),
+        });
+
         if (!this.validateBetRequest(player, payload)) {
             return;
         }

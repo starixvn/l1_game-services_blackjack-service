@@ -27,7 +27,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         userInfosRepository,
         settleGameRoundConsumer,
         roundsRepository,
-        validateBalance,
+        baseMetrics,
     }) {
         super({
             definition,
@@ -38,7 +38,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             betsRepository,
             betLogsRepository,
             userInfosRepository,
-            validateBalance,
+            baseMetrics,
         });
         this.settleGameRoundConsumer = settleGameRoundConsumer;
         this.roundsRepository = roundsRepository;
@@ -65,6 +65,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         const { betTracks } = this.gameData.ingame[player.profile.name];
         this.gameData.ingame[player.profile.name].processing = false;
+
+        const totalProcessedTime = (new Date() - payload.receivedTime) / 1000;
+        this.baseMetrics.collectBetProcessedTime(totalProcessedTime);
 
         if (betTracks.hands.every((hand) => hand.isStand) && betTracks.hands.length > 0) {
             await this.settleGameRoundConsumer.settleRound(player.profile.name);
@@ -123,23 +126,17 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 gameRoundId: hand.id,
             };
 
-            const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
+            const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
-            if (balanceResult.isOk) {
-                const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
-
-                if (apiResult.isOk) {
-                    betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
-                    totalBet += hand.bet;
-                    balance = apiResult.response;
-                } else {
-                    failedHands.push({ pos: hand.pos, apiResult });
-                }
-
-                await this.checkUserStakeChange(apiResult, player);
+            if (apiResult.isOk) {
+                betTracks.hands.push({ betwin: 0, cards: [], actions: [], ...hand });
+                totalBet += hand.bet;
+                balance = apiResult.response;
             } else {
-                failedHands.push({ pos: hand.pos, apiResult: balanceResult });
+                failedHands.push({ pos: hand.pos, apiResult });
             }
+
+            await this.checkUserStakeChange(apiResult, player);
         }
 
         if (failedHands.length > 0) {
@@ -213,13 +210,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameRoundId: hand.id,
         };
 
-        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
-
-        if (!balanceResult.isOk) {
-            this.handleFailPlaceBetResponse(player, balanceResult);
-            return;
-        }
-
         const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 
         if (apiResult.isOk) {
@@ -264,13 +254,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             gameId: this.definition.id,
             gameRoundId: newHandId,
         };
-
-        const balanceResult = await this.validateBalance({ id: player.UID, session: player.session }, betInfo);
-
-        if (!balanceResult.isOk) {
-            this.handleFailPlaceBetResponse(player, balanceResult);
-            return;
-        }
 
         const apiResult = await this.placeBet({ id: player.UID, session: player.session }, betInfo);
 

@@ -59,14 +59,6 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         return criteria;
     }
 
-    validateBetRequest(player, payload) {
-        if (!payload.double || !payload.double.id) {
-            return false;
-        }
-
-        return super.validateBetRequest(player, payload);
-    }
-
     consume(player, payload) {
         super.consume(player, payload, { action: gameSettings.actions.double, id: payload.double.id });
     }

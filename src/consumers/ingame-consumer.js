@@ -1,4 +1,3 @@
-import { getBalance } from "sc-base-apis";
 import { Core } from "sc-game-base";
 
 export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsumer {
@@ -35,7 +34,7 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
                   }
                 : {};
 
-        await getBalance(realPlayer, true);
+        await this.getBalance(realPlayer, true);
 
         const user = await this.getUserInfo(realPlayer.UID);
 

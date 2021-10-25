@@ -12,6 +12,7 @@ const Schema = new mongoose.Schema({
     uid: { type: String, required: true },
     name: { type: String, required: true },
     odds: { type: Object },
+    exchangeRateId: { type: Number, required: true },
 });
 
 const rounds = mongoose.model(modelName, Schema);

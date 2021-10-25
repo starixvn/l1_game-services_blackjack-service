@@ -22,6 +22,10 @@ const schema = new mongoose.Schema({
     memberId: { type: Number },
     siteId: { type: String },
     freeBet: { type: Boolean, default: false },
+
+    currency: { type: String, required: true },
+    partnerId: { type: String, required: true },
+    rate: { type: Number, required: true },
 });
 
 const bets = mongoose.model(modelName, schema);

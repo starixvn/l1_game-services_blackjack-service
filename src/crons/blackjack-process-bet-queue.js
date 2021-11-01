@@ -45,6 +45,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     }
 
     async proceedBet(player, payload) {
+        console.log(player);
         switch (payload.action) {
             case gameSettings.actions.deal:
                 await this.processDeal(player, payload);

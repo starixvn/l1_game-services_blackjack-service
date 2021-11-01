@@ -19,8 +19,15 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
     }
 
     async buildPayload(realPlayer) {
-        const { minbet, maxbet, choices_maxbet, odds, enableFreeBet } = this.gameData.gameConfigs;
-        const gameConfigs = { minbet, maxbet, choices_maxbet, odds, enableFreeBet };
+        const { session } = realPlayer;
+
+        const settings = await this.currencyGroupGamesRepository
+            .findOne({ groupId: session.currencyGroupId, gameId: this.definition.id }, "minBet maxBet maxBetPerChoices chips stakeLevels")
+            .lean()
+            .exec();
+
+        const { odds, enableFreeBet } = this.gameData.gameConfigs;
+        const gameConfigs = { ...settings, odds, enableFreeBet };
         const { betTracks } = this.gameData.ingame[realPlayer.profile.name] || { betTracks: {} };
         const totalAmount = betTracks.roundId > 0 ? betTracks.hands.reduce((total, item) => total + item.bet, 0) : 0;
 

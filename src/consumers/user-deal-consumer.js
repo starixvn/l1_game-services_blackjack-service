@@ -4,12 +4,16 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDealConsumer extends BaseActionConsumer {
-    composeActionValidationCriteria(player, payload) {
-        const configs = this.gameData.gameConfigs;
+    async composeActionValidationCriteria(player, payload) {
+        const settings = await this.currencyGroupGamesRepository
+            .findOne({ groupId: player.session.currencyGroupId }, "minBet maxBet")
+            .lean()
+            .exec();
+
         const { deal } = payload;
-        const result = super.composeActionValidationCriteria(player, payload);
-        const minBet = Math.max(player.profile.minBet, configs.minbet);
-        const maxBet = Math.min(player.profile.maxBet, configs.maxbet);
+        const result = await super.composeActionValidationCriteria(player, payload);
+        const minBet = Math.max(player.profile.minBet, settings.minBet);
+        const maxBet = Math.min(player.profile.maxBet, settings.maxBet);
 
         const handViolateMinBet = deal.hands.find((hand) => !hand.bet || hand.bet < minBet);
 
@@ -53,9 +57,9 @@ export default class UserDealConsumer extends BaseActionConsumer {
         return result;
     }
 
-    consume(player, payload) {
+    async consume(player, payload) {
         const { deal } = payload;
 
-        super.consume(player, payload, { action: gameSettings.actions.deal, hands: deal.hands });
+        await super.consume(player, payload, { action: gameSettings.actions.deal, hands: deal.hands });
     }
 }

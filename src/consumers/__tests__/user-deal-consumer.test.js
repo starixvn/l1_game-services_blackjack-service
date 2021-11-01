@@ -5,6 +5,8 @@ import BlackjackGameDefinition from "../../blackjack-game-definition";
 import gameSettings from "../../game-settings";
 import noticeHelper from "../../helpers/notice-helper";
 import UserDealConsumer from "../user-deal-consumer";
+import { stubMongooseModelStupidly } from "jest-micro-auto-stub";
+import mongoose from "mongoose";
 
 jest.mock("sc-game-base/src/core/event-publishers/base-event-publisher");
 
@@ -17,6 +19,7 @@ const publisher = new BaseEventPublishers();
 /** @type {UserDealConsumer}*/
 let consumer = null;
 
+let currencyGroupGamesRepository = null;
 const DATE_TO_USE = new Date("2016");
 const _Date = Date;
 global.Date = jest.fn(() => DATE_TO_USE);
@@ -26,16 +29,19 @@ beforeEach(() => {
     gameData = new BlackjackGameData(gameSettings.durations.wholeRound);
     gameData.gameConfigs = {
         enabled: true,
-        minbet: 1,
-        maxbet: 3000,
         disabledround: 6912,
         odds: {
             regular: 2,
             blackjack: 2.5,
         },
     };
+    currencyGroupGamesRepository = stubMongooseModelStupidly(mongoose.Model);
+    currencyGroupGamesRepository.findOne().lean().exec.mockReturnValue({
+        minBet: 1,
+        maxBet: 2000,
+    });
 
-    consumer = new UserDealConsumer(definition, gameData, publisher);
+    consumer = new UserDealConsumer(definition, gameData, publisher, currencyGroupGamesRepository);
 });
 
 const player = {
@@ -45,16 +51,19 @@ const player = {
         minBet: 1,
         maxBet: 5000,
     },
+    session: {
+        currencyGroupId: 1,
+    },
 };
 
 describe("consume test", () => {
-    it("valid bet, add to betQueue, flag processing = true", () => {
+    it("valid bet, add to betQueue, flag processing = true", async () => {
         const payload = {
             deal: {
                 hands: [{ pos: 1, bet: 100 }],
             },
         };
-        consumer.consume(player, payload);
+        await consumer.consume(player, payload);
         const ingamePlayer = gameData.ingame[player.profile.name];
         expect(ingamePlayer.processing).toBeTrue();
         expect(ingamePlayer.betQueue).toContainEqual({
@@ -63,53 +72,53 @@ describe("consume test", () => {
         });
     });
 
-    it("invalid bet, publish error to user, not creating ingame", () => {
+    it("invalid bet, publish error to user, not creating ingame", async () => {
         const payload = {
             deal: {
                 hands: [{ pos: 1, bet: -100 }],
             },
         };
-        consumer.consume(player, payload);
+        await consumer.consume(player, payload);
         expect(gameData.ingame[player.profile.name]).toBeUndefined();
         expect(publisher.publishToUser).toHaveBeenCalled();
     });
 });
 
 describe("validation test", () => {
-    it("payload has bet amount exceed maxbet, return correct error", () => {
+    it("payload has bet amount exceed maxbet, return correct error", async () => {
         const payload = {
             deal: {
                 hands: [{ pos: 1, bet: 4000 }],
             },
         };
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
-        expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.maxBet, maxBet: 3000 } });
+        expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.maxBet, maxBet: 2000 } });
     });
-    it("payload has no hand, return correct error", () => {
+    it("payload has no hand, return correct error", async () => {
         const payload = {
             deal: {
                 hands: [],
             },
         };
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.invalidDealHands } });
     });
-    it("payload has hand having invalid postion, return correct error", () => {
+    it("payload has hand having invalid postion, return correct error", async () => {
         const payload = {
             deal: {
                 hands: [{ pos: 200, bet: 45 }],
             },
         };
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.invalidPosition } });
     });
-    it("gameData has running round, return correct error", () => {
+    it("gameData has running round, return correct error", async () => {
         const payload = {
             deal: {
                 hands: [{ pos: 1, bet: 400 }],
@@ -124,7 +133,7 @@ describe("validation test", () => {
             },
         };
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.invalidDealDueToRunningRound } });
     });

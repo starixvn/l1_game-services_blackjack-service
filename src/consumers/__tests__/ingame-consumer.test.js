@@ -4,6 +4,7 @@ import gameSettings from "../../game-settings";
 import InGameConsumer from "../ingame-consumer";
 import mongoose from "mongoose";
 import roundQuery from "sc-game-base/src/core/query-apis/round-query";
+import { stubMongooseModelStupidly } from "jest-micro-auto-stub";
 
 jest.mock("sc-game-base/src/core/query-apis/round-query");
 const getBalance = jest.fn();
@@ -34,6 +35,9 @@ const realPlayer = {
     socketClient: {
         emit: jest.fn(),
     },
+    session: {
+        currencyGroupId: 1,
+    },
 };
 
 const user = {
@@ -43,6 +47,8 @@ const user = {
     type: false,
 };
 
+let currencyGroupGamesRepository = null;
+
 userInfosExecMockFunc.mockReturnValue(user);
 
 beforeEach(() => {
@@ -50,17 +56,21 @@ beforeEach(() => {
     gameData = new BlackjackGameData(gameSettings.durations.wholeRound);
     gameData.gameConfigs = {
         enabled: true,
-        minbet: 1,
-        maxbet: 3000,
         enableFreeBet: false,
         odds: {
             regular: 2,
             blackjack: 2.5,
         },
-        choices_maxbet: null
+        choices_maxbet: null,
     };
 
-    consumer = new InGameConsumer(definition, gameData, roundQuery, null, getBalance, userInfosRepository);
+    currencyGroupGamesRepository = stubMongooseModelStupidly(mongoose.Model);
+    currencyGroupGamesRepository.findOne().lean().exec.mockReturnValue({
+        minBet: 1,
+        maxBet: 3000,
+    });
+
+    consumer = new InGameConsumer(definition, gameData, roundQuery, null, getBalance, userInfosRepository, currencyGroupGamesRepository);
 });
 
 describe("test ingame consumer", () => {
@@ -75,13 +85,12 @@ describe("test ingame consumer", () => {
             user,
             ownBets: {},
             gameConfigs: {
-                choices_maxbet :gameData.gameConfigs.choices_maxbet,
-                enableFreeBet :gameData.gameConfigs.enableFreeBet,
-                minbet :gameData.gameConfigs.minbet,
-                maxbet :gameData.gameConfigs.maxbet,
-                odds :gameData.gameConfigs.odds,
-            }
-        }
+                enableFreeBet: gameData.gameConfigs.enableFreeBet,
+                minBet: 1,
+                maxBet: 3000,
+                odds: gameData.gameConfigs.odds,
+            },
+        };
         expect(gameData.players[realPlayer.UID]).toEqual(expectedPlayer);
         expect(realPlayer.socketClient.emit).toHaveBeenCalledWith(definition.name, expectedPayload);
     });

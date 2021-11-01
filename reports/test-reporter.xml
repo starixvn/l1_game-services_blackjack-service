@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\user-split-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="9"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="4"/>
+        <testCase name="validation test hand is stand, return correct error" duration="2"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="2"/>
+        <testCase name="validation test Attempt to split child hand, return correct error" duration="2"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\ingame-consumer.test.js">
+        <testCase name="test ingame consumer should store player into gamedata &amp; publish to user via socket correctly" duration="13"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\user-deal-consumer.test.js">
+        <testCase name="consume test valid bet, add to betQueue, flag processing = true" duration="12"/>
+        <testCase name="consume test invalid bet, publish error to user, not creating ingame" duration="3"/>
+        <testCase name="validation test payload has bet amount exceed maxbet, return correct error" duration="1"/>
+        <testCase name="validation test payload has no hand, return correct error" duration="1"/>
+        <testCase name="validation test payload has hand having invalid postion, return correct error" duration="1"/>
+        <testCase name="validation test gameData has running round, return correct error" duration="1"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\user-hit-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="10"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="4"/>
+        <testCase name="validation test hand is stand, return correct error" duration="2"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="2"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\user-double-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="10"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="4"/>
+        <testCase name="validation test hand is stand, return correct error" duration="2"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="2"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="2"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\helpers\__tests__\dealer.test.js">
+        <testCase name="generateResult() should auto deal until it reach min value of dealer" duration="38"/>
+        <testCase name="generateResult() should not deal since it reached min value of dealer" duration="40"/>
+        <testCase name="settle() should return push if both dealer and player are blackjack" duration="2"/>
+        <testCase name="settle() should return blackjack odds if player is blackjack but dealer is not" duration="1"/>
+        <testCase name="settle() should return regular odds if player is blackjack but splitted" duration="4"/>
+        <testCase name="settle() should return 0 if player is bust" duration="2"/>
+        <testCase name="settle() should return regular odds if player is greater than dealer and not bust" duration="2"/>
+        <testCase name="settle() should return push if both dealer and player are the same" duration="4"/>
+        <testCase name="isUpCards() should be true if all hands are bust" duration="2"/>
+        <testCase name="isUpCards() should be true if all hands are blackjack" duration="2"/>
+        <testCase name="isUpCards() should be true if count of blackjack and bust are equal total hands" duration="1"/>
+        <testCase name="isUpCards() should be false if count of blackjack and bust are NOT equal total hands" duration="1"/>
+        <testCase name="isUpCards() should be false if count of blackjack and bust are equal total hands but blackjack hands were splitted" duration="1"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\helpers\__tests__\card-helper.test.js">
+        <testCase name="calculate() should return blackjack" duration="5"/>
+        <testCase name="calculate() when cards has aces, should return value correctly" duration="5"/>
+        <testCase name="calculate() should calculate value correctly" duration="6"/>
+        <testCase name="calculateFinalValue() should return single value" duration="7"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\settle-game-consumer.test.js">
+        <testCase name="settle round tests should delete ingame, publish round result delete data in game notification" duration="31"/>
+        <testCase name="settle bet tests should delete ingame, publish round result" duration="9"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\crons\__tests__\blackjack-process-bet-queue.test.js">
+        <testCase name="deal test valid bet, start dealing cards, save to database, update bettracks, publish to user" duration="27"/>
+        <testCase name="deal test valid bet, user stake change, start dealing cards, save to database, update bettracks, publish to user, update user stake level" duration="13"/>
+        <testCase name="deal test placeBet return error, only publish errors to user" duration="6"/>
+        <testCase name="process double tests api return isOk = true, update betTracks and database" duration="13"/>
+        <testCase name="process double tests placeBet return error, only publish error to user" duration="7"/>
+        <testCase name="process hit tests should update betTracks and database" duration="8"/>
+        <testCase name="process hit tests should auto stand hand when total &gt; 21" duration="7"/>
+        <testCase name="process stand tests should update betTracks, database &amp; publish to user" duration="8"/>
+        <testCase name="process split tests api return isOk = true, update betTracks and database" duration="11"/>
+        <testCase name="process split tests placeBet return error, only publish error to user" duration="6"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\outgame-consumer.test.js">
+        <testCase name="test outgame consumer should save running round to database, clear the game data" duration="3"/>
+    </file>
+    <file path="G:\Source\blackjack-service\src\consumers\__tests__\user-stand-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="4"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="2"/>
+        <testCase name="validation test hand is stand, return correct error" duration="0"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="1"/>
+    </file>
+</testExecutions>

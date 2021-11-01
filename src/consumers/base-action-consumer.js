@@ -5,8 +5,8 @@ import gameSettings from "../game-settings";
 import noticeHelper from "../helpers/notice-helper";
 
 export default class BaseActionConsumer extends PlaceBetConsumer {
-    validateBetRequest(player, payload) {
-        const criteria = this.composeValidationCriteria(player, payload);
+    async validateBetRequest(player, payload) {
+        const criteria = await this.composeValidationCriteria(player, payload);
         const failedCriterion = criteria.find((criterion) => criterion.failure);
 
         if (failedCriterion) {
@@ -17,7 +17,7 @@ export default class BaseActionConsumer extends PlaceBetConsumer {
         return true;
     }
 
-    composeActionValidationCriteria(player, payload) {
+    async composeActionValidationCriteria(player, payload) {
         return [
             {
                 failure: this.gameData.ingame[player.profile.name]?.processing,
@@ -26,9 +26,9 @@ export default class BaseActionConsumer extends PlaceBetConsumer {
         ];
     }
 
-    composeValidationCriteria(player, payload) {
+    async composeValidationCriteria(player, payload) {
         const bettingTimeValidationCriteria = this.composeBettingTimeValidationCriteria() ?? [];
-        const actionValidationCriteria = this.composeActionValidationCriteria(player, payload) || [];
+        const actionValidationCriteria = (await this.composeActionValidationCriteria(player, payload)) || [];
 
         return bettingTimeValidationCriteria.concat(actionValidationCriteria);
     }
@@ -44,14 +44,14 @@ export default class BaseActionConsumer extends PlaceBetConsumer {
         ];
     }
 
-    consume(player, payload, queuePayload) {
+    async consume(player, payload, queuePayload) {
         const name = player.profile.name;
 
         Object.assign(queuePayload, {
             receivedTime: new Date(),
         });
 
-        if (!this.validateBetRequest(player, payload)) {
+        if (!(await this.validateBetRequest(player, payload))) {
             return;
         }
 

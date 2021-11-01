@@ -71,7 +71,7 @@ beforeEach(() => {
 });
 
 describe("consume test", () => {
-    it("valid payload, add to betQueue, flag processing = true", () => {
+    it("valid payload, add to betQueue, flag processing = true", async () => {
         const payload = {
             hit: {
                 id: 100,
@@ -80,7 +80,7 @@ describe("consume test", () => {
         const ingamePlayer = mockInGamePlayer();
         gameData.ingame[player.profile.name] = ingamePlayer;
 
-        consumer.consume(player, payload);
+        await consumer.consume(player, payload);
 
         expect(ingamePlayer.processing).toBeTrue();
         expect(ingamePlayer.betQueue).toContainEqual({
@@ -89,7 +89,7 @@ describe("consume test", () => {
         });
     });
 
-    it("invalid payload, publish error to user, not updating betTracs", () => {
+    it("invalid payload, publish error to user, not updating betTracs", async() => {
         const payload = {
             hit: {
                 id: 200,
@@ -98,14 +98,14 @@ describe("consume test", () => {
         const ingamePlayer = mockInGamePlayer();
         gameData.ingame[player.profile.name] = ingamePlayer;
 
-        consumer.consume(player, payload);
+        await consumer.consume(player, payload);
         expect(ingamePlayer.processing).toBeFalse();
         expect(ingamePlayer.betQueue).toBeEmpty();
         expect(publisher.publishToUser).toHaveBeenCalled();
     });
 });
 describe("validation test", () => {
-    it("hand is stand, return correct error", () => {
+    it("hand is stand, return correct error", async() => {
         const payload = {
             hit: {
                 id: 100,
@@ -117,12 +117,12 @@ describe("validation test", () => {
         ingamePlayer.betTracks.hands[0].isStand = true;
         ingamePlayer.betTracks.hands[0].actions.push(gameSettings.actions.stand);
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.handIsStand } });
     });
 
-    it("invalid hand id, return correct error", () => {
+    it("invalid hand id, return correct error", async() => {
         const payload = {
             hit: {
                 id: 120,
@@ -132,7 +132,7 @@ describe("validation test", () => {
         const ingamePlayer = mockInGamePlayer();
         gameData.ingame[player.profile.name] = ingamePlayer;
 
-        const result = consumer.composeActionValidationCriteria(player, payload);
+        const result = await consumer.composeActionValidationCriteria(player, payload);
 
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.invalidHandId } });
     });

@@ -7,8 +7,12 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDoubleConsumer extends BaseActionConsumer {
-    composeActionValidationCriteria(player, payload) {
-        const configs = this.gameData.gameConfigs;
+    async composeActionValidationCriteria(player, payload) {
+        const settings = await this.currencyGroupGamesRepository
+            .findOne({ groupId: player.session.currencyGroupId }, "minBet maxBet")
+            .lean()
+            .exec();
+
         const playerData = this.gameData.ingame[player.profile.name];
 
         if (!playerData) {
@@ -22,10 +26,10 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
             ];
         }
 
-        const maxBet = Math.min(player.profile.maxBet, configs.maxbet);
+        const maxBet = Math.min(player.profile.maxBet, settings.maxBet);
 
         const { betTracks } = playerData;
-        const criteria = super.composeActionValidationCriteria(player, payload);
+        const criteria = await super.composeActionValidationCriteria(player, payload);
         const selectedHand = betTracks.hands?.find((hand) => hand.id === payload.double.id);
         if (selectedHand) {
             criteria.push(
@@ -59,7 +63,7 @@ export default class UserDoubleConsumer extends BaseActionConsumer {
         return criteria;
     }
 
-    consume(player, payload) {
-        super.consume(player, payload, { action: gameSettings.actions.double, id: payload.double.id });
+    async consume(player, payload) {
+        await super.consume(player, payload, { action: gameSettings.actions.double, id: payload.double.id });
     }
 }

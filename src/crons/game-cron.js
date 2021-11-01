@@ -25,7 +25,8 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         roundsRepository,
         betsRepository,
         archiveStatusesRepository,
-        notificationRepository
+        notificationRepository,
+        exchangeRatesRepository
     }) {
         super({
             definition,
@@ -38,7 +39,8 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             gameConfigsRepository,
             roundsRepository,
             archiveStatusesRepository,
-            notificationRepository
+            notificationRepository,
+            exchangeRatesRepository
         });
 
         this.betsRepository = betsRepository;
@@ -78,7 +80,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
 
         await this.initBetTracks();
         await this.updateExchangeRates();
-        
+
         job.start();
     }
 

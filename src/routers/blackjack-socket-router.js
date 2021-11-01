@@ -24,6 +24,7 @@ export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter
         userDoubleConsumer,
         userSplitConsumer,
         userDealConsumer,
+        playGamePermissionValidator
     }) {
         super({
             definition,
@@ -35,6 +36,7 @@ export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter
             userSignInPublisher,
             historyQuery,
             logService,
+            playGamePermissionValidator
         });
 
         this.userStandConsumer = userStandConsumer;

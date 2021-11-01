@@ -45,7 +45,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     }
 
     async proceedBet(player, payload) {
-        console.log(player);
         switch (payload.action) {
             case gameSettings.actions.deal:
                 await this.processDeal(player, payload);
@@ -199,10 +198,12 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         }));
 
         if (player.session) {
-            betEntities.memberId = player.session.memberId;
-            betEntities.partnerId = player.session.partnerId;
-            betEntities.currency = player.session.currencyName;
-            betEntities.rate = this.calculateCurrencyRate(player.session);
+            betEntities.forEach((betEntity) => {
+                betEntity.memberId = player.session.memberId;
+                betEntity.partnerId = player.session.partnerId;
+                betEntity.currency = player.session.currencyName;
+                betEntity.rate = this.calculateCurrencyRate(player.session);
+            });
         }
 
         await this.betsRepository.insertMany(betEntities);

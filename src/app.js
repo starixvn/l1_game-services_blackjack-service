@@ -13,9 +13,10 @@ const run = async () => {
     const definition = new BlackJackGameDefinition(gameSettings, generateResult, settle, gameSettings.actions, gameSettings.payouts);
 
     const container = new BlackjackContainerRegistry().register(appConfigs, definition, gameData);
-    const app = new Core.BaseGameApp(container);
+    const app = new Core.BaseGameApp(definition.name, appConfigs);
 
     await app.run();
+    await app.startGame(container);
 };
 
 run();

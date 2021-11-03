@@ -334,6 +334,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             time: new Date(),
             actions: splitHand.actions,
             splitFrom: splitHand.splitFrom,
+            partnerId: bet.partnerId,
+            currency: bet.currency,
+            rate: bet.rate,
         });
 
         this.placeBetPublisher.publishToUser(player.UID, {

@@ -200,6 +200,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         if (player.session) {
             betEntities.forEach((betEntity) => {
                 betEntity.memberId = player.session.memberId;
+                betEntity.siteId = player.session.siteId;
                 betEntity.partnerId = player.session.partnerId;
                 betEntity.currency = player.session.currencyName;
                 betEntity.rate = this.calculateCurrencyRate(player.session);

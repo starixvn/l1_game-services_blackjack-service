@@ -3736,7 +3736,7 @@ debug@~4.1.0:
   dependencies:
     ms "^2.1.1"
 
-debuglog@*, debuglog@^1.0.1:
+debuglog@^1.0.1:
   version "1.0.1"
   resolved "http://npm.lumigame.com/debuglog/-/debuglog-1.0.1.tgz"
   integrity sha1-qiT/uaw9+aI1GDfPstJ5NgzXhJI=
@@ -5379,7 +5379,7 @@ import-local@^3.0.2:
     pkg-dir "^4.2.0"
     resolve-cwd "^3.0.0"
 
-imurmurhash@*, imurmurhash@^0.1.4:
+imurmurhash@^0.1.4:
   version "0.1.4"
   resolved "http://npm.lumigame.com/imurmurhash/-/imurmurhash-0.1.4.tgz"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
@@ -7209,11 +7209,6 @@ lockfile@^1.0.4:
   dependencies:
     signal-exit "^3.0.2"
 
-lodash._baseindexof@*:
-  version "3.1.0"
-  resolved "http://npm.lumigame.com/lodash._baseindexof/-/lodash._baseindexof-3.1.0.tgz#fe52b53a1c6761e42618d654e4a25789ed61822c"
-  integrity sha1-/lK1OhxnYeQmGNZU5KJXie1hgiw=
-
 lodash._baseuniq@~4.6.0:
   version "4.6.0"
   resolved "http://npm.lumigame.com/lodash._baseuniq/-/lodash._baseuniq-4.6.0.tgz"
@@ -7222,32 +7217,10 @@ lodash._baseuniq@~4.6.0:
     lodash._createset "~4.0.0"
     lodash._root "~3.0.0"
 
-lodash._bindcallback@*:
-  version "3.0.1"
-  resolved "http://npm.lumigame.com/lodash._bindcallback/-/lodash._bindcallback-3.0.1.tgz#e531c27644cf8b57a99e17ed95b35c748789392e"
-  integrity sha1-5THCdkTPi1epnhftlbNcdIeJOS4=
-
-lodash._cacheindexof@*:
-  version "3.0.2"
-  resolved "http://npm.lumigame.com/lodash._cacheindexof/-/lodash._cacheindexof-3.0.2.tgz#3dc69ac82498d2ee5e3ce56091bafd2adc7bde92"
-  integrity sha1-PcaayCSY0u5ePOVgkbr9Ktx73pI=
-
-lodash._createcache@*:
-  version "3.1.2"
-  resolved "http://npm.lumigame.com/lodash._createcache/-/lodash._createcache-3.1.2.tgz#56d6a064017625e79ebca6b8018e17440bdcf093"
-  integrity sha1-VtagZAF2JeeevKa4AY4XRAvc8JM=
-  dependencies:
-    lodash._getnative "^3.0.0"
-
 lodash._createset@~4.0.0:
   version "4.0.3"
   resolved "http://npm.lumigame.com/lodash._createset/-/lodash._createset-4.0.3.tgz"
   integrity sha1-D0ZZ+7CddRlPqeK4imZE02PJ/iY=
-
-lodash._getnative@*, lodash._getnative@^3.0.0:
-  version "3.9.1"
-  resolved "http://npm.lumigame.com/lodash._getnative/-/lodash._getnative-3.9.1.tgz#570bc7dede46d61cdcde687d65d3eecbaa3aaff5"
-  integrity sha1-VwvH3t5G1hzc3mh9ZdPuy6o6r/U=
 
 lodash._reinterpolate@^3.0.0:
   version "3.0.0"
@@ -7323,11 +7296,6 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "http://npm.lumigame.com/lodash.once/-/lodash.once-4.1.1.tgz"
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
-
-lodash.restparam@*:
-  version "3.6.1"
-  resolved "http://npm.lumigame.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
-  integrity sha1-k2pOMJ7zMKdkXtQUWYbIWuWyCAU=
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
@@ -9619,20 +9587,20 @@ sc-api-client@^1.3.0:
     axios "^0.19.2"
     openid-client "^3.15.9"
 
-sc-base-apis@1.12.1-beta.4:
-  version "1.12.1-beta.4"
-  resolved "http://npm.lumigame.com/sc-base-apis/-/sc-base-apis-1.12.1-beta.4.tgz#7a65898f6bb4a30331bf797a7953b01376c0c497"
-  integrity sha512-ooJxvVrx3ftmAXOuV3WIssq3Xj3hZTiia8D5olZgRwfvsWn4OHy0hj+6qaMhzVvIs1Y8I2eVHV7jI+Tiv+rEEQ==
+sc-base-apis@1.12.1-beta.6:
+  version "1.12.1-beta.6"
+  resolved "http://npm.lumigame.com/sc-base-apis/-/sc-base-apis-1.12.1-beta.6.tgz#2250d4c2ec5a24afed484d45a3ae68cbf84af0f7"
+  integrity sha512-thMXRRF5VZ3WaRGAQspLBo2eG5T0gBBYBgF3dTG/8dq2KEKVQvuP2tyUqt3VmW0QCuQSdZ41C5HANOr3X9Hw7w==
   dependencies:
     moment "^2.27.0"
     sc-api-client "^1.3.0"
-    sc-base-database "1.8.3-beta.2"
+    sc-base-database "1.8.3-beta.4"
     sc-common "^1.7.0"
 
-sc-base-database@1.8.3-beta.2:
-  version "1.8.3-beta.2"
-  resolved "http://npm.lumigame.com/sc-base-database/-/sc-base-database-1.8.3-beta.2.tgz#bcf37597eaaac404f5f32246efbfefa5f4369822"
-  integrity sha512-bOkaMCMv009JClZeUkgWwgw6RCCr6v+GpAADRMbsB6MMkxBGM49xPxo8GsaixgdoOu7QE2YxZwPtToknTcOgmQ==
+sc-base-database@1.8.3-beta.4:
+  version "1.8.3-beta.4"
+  resolved "http://npm.lumigame.com/sc-base-database/-/sc-base-database-1.8.3-beta.4.tgz#6a026519e927f706d10266b53f64a09ec78549db"
+  integrity sha512-/HLBb2loG/MgthyobZhPns5nFOD+P6sxXQCOoNDpO/aDftv5P9JnUUMrvauOPbcZtO03MmeGy4Vx/FsN9bZXcw==
   dependencies:
     mongoose "^5.9.25"
     sc-common "^1.6.0"
@@ -9648,10 +9616,10 @@ sc-common@^1.6.0, sc-common@^1.7.0:
     mongoose-long "^0.3.0"
     numeral "^2.0.6"
 
-sc-game-base@2.0.1-beta.12:
-  version "2.0.1-beta.12"
-  resolved "http://npm.lumigame.com/sc-game-base/-/sc-game-base-2.0.1-beta.12.tgz#ceda3f1521f01098ea1062c9ed95f63f5743a1cd"
-  integrity sha512-oI2TRfccNFJq7fptMvaYyIdIgw8NzmxDONaieglW9rVrc4BXNg6/4JRtADPemLqN9ODZBzujCN8XzqxxG4TvCA==
+sc-game-base@2.0.1-beta.24:
+  version "2.0.1-beta.24"
+  resolved "http://npm.lumigame.com/sc-game-base/-/sc-game-base-2.0.1-beta.24.tgz#4d3056441489d4fb942318969c2f21fe79747480"
+  integrity sha512-nJxKt516NXtCOtaqAXGPhs5dsvQS7TsNkjDhFziDwkDE7nLGyv0/zdYr/mL18/HQVhTEtyhBJydxh0u1ZQlrSg==
   dependencies:
     "@socket.io/admin-ui" "^0.2.0"
     awilix "^4.3.1"
@@ -9666,8 +9634,8 @@ sc-game-base@2.0.1-beta.12:
     mongoose "^5.9.25"
     morgan "^1.10.0"
     openid-client "^4.2.0"
-    sc-base-apis "1.12.1-beta.4"
-    sc-base-database "1.8.3-beta.2"
+    sc-base-apis "1.12.1-beta.6"
+    sc-base-database "1.8.3-beta.4"
     sc-common "^1.7.0"
     socket.io "^4.1.2"
     socket.io-prom-metrics "^1.0.3"

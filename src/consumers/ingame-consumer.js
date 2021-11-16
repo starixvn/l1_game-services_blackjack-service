@@ -21,10 +21,7 @@ export default class InGameConsumer extends Core.BaseEventConsumers.InGameConsum
     async buildPayload(realPlayer) {
         const { session } = realPlayer;
 
-        const settings = await this.currencyGroupGamesRepository
-            .findOne({ groupId: session.currencyGroupId, gameId: this.definition.id }, "minBet maxBet maxBetPerChoices chips stakeLevels")
-            .lean()
-            .exec();
+        const settings = this.gameData.currencyGroupGames.find((x) => x.groupId.toString() === session.currencyGroupId);
 
         const { odds, enableFreeBet } = this.gameData.gameConfigs;
         const gameConfigs = { ...settings, odds, enableFreeBet };

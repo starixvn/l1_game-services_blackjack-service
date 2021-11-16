@@ -4,7 +4,6 @@ import gameSettings from "../../game-settings";
 import InGameConsumer from "../ingame-consumer";
 import mongoose from "mongoose";
 import roundQuery from "sc-game-base/src/core/query-apis/round-query";
-import { stubMongooseModelStupidly } from "jest-micro-auto-stub";
 
 jest.mock("sc-game-base/src/core/query-apis/round-query");
 const getBalance = jest.fn();
@@ -36,7 +35,7 @@ const realPlayer = {
         emit: jest.fn(),
     },
     session: {
-        currencyGroupId: 1,
+        currencyGroupId: "g1",
     },
 };
 
@@ -46,8 +45,6 @@ const user = {
     avatarId: 1,
     type: false,
 };
-
-let currencyGroupGamesRepository = null;
 
 userInfosExecMockFunc.mockReturnValue(user);
 
@@ -63,14 +60,15 @@ beforeEach(() => {
         },
         choices_maxbet: null,
     };
+    gameData.currencyGroupGames = [
+        {
+            groupId: "g1",
+            minBet: 1,
+            maxBet: 3000,
+        },
+    ];
 
-    currencyGroupGamesRepository = stubMongooseModelStupidly(mongoose.Model);
-    currencyGroupGamesRepository.findOne().lean().exec.mockReturnValue({
-        minBet: 1,
-        maxBet: 3000,
-    });
-
-    consumer = new InGameConsumer(definition, gameData, roundQuery, null, getBalance, userInfosRepository, currencyGroupGamesRepository);
+    consumer = new InGameConsumer(definition, gameData, roundQuery, null, getBalance, userInfosRepository);
 });
 
 describe("test ingame consumer", () => {
@@ -85,9 +83,8 @@ describe("test ingame consumer", () => {
             user,
             ownBets: {},
             gameConfigs: {
+                ...gameData.currencyGroupGames[0],
                 enableFreeBet: gameData.gameConfigs.enableFreeBet,
-                minBet: 1,
-                maxBet: 3000,
                 odds: gameData.gameConfigs.odds,
             },
         };

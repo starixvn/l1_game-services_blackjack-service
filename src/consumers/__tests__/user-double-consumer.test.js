@@ -18,7 +18,6 @@ const publisher = new BaseEventPublishers();
 
 /** @type {UserDoubleConsumer}*/
 let consumer = null;
-let currencyGroupGamesRepository = null;
 
 const DATE_TO_USE = new Date("2016");
 const _Date = Date;
@@ -32,7 +31,7 @@ const player = {
         maxBet: 5000,
     },
     session: {
-        currencyGroupId: 1,
+        currencyGroupId: "g1",
     },
 };
 
@@ -70,13 +69,14 @@ beforeEach(() => {
             blackjack: 2.5,
         },
     };
-    currencyGroupGamesRepository = stubMongooseModelStupidly(mongoose.Model);
-    currencyGroupGamesRepository.findOne().lean().exec.mockReturnValue({
-        minBet: 1,
-        maxBet: 3000,
-    });
-
-    consumer = new UserDoubleConsumer(definition, gameData, publisher, currencyGroupGamesRepository);
+    gameData.currencyGroupGames = [
+        {
+            groupId: "g1",
+            minBet: 1,
+            maxBet: 3000,
+        },
+    ];
+    consumer = new UserDoubleConsumer(definition, gameData, publisher);
 });
 
 describe("consume test", () => {

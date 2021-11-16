@@ -19,7 +19,6 @@ const publisher = new BaseEventPublishers();
 /** @type {UserDealConsumer}*/
 let consumer = null;
 
-let currencyGroupGamesRepository = null;
 const DATE_TO_USE = new Date("2016");
 const _Date = Date;
 global.Date = jest.fn(() => DATE_TO_USE);
@@ -35,13 +34,14 @@ beforeEach(() => {
             blackjack: 2.5,
         },
     };
-    currencyGroupGamesRepository = stubMongooseModelStupidly(mongoose.Model);
-    currencyGroupGamesRepository.findOne().lean().exec.mockReturnValue({
-        minBet: 1,
-        maxBet: 2000,
-    });
-
-    consumer = new UserDealConsumer(definition, gameData, publisher, currencyGroupGamesRepository);
+    gameData.currencyGroupGames = [
+        {
+            groupId: "g1",
+            minBet: 1,
+            maxBet: 3000,
+        },
+    ];
+    consumer = new UserDealConsumer(definition, gameData, publisher);
 });
 
 const player = {
@@ -52,7 +52,7 @@ const player = {
         maxBet: 5000,
     },
     session: {
-        currencyGroupId: 1,
+        currencyGroupId: "g1",
     },
 };
 
@@ -94,7 +94,7 @@ describe("validation test", () => {
 
         const result = await consumer.composeActionValidationCriteria(player, payload);
 
-        expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.maxBet, maxBet: 2000 } });
+        expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.maxBet, maxBet: 3000 } });
     });
     it("payload has no hand, return correct error", async () => {
         const payload = {

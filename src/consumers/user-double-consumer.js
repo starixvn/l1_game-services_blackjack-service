@@ -8,10 +8,7 @@ import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserDoubleConsumer extends BaseActionConsumer {
     async composeActionValidationCriteria(player, payload) {
-        const settings = await this.currencyGroupGamesRepository
-            .findOne({ groupId: player.session.currencyGroupId }, "minBet maxBet")
-            .lean()
-            .exec();
+        const settings = this.gameData.currencyGroupGames.find((x) => x.groupId.toString() === player.session.currencyGroupId);
 
         const playerData = this.gameData.ingame[player.profile.name];
 

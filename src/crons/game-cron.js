@@ -26,7 +26,9 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         betsRepository,
         archiveStatusesRepository,
         notificationRepository,
-        exchangeRatesRepository
+        exchangeRatesRepository,
+        currencyGroupGamesRepository,
+        partnerConfigRepository,
     }) {
         super({
             definition,
@@ -40,7 +42,9 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             roundsRepository,
             archiveStatusesRepository,
             notificationRepository,
-            exchangeRatesRepository
+            exchangeRatesRepository,
+            currencyGroupGamesRepository,
+            partnerConfigRepository,
         });
 
         this.betsRepository = betsRepository;
@@ -122,6 +126,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                     },
                     betQueue: [],
                 };
+                console.log(userHands);
 
                 this.gameData.ingame[round.name] = newPlayer;
             })

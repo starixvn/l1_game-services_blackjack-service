@@ -6,7 +6,7 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserSplitConsumer extends BaseActionConsumer {
-    composeActionValidationCriteria(player, payload) {
+    async composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
 
         if (!playerData) {
@@ -24,7 +24,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
         const selectedHand = hands.find((hand) => hand.id === payload.split.id);
 
         return [
-            ...super.composeActionValidationCriteria(player, payload),
+            ...(await super.composeActionValidationCriteria(player, payload)),
             {
                 failure: !selectedHand,
                 notice: this.getNoticeObj(noticeHelper.invalidHandId),
@@ -56,7 +56,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
         ];
     }
 
-    consume(player, payload) {
-        super.consume(player, payload, { action: gameSettings.actions.split, id: payload.split.id });
+    async consume(player, payload) {
+        await super.consume(player, payload, { action: gameSettings.actions.split, id: payload.split.id });
     }
 }

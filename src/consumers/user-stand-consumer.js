@@ -3,11 +3,11 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserStandConsumer extends BaseActionConsumer {
-    composeActionValidationCriteria(player, payload) {
+    async composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
         const hand = playerData?.betTracks?.hands?.find((currentHand) => currentHand.id === payload.stand.id);
         return [
-            ...super.composeActionValidationCriteria(player, payload),
+            ...(await super.composeActionValidationCriteria(player, payload)),
             {
                 failure: !hand,
                 notice: this.getNoticeObj(noticeHelper.invalidHandId),
@@ -23,7 +23,7 @@ export default class UserStandConsumer extends BaseActionConsumer {
         ];
     }
 
-    consume(player, payload) {
-        super.consume(player, payload, { action: gameSettings.actions.stand, id: payload.stand.id });
+    async consume(player, payload) {
+        await super.consume(player, payload, { action: gameSettings.actions.stand, id: payload.stand.id });
     }
 }

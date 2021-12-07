@@ -24,6 +24,7 @@ export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter
         userDoubleConsumer,
         userSplitConsumer,
         userDealConsumer,
+        playGamePermissionValidator
     }) {
         super({
             definition,
@@ -35,6 +36,7 @@ export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter
             userSignInPublisher,
             historyQuery,
             logService,
+            playGamePermissionValidator
         });
 
         this.userStandConsumer = userStandConsumer;
@@ -44,34 +46,34 @@ export default class BlackJackSocketRouter extends Core.Routers.BaseSocketRouter
         this.userDealConsumer = userDealConsumer;
     }
 
-    handlePlaceBet(payload) {
+    async handlePlaceBet(payload) {
         try {
             if (!this.verify()) {
                 return;
             }
 
             if (payload.deal) {
-                this.userDealConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                await this.userDealConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
                 return;
             }
 
             if (payload.hit) {
-                this.userHitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                await this.userHitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
                 return;
             }
 
             if (payload.stand) {
-                this.userStandConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                await this.userStandConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
                 return;
             }
 
             if (payload.split) {
-                this.userSplitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                await this.userSplitConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
                 return;
             }
 
             if (payload.double) {
-                this.userDoubleConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
+                await this.userDoubleConsumer.consume(this.gameData.realPlayers[this.socketClient.id], payload);
                 return;
             }
         } catch (error) {

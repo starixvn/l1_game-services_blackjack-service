@@ -5,9 +5,9 @@ import noticeHelper from "../helpers/notice-helper";
 import BaseActionConsumer from "./base-action-consumer";
 
 export default class UserHitConsumer extends BaseActionConsumer {
-    composeActionValidationCriteria(player, payload) {
+    async composeActionValidationCriteria(player, payload) {
         const playerData = this.gameData.ingame[player.profile.name];
-        const criteria = super.composeActionValidationCriteria(player, payload);
+        const criteria = await super.composeActionValidationCriteria(player, payload);
         const hand = playerData?.betTracks?.hands?.find((currentHand) => currentHand.id === payload.hit.id);
 
         if (hand) {
@@ -35,7 +35,7 @@ export default class UserHitConsumer extends BaseActionConsumer {
         return criteria;
     }
 
-    consume(player, payload) {
-        super.consume(player, payload, { action: gameSettings.actions.hit, id: payload.hit.id });
+    async consume(player, payload) {
+        await super.consume(player, payload, { action: gameSettings.actions.hit, id: payload.hit.id });
     }
 }

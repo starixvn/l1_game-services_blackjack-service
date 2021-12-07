@@ -25,7 +25,12 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         roundsRepository,
         betsRepository,
         archiveStatusesRepository,
-        notificationRepository
+        notificationRepository,
+        exchangeRatesRepository,
+        currencyGroupGamesRepository,
+        partnerConfigRepository,
+        currencyGroupRepository,
+        currencyRepository,
     }) {
         super({
             definition,
@@ -38,7 +43,12 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             gameConfigsRepository,
             roundsRepository,
             archiveStatusesRepository,
-            notificationRepository
+            notificationRepository,
+            exchangeRatesRepository,
+            currencyGroupGamesRepository,
+            partnerConfigRepository,
+            currencyGroupRepository,
+            currencyRepository,
         });
 
         this.betsRepository = betsRepository;
@@ -77,6 +87,9 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         }
 
         await this.initBetTracks();
+        await this.getSettingForNewRound();
+        await this.updateExchangeRates();
+
         job.start();
     }
 
@@ -118,6 +131,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                     },
                     betQueue: [],
                 };
+                console.log(userHands);
 
                 this.gameData.ingame[round.name] = newPlayer;
             })

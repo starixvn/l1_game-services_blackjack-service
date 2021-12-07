@@ -34,6 +34,9 @@ const realPlayer = {
     socketClient: {
         emit: jest.fn(),
     },
+    session: {
+        currencyGroupId: "g1",
+    },
 };
 
 const user = {
@@ -50,15 +53,20 @@ beforeEach(() => {
     gameData = new BlackjackGameData(gameSettings.durations.wholeRound);
     gameData.gameConfigs = {
         enabled: true,
-        minbet: 1,
-        maxbet: 3000,
         enableFreeBet: false,
         odds: {
             regular: 2,
             blackjack: 2.5,
         },
-        choices_maxbet: null
+        choices_maxbet: null,
     };
+    gameData.currencyGroupGames = [
+        {
+            groupId: "g1",
+            minBet: 1,
+            maxBet: 3000,
+        },
+    ];
 
     consumer = new InGameConsumer(definition, gameData, roundQuery, null, getBalance, userInfosRepository);
 });
@@ -75,13 +83,11 @@ describe("test ingame consumer", () => {
             user,
             ownBets: {},
             gameConfigs: {
-                choices_maxbet :gameData.gameConfigs.choices_maxbet,
-                enableFreeBet :gameData.gameConfigs.enableFreeBet,
-                minbet :gameData.gameConfigs.minbet,
-                maxbet :gameData.gameConfigs.maxbet,
-                odds :gameData.gameConfigs.odds,
-            }
-        }
+                ...gameData.currencyGroupGames[0],
+                enableFreeBet: gameData.gameConfigs.enableFreeBet,
+                odds: gameData.gameConfigs.odds,
+            },
+        };
         expect(gameData.players[realPlayer.UID]).toEqual(expectedPlayer);
         expect(realPlayer.socketClient.emit).toHaveBeenCalledWith(definition.name, expectedPayload);
     });

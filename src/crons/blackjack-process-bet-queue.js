@@ -168,7 +168,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     async createRoundAndHandEntities(player) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
         const { odds } = this.gameData.gameConfigs;
-        const { roundId } = this.gameData;
+        const { roundId, exchangeRates } = this.gameData;
         this.gameData.roundId++;
 
         const newRound = await this.roundsRepository.create({
@@ -178,6 +178,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             uid: player.UID,
             name: player.profile.name,
             odds,
+            exchangeRateId: exchangeRates.exId,
         });
 
         betTracks.roundId = newRound.id;
@@ -187,8 +188,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             phien: betTracks.roundId,
             uid: player.UID,
             name: player.profile.name,
-            memberId: player.session?.memberId,
-            siteId: player.session?.siteId,
             pos: hand.pos,
             bet: hand.bet,
             cards: hand.cards,
@@ -197,6 +196,16 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             time: new Date(),
             actions: hand.actions,
         }));
+
+        if (player.session) {
+            betEntities.forEach((betEntity) => {
+                betEntity.memberId = player.session.memberId;
+                betEntity.siteId = player.session.siteId;
+                betEntity.partnerId = player.session.partnerId;
+                betEntity.currency = player.session.currencyName;
+                betEntity.rate = this.calculateCurrencyRate(player.session);
+            });
+        }
 
         await this.betsRepository.insertMany(betEntities);
     }
@@ -326,6 +335,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             time: new Date(),
             actions: splitHand.actions,
             splitFrom: splitHand.splitFrom,
+            partnerId: bet.partnerId,
+            currency: bet.currency,
+            rate: bet.rate,
         });
 
         this.placeBetPublisher.publishToUser(player.UID, {

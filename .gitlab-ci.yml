@@ -1,3 +1,6 @@
+variables:
+  SMOKE_PRODUCT_NAME: BlackJack
+
 include:
   - project: "ci/repos-ci/pentagon_l1_blackjack_service"
     ref: master

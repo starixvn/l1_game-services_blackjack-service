@@ -32,7 +32,7 @@
         "mongoose": "^5.9.25",
         "morgan": "^1.10.0",
         "nodemon": "^2.0.4",
-        "sc-game-base": "2.1.1-beta.16",
+        "sc-game-base": "2.2.1",
         "socket.io": "^2.3.0"
     },
     "devDependencies": {

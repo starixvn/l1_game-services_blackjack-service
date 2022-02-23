@@ -23,7 +23,7 @@ const calculateAce = (cards, total) => {
         aceCount--;
     }
 
-    const reversedValues = reducedValues.reverse();
+    const reversedValues = [...reducedValues].reverse();
 
     return reversedValues.some((value) => value <= constants.blackJack)
         ? reversedValues.filter((value) => value <= constants.blackJack)

@@ -15,7 +15,7 @@ export default class UserSplitConsumer extends BaseActionConsumer {
             return [
                 {
                     failure: true,
-                    notice: this.getNoticeObj(oticeHelper.cantSplit),
+                    notice: this.getNoticeObj(noticeHelper.cantSplit),
                 },
             ];
         }

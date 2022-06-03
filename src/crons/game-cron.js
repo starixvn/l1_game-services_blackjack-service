@@ -142,14 +142,18 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         const { durations } = this.definition;
 
         if (this.gameData.remainingTime === durations.wholeAction) {
+            console.log(`wholeAction ${JSON.stringify(this.bot)}`);
             await this.checkGameStatus();
             this.bot && (await this.bot.reset());
         }
 
         if (!this.gameData.disabled) {
+            console.log(`remainingTime ${JSON.stringify(this.bot)} ${this.gameData.remainingTime} ${durations.botFrequency}`);
             this.gameData.remainingTime--;
 
+            console.log(this.gameData.remainingTime % durations.botFrequency);
             if (this.gameData.remainingTime % durations.botFrequency === 0) {
+                console.log(`bot run`);
                 this.bot && (await this.bot.run());
             }
         }

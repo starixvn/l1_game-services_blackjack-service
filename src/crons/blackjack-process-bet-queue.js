@@ -115,6 +115,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         let totalBet = 0;
         const failedHands = [];
 
+        console.log(`processDeal ${this.gameData.betId}`);
         for (const hand of _.uniqBy(payload.hands, (currentHand) => currentHand.pos)) {
             hand.id = this.gameData.betId;
             this.gameData.betId++;

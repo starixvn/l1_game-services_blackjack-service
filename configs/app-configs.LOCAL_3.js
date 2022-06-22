@@ -36,7 +36,15 @@ export default {
         env: "LOCAL-3",
     },
     authenticateSettings: {
+        url: "http://l1_auth_api_local_3:5000",
+        id: "game-services",
+        secret: "gameservices@20luminet&",
+        requestTimeout: 10000,
+        useAuthenticate: true,
         audiences: ["api", "admin-api"],
+    },
+    userServiceSettings: {
+        url: "http://l1_user_service_local_3:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
     enableCorsWs: false,

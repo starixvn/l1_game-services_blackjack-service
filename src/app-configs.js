@@ -13,17 +13,6 @@ export default {
         placeBetTimeout: 4500,
         enableApiLogs: true,
     },
-    mainServerApiSettings: {
-        url: "http://localhost:8080/api",
-        auth: {
-            url: "http://auth.lumigame.com",
-            id: "game-services",
-            secret: "gameservices@20luminet&",
-        },
-        requestTimeout: 10000,
-        placeBetTimeout: 4500,
-        useAuthenticate: true,
-    },
     socketOptions: {
         pingInterval: 60 * 1000,
         pingTimeout: 60 * 1000,
@@ -46,10 +35,18 @@ export default {
         env: "LOCAL",
     },
     authenticateSettings: {
+        url: "http://auth.lumigame.com",
+        id: "game-services",
+        secret: "gameservices@20luminet&",
+        requestTimeout: 10000,
+        useAuthenticate: false,
         audiences: ["api", "admin-api"],
+    },
+    userServiceSettings: {
+        url: "http://127.0.0.1:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
     enableCorsWs: false,
     corsUrls: ["http://localhost:7456", "http://localhost:7000", "http://games.lumigame.com", "http://admin.lumigame.com"],
-    roundMaxDuration: 24
+    roundMaxDuration: 24,
 };

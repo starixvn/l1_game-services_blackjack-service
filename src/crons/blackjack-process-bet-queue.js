@@ -195,6 +195,8 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             softPoints: calculate(hand.cards),
             time: new Date(),
             actions: hand.actions,
+
+            roundId: betTracks.roundId,
         }));
 
         if (player.session) {
@@ -203,6 +205,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 betEntity.siteId = player.session.siteId;
                 betEntity.partnerId = player.session.partnerId;
                 betEntity.currency = player.session.currencyName;
+
+                betEntity.playerId = player.session.memberId;
+                betEntity.operatorId = player.session.partnerId;
                 betEntity.rate = this.calculateCurrencyRate(player.session);
             });
         }
@@ -338,6 +343,10 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             partnerId: bet.partnerId,
             currency: bet.currency,
             rate: bet.rate,
+
+            playerId: player.session?.memberId,
+            operatorId: bet.partnerId,
+            roundId: betTracks.roundId,
         });
 
         this.placeBetPublisher.publishToUser(player.UID, {

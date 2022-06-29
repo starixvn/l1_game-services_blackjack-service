@@ -13,11 +13,15 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
             _id: false,
             uid: false,
             thanhtoan: false,
+            paid: false,
             odds: false,
             siteId: false,
             memberId: false,
             __v: false,
             __archive: false,
+            currency: false,
+            partnerId: false,
+            operatorId: false,
         };
         const bets = await this.betsRepository
             .find(filter, betProjection, { sort: { _id: -1 }, skip: numberOfSkippedBets, limit: pageSize })

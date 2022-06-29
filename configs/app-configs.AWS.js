@@ -13,17 +13,6 @@ export default {
         requestTimeout: 10000, // 10s
         enabledApiLogs: true,
     },
-    mainServerApiSettings: {
-        url: "http://l1_game_server_AWS:5000/api",
-        auth: {
-            url: "http://l1_auth_api_AWS:5000",
-            id: "game-services",
-            secret: "gameservices@20luminet&",
-        },
-        requestTimeout: 10000,
-        placeBetTimeout: 4500,
-        useAuthenticate: true,
-    },
     socketOptions: {
         pingInterval: 60 * 1000,
         pingTimeout: 60 * 1000,
@@ -46,7 +35,15 @@ export default {
         env: "AWS",
     },
     authenticateSettings: {
+        url: "http://l1_auth_api_AWS:5000",
+        id: "game-services",
+        secret: "gameservices@20luminet&",
+        requestTimeout: 10000,
+        useAuthenticate: true,
         audiences: ["api", "admin-api"],
+    },
+    userServiceSettings: {
+        url: "http://localhost:8004/api",
     },
     adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
     enableCorsWs: true,

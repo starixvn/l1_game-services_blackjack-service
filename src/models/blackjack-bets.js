@@ -26,6 +26,11 @@ const schema = new mongoose.Schema({
     currency: { type: String, required: false },
     partnerId: { type: String, required: false },
     rate: { type: Number, required: false },
+
+    playerId: { type: Number },
+    operatorId: { type: String, required: false },
+    roundId: { type: Number, default: 0 },
+    paid: { type: Boolean, default: false },
 });
 
 const bets = mongoose.model(modelName, schema);

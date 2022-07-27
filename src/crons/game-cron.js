@@ -102,6 +102,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
 
     async initBetTracks() {
         const runningRounds = await this.roundsRepository.find({ ended: false }).lean().exec();
+        const { randomMode } = this.gameData.gameConfigs;
 
         await Promise.all(
             runningRounds.map(async (round) => {
@@ -124,7 +125,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                         roundId: round.id,
                         roundStartTime: round.roundStartTime,
                         uid: round.uid,
-                        deck: generateDecks(usedCards),
+                        deck: generateDecks(usedCards, randomMode),
                         dealer: { cards: [...round.result] },
                         hands: userHands,
                         activeHandId: userHands.find((hand) => !hand.isStand)?.id,

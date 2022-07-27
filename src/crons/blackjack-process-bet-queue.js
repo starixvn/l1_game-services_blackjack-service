@@ -108,6 +108,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
     async processDeal(player, payload) {
         const { betTracks } = this.gameData.ingame[player.profile.name];
+        const { randomMode } = this.gameData.gameConfigs;
         betTracks.dealer = { cards: [] };
         betTracks.hands = [];
         betTracks.uid = player.UID;
@@ -145,7 +146,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         if (betTracks.hands.length > 0) {
             betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
-            betTracks.deck = generateDecks();
+            betTracks.deck = generateDecks([], randomMode);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);
             betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand)?.id;

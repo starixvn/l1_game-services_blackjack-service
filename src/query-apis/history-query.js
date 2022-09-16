@@ -12,15 +12,13 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
         const betProjection = {
             _id: false,
             uid: false,
-            thanhtoan: false,
             paid: false,
             odds: false,
             siteId: false,
-            memberId: false,
+            playerId: false,
             __v: false,
             __archive: false,
             currency: false,
-            partnerId: false,
             operatorId: false,
         };
         const bets = await this.betsRepository
@@ -32,7 +30,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
         if (bets && bets.length > 0) {
             betLogs = await Promise.all(
                 bets.map(async (bet) => {
-                    const round = await this.roundQuery.getOne(bet.phien, { _id: false });
+                    const round = await this.roundQuery.getOne(bet.roundId, { _id: false });
 
                     return {
                         ...bet,

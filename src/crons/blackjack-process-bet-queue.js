@@ -186,7 +186,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         const betEntities = betTracks.hands.map((hand) => ({
             id: hand.id,
-            phien: betTracks.roundId,
+            roundId: betTracks.roundId,
             uid: player.UID,
             name: player.profile.name,
             pos: hand.pos,
@@ -202,13 +202,11 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         if (player.session) {
             betEntities.forEach((betEntity) => {
-                betEntity.memberId = player.session.memberId;
                 betEntity.siteId = player.session.siteId;
-                betEntity.partnerId = player.session.partnerId;
                 betEntity.currency = player.session.currencyName;
 
-                betEntity.playerId = player.session.memberId;
-                betEntity.operatorId = player.session.partnerId;
+                betEntity.playerId = player.session.playerId;
+                betEntity.operatorId = player.session.operatorId;
                 betEntity.rate = this.calculateCurrencyRate(player.session);
             });
         }
@@ -328,10 +326,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
         await this.betsRepository.create({
             id: splitHand.id,
-            phien: betTracks.roundId,
+            roundId: betTracks.roundId,
             uid: player.UID,
             name: player.profile.name,
-            memberId: player.session?.memberId,
             siteId: player.session?.siteId,
             pos: splitHand.pos,
             bet: splitHand.bet,
@@ -341,12 +338,11 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             time: new Date(),
             actions: splitHand.actions,
             splitFrom: splitHand.splitFrom,
-            partnerId: bet.partnerId,
             currency: bet.currency,
             rate: bet.rate,
 
-            playerId: player.session?.memberId,
-            operatorId: bet.partnerId,
+            playerId: player.session?.playerId,
+            operatorId: bet.operatorId,
             roundId: betTracks.roundId,
         });
 

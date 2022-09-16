@@ -98,7 +98,7 @@ describe("settle round tests", () => {
         betsRepositoryExecMockFunc.mockReturnValueOnce([
             {
                 id: 100,
-                phien: 1,
+                roundId: 1,
                 bet: 100,
                 cards: [
                     {
@@ -169,7 +169,7 @@ describe("settle bet tests", () => {
         betsRepositoryExecMockFunc.mockReturnValueOnce([
             {
                 id: 100,
-                phien: 1,
+                roundId: 1,
                 bet: 100,
                 cards: [
                     {

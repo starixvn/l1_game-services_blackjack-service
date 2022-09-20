@@ -196,8 +196,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             softPoints: calculate(hand.cards),
             time: new Date(),
             actions: hand.actions,
-
-            roundId: betTracks.roundId,
         }));
 
         if (player.session) {
@@ -343,7 +341,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
 
             playerId: player.session?.playerId,
             operatorId: bet.operatorId,
-            roundId: betTracks.roundId,
         });
 
         this.placeBetPublisher.publishToUser(player.UID, {

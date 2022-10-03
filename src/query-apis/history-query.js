@@ -6,7 +6,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
             return {};
         }
 
-        const filter = { uid: player.UID, thanhtoan: true };
+        const filter = { uid: player.UID, paid: true };
         const numberOfSkippedBets = (page - 1) * pageSize;
         const total = await this.betsRepository.countDocuments(filter).exec();
         const betProjection = {

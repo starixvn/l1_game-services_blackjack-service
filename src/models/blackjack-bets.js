@@ -25,7 +25,7 @@ const schema = new mongoose.Schema({
 
     playerId: { type: Number },
     operatorId: { type: String, required: false },
-    roundId: { type: Number, default: 0 },
+    roundId: { type: Number, default: 0, required: true },
     paid: { type: Boolean, default: false },
 });
 

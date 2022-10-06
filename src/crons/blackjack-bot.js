@@ -8,7 +8,6 @@ export default class BlackJackBot extends Core.Crons.BaseBot {
     }
 
     async run() {
-        console.log(this.maxNumberOfBots);
         if (this.gameData.gameConfigs?.botenabled && this.maxNumberOfBots > 0) {
             this.gameData.betId += this.chance.integer({ min: 1, max: this.maxNumberOfBots });
         }

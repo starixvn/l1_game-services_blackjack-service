@@ -1,9 +1,9 @@
 import Chance from "chance";
 import { Core } from "sc-game-base";
 
-export default class BlackJackBot extends Core.BaseBot {
-    constructor(definition, gameData) {
-        super(definition, gameData);
+export default class BlackJackBot extends Core.Crons.BaseBot {
+    constructor(definition, gameData, userInfosRepository) {
+        super(definition, gameData, userInfosRepository);
         this.chance = new Chance();
     }
 

@@ -5,3 +5,6 @@ include:
   - project: "ci/repos-ci/pentagon_l1_blackjack_service"
     ref: master
     file: "gitlab-ci.yml"
+  - project: "ci/repos-ci/pentagon_l2_blackjack_service"
+    ref: master
+    file: "gitlab-ci-mixing.yml"

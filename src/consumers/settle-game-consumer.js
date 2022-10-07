@@ -39,7 +39,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
     }
 
     async queryBets(roundId) {
-        return this.betsRepository.find({ phien: roundId, thanhtoan: false }).exec();
+        return this.betsRepository.find({ roundId, paid: false }).exec();
     }
 
     async settleBets({ result, settlementResult, roundId, odds, time, playerName, playerUID }) {
@@ -58,7 +58,6 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                     }
 
                     bet.betwin = betResult.totalWin;
-                    bet.thanhtoan = true;
                     bet.paid = true;
                     bet.result = betResult.result;
                     bet.softPoints = [];

@@ -107,7 +107,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
         await Promise.all(
             runningRounds.map(async (round) => {
                 const usedCards = [...round.result];
-                const hands = await this.betsRepository.find({ phien: round.id }).lean().exec();
+                const hands = await this.betsRepository.find({ roundId: round.id }).lean().exec();
                 const userHands = hands.map((hand) => {
                     usedCards.push(...hand.cards);
 

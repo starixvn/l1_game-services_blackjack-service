@@ -10,6 +10,7 @@ import {
     UserStandConsumer,
 } from "./consumers";
 import SettleGameConsumer from "./consumers/settle-game-consumer";
+import BlackJackBot from "./crons/blackjack-bot";
 import BlackJackProcessBetQueue from "./crons/blackjack-process-bet-queue";
 import GameCron from "./crons/game-cron";
 
@@ -68,6 +69,7 @@ export default class BlackjackContainerRegistry extends Table.TableContainerRegi
         this.container.register({
             processBetQueue: asClass(BlackJackProcessBetQueue).singleton().proxy(),
             gameCron: asClass(GameCron).singleton().proxy(),
+            bot: asClass(BlackJackBot).singleton(),
         });
     }
 

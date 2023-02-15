@@ -46,15 +46,6 @@ export default {
         url: "http://l2_user_service_prod:5000",
     },
     adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
-    enableCorsWs: true,
-    corsUrls: [
-        "https://v-gaming.net",
-        "https://www.v-gaming.net",
-        "http://v-gaming.net",
-        "http://www.v-gaming.net",
-        "http://adm.v-gaming.net",
-        "https://adm.v-gaming.net",
-    ],
     roundMaxDuration: 24,
     metrics: {
         enable: true,

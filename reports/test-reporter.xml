@@ -1,13 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-    <file path="D:\Lumi\blackjack-service\src\helpers\__tests__\desk-helper.test.js">
-        <testCase name="deckHelper generateDeck when random mode is undefined should return valid deck of cards" duration="3"/>
-        <testCase name="deckHelper generateDeck when random mode is undefined should return deck of cards without exclusions" duration="2"/>
-        <testCase name="deckHelper generateDeck when random mode is 1 should return valid deck of cards" duration="3"/>
-        <testCase name="deckHelper generateDeck when random mode is 1 should return deck of cards without exclusions" duration="2"/>
-        <testCase name="deckHelper generateDeck when random mode is 2 should return valid deck of cards" duration="1"/>
-        <testCase name="deckHelper generateDeck when random mode is 2 should return deck of cards without exclusions" duration="1"/>
-        <testCase name="deckHelper generateDeck when random mode is 3 should return valid deck of cards" duration="3"/>
-        <testCase name="deckHelper generateDeck when random mode is 3 should return deck of cards without exclusions" duration="2"/>
-    </file>
 </testExecutions>

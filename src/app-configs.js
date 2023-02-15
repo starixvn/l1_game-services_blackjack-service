@@ -46,7 +46,5 @@ export default {
         url: "http://127.0.0.1:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
-    enableCorsWs: false,
-    corsUrls: ["http://localhost:7456", "http://localhost:7000", "http://games.lumigame.com", "http://admin.lumigame.com"],
     roundMaxDuration: 24,
 };

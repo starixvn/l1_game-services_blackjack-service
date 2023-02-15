@@ -45,14 +45,6 @@ export default {
         url: "http://l1_user_service_sit:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
-    enableCorsWs: true,
-    corsUrls: [
-        "http://localhost:7456",
-        "http://l1sit.sgamesuat.com",
-        "https://l1sit.sgamesuat.com",
-        "http://l1sitadm.sgamesuat.com",
-        "https://l1sitadm.sgamesuat.com",
-    ],
     roundMaxDuration: 1,
     metrics: {
         enable: true,

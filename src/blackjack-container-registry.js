@@ -19,6 +19,7 @@ import { BlackJackRounds } from "./models/blackjack-rounds";
 import RoundResultPublisher from "./publishers/round-result-publisher";
 import HistoryQuery from "./query-apis/history-query";
 import BlackJackSocketRouter from "./routers/blackjack-socket-router";
+import HttpRouter from "./routers/http-router";
 
 const { asClass, asValue } = awilix;
 
@@ -60,6 +61,7 @@ export default class BlackjackContainerRegistry extends Table.TableContainerRegi
 
         this.container.register({
             socketRouter: asClass(BlackJackSocketRouter).proxy(),
+            httpRouter: asClass(HttpRouter),
         });
     }
 

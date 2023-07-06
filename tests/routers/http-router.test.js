@@ -10,6 +10,34 @@ jest.mock("sc-common");
 const publisher = new BaseEventPublishers();
 
 describe("HttpRouter", () => {
+    const app = {
+        get: jest.fn(),
+        post: (url, authenticate, callBack) => {
+            callBack && callBack({}, { send: jest.fn() });
+        },
+        calledPost: false,
+    };
+    const appConfigs = {
+        apiSettings: {
+            authUrl: "http://localhost",
+        },
+        authenticateSettings: {
+            audiences: [],
+        },
+    };
+    const logService = {};
+    const gameData = {};
+    const historyQuery = {};
+    const metricQuery = {};
+    const res = { send: jest.fn() };
+
+    let router;
+    beforeEach(() => {
+        // Arrange
+        jest.clearAllMocks();
+
+        router = new HttpRouter(appConfigs, gameData, historyQuery, metricQuery, logService);
+    });
     it("should inherit TableHttpRouter", () => {
         // Act
         const router = new HttpRouter();
@@ -21,16 +49,16 @@ describe("HttpRouter", () => {
     describe("init", () => {
         it("should run correct", () => {
             // Arrange
-            const router = new HttpRouter();
-            const app = { post: jest.fn() };
+            app.calledPost = false;
+            router.appConfigs = appConfigs;
             TableHttpRouter.prototype.init = jest.fn();
-
+            router.handleVoidTicket = jest.fn();
             // Act
             router.init(app);
 
             // Assert
             expect(TableHttpRouter.prototype.init).toHaveBeenCalledWith(app);
-            expect(app.post).toHaveBeenCalled();
+            expect(router.handleVoidTicket).toHaveBeenCalled();
         });
     });
 
@@ -59,7 +87,7 @@ describe("HttpRouter", () => {
             // Assert
             expect(router.gameData.ingame).toStrictEqual({});
             expect(gameNotifications.deleteOne).toHaveBeenCalled();
-            expect(logger.logWarning).toHaveBeenCalledWith(`Void running ticket from api call for ${JSON.stringify("a")}`);
+            expect(logger.logError).toHaveBeenCalledWith(`Void running ticket from api call for ${JSON.stringify("a")}`);
             expect(publisher.publishToUser).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledWith(true);
         });

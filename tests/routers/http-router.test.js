@@ -2,12 +2,14 @@ import TableHttpRouter from "sc-game-base/src/table/routers/table-http-router";
 import { logger } from "sc-common";
 import HttpRouter from "../../src/routers/http-router";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
-import { gameNotifications } from "sc-base-database";
 
 jest.mock("sc-base-database");
 jest.mock("sc-common");
 
 const publisher = new BaseEventPublishers();
+const gameNotificationsRepository = {
+    deleteOne: jest.fn()
+  };
 
 describe("HttpRouter", () => {
     const app = {
@@ -29,7 +31,6 @@ describe("HttpRouter", () => {
     const gameData = {};
     const historyQuery = {};
     const metricQuery = {};
-    const res = { send: jest.fn() };
 
     let router;
     beforeEach(() => {
@@ -39,9 +40,6 @@ describe("HttpRouter", () => {
         router = new HttpRouter(appConfigs, gameData, historyQuery, metricQuery, logService);
     });
     it("should inherit TableHttpRouter", () => {
-        // Act
-        const router = new HttpRouter();
-
         // Assert
         expect(router instanceof TableHttpRouter);
     });
@@ -50,7 +48,6 @@ describe("HttpRouter", () => {
         it("should run correct", () => {
             // Arrange
             app.calledPost = false;
-            router.appConfigs = appConfigs;
             TableHttpRouter.prototype.init = jest.fn();
             router.handleVoidTicket = jest.fn();
             // Act
@@ -65,36 +62,46 @@ describe("HttpRouter", () => {
     describe("handleVoidTicket", () => {
         it("should run correctly when player is valid", async () => {
             // Arrange
-            const router = new HttpRouter(null, null, null, null, null, null, null, publisher);
+            const realPlayer = { UID: 'abc', profile: { name: 'a' } };
+            const gameData = {
+              ingame: { [realPlayer.profile.name]: {} },
+              gameConfigs: { odds: {} },
+              realPlayers: { 1: realPlayer },
+            };
+            const definition = { settle: jest.fn() };
+            const router = new HttpRouter(null, gameData, null, null, null, null, definition, publisher, gameNotificationsRepository);
             const res = { send: jest.fn() };
             const req = {
-                body: {
-                    UserIdentify: "abc",
-                    Name: "a",
-                },
+              body: {
+                UserIdentify: 'abc',
+                Name: 'a',
+              },
             };
-            const realPlayer = { UID: "abc", profile: { name: "a" } };
-            router.gameData = {
-                ingame: { [realPlayer.profile.name]: {} },
-                gameConfigs: { odds: {} },
-                realPlayers: { 1: realPlayer },
-            };
-            router.definition = { settle: jest.fn() };
+           
             publisher.publishToUser = jest.fn();
             //Act
             await router.handleVoidTicket(req, res);
-
+      
             // Assert
             expect(router.gameData.ingame).toStrictEqual({});
-            expect(gameNotifications.deleteOne).toHaveBeenCalled();
-            expect(logger.logError).toHaveBeenCalledWith(`Void running ticket from api call for ${JSON.stringify("a")}`);
+            expect(gameNotificationsRepository.deleteOne).toHaveBeenCalled();
+            expect(logger.logError).toHaveBeenCalledWith(
+              `Void running ticket from api call for ${JSON.stringify('a')}`,
+            );
             expect(publisher.publishToUser).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledWith(true);
         });
 
         it("should run incorrectly when player is invalid", async () => {
             // Arrange
-            const router = new HttpRouter();
+            const realPlayer = { UID: "bc", profile: { name: "a" } };
+            const gameData = {
+                ingame: { [realPlayer.profile.name]: {} },
+                gameConfigs: { odds: {} },
+                realPlayers: { 1: realPlayer },
+            };
+            const definition = { settle: jest.fn() };
+            const router = new HttpRouter(null, gameData, null, null, null, null, definition, publisher);
             const res = { send: jest.fn() };
             const req = {
                 body: {
@@ -102,13 +109,7 @@ describe("HttpRouter", () => {
                     Name: "",
                 },
             };
-            const realPlayer = { UID: "bc", profile: { name: "a" } };
-            router.gameData = {
-                ingame: { [realPlayer.profile.name]: {} },
-                gameConfigs: { odds: {} },
-                realPlayers: { 1: realPlayer },
-            };
-            router.definition = { settle: jest.fn() };
+          
             await router.handleVoidTicket(req, res);
 
             // Assert

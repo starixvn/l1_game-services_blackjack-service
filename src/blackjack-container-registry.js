@@ -20,6 +20,7 @@ import RoundResultPublisher from "./publishers/round-result-publisher";
 import HistoryQuery from "./query-apis/history-query";
 import BlackJackSocketRouter from "./routers/blackjack-socket-router";
 import HttpRouter from "./routers/http-router";
+import { gameNotifications } from 'sc-base-database';
 
 const { asClass, asValue } = awilix;
 
@@ -30,6 +31,7 @@ export default class BlackjackContainerRegistry extends Table.TableContainerRegi
         this.container.register({
             roundsRepository: asValue(BlackJackRounds),
             betsRepository: asValue(BlackJackBets),
+            gameNotificationsRepository: asValue(gameNotifications),
         });
     }
 

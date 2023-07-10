@@ -1,14 +1,24 @@
 import TableHttpRouter from "sc-game-base/src/table/routers/table-http-router";
 import { logger } from "sc-common";
-import { gameNotifications } from "sc-base-database";
 import { utils } from "sc-common";
 
 export default class HttpRouter extends TableHttpRouter {
-    constructor(appConfigs, gameData, historyQuery, userSessionsRepository, metricQuery, logService, definition, publisher) {
+    constructor(
+        appConfigs,
+        gameData,
+        historyQuery,
+        userSessionsRepository,
+        metricQuery,
+        logService,
+        definition,
+        publisher,
+        gameNotificationsRepository
+    ) {
         super(appConfigs, gameData, historyQuery, userSessionsRepository, metricQuery, logService);
 
         this.definition = definition;
         this.publisher = publisher;
+        this.gameNotificationsRepository = gameNotificationsRepository;
     }
     init(app) {
         super.init(app);
@@ -33,7 +43,7 @@ export default class HttpRouter extends TableHttpRouter {
             }
 
             delete this.gameData.ingame[Name];
-            await gameNotifications.deleteOne({ uid: UserIdentify, gameId: this.definition.id });
+            await this.gameNotificationsRepository.deleteOne({ uid: UserIdentify, gameId: this.definition.id });
             logger.logError(`Void running ticket from api call for ${JSON.stringify(Name)}`);
             this.publisher.publishToUser(UserIdentify, { toLobby: true });
             res.send(true);

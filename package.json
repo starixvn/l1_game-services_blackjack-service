@@ -36,7 +36,8 @@
         "sc-game-base": "3.3.0",
         "socket.io": "^2.3.0",
         "d3-array": "^3.2.0",
-        "random-js": "^2.1.0"
+        "random-js": "^2.1.0",
+        "sc-base-database": "1.10.1"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.14.7",

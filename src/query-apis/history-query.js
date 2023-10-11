@@ -22,7 +22,7 @@ export default class HistoryQuery extends Core.QueryApis.HistoryQuery {
             operatorId: false,
         };
         const bets = await this.betsRepository
-            .find(filter, betProjection, { sort: { _id: -1 }, skip: numberOfSkippedBets, limit: pageSize })
+            .find(filter, betProjection, { sort: { id: -1 }, skip: numberOfSkippedBets, limit: pageSize })
             .lean()
             .exec();
         let betLogs = [];

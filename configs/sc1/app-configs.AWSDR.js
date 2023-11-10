@@ -1,0 +1,55 @@
+export default {
+    hostingPort: 5000,
+    apiSettings: {
+        enabledApi: true,
+        apiUrl: "http://l1_game_api_awsdr:5000",
+        authUrl: "http://l1_auth_api_awsdr:5000",
+        client: {
+            id: "game-server",
+            secret: "gameserver@20luminet&",
+        },
+        useAuthenticate: true,
+        placeBetTimeout: 4000,
+        requestTimeout: 10000, // 10s
+        enabledApiLogs: true,
+    },
+    socketOptions: {
+        pingInterval: 60 * 1000,
+        pingTimeout: 60 * 1000,
+        transports: ["websocket"],
+        allowUpgrades: false,
+    },
+    enabledLogs: true,
+    database: {
+        url: "mongodb://lmn_backend:Sb%7B5r%40Xy4X%256%28%24%5Bt%252HsOxJ%7CQt9jdR%26t@10.77.15.16:27101/?replicaSet=SabaL1DR",
+        options: {
+            dbName: "minigame",
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            auto_reconnect: true,
+        },
+    },
+    sentry: {
+        sentryUrl: "https://52368c4019044019885440599c180bda@scsentry.sgamesuat.com/24",
+        logIdentifier: "blackjack",
+        env: "UAT",
+    },
+    authenticateSettings: {
+        url: "http://l1_auth_api_awsdr:5000",
+        id: "game-services",
+        secret: "gameservices@20luminet&",
+        requestTimeout: 10000,
+        useAuthenticate: true,
+        audiences: ["api", "admin-api"],
+    },
+    userServiceSettings: {
+        url: "http://l1_user_service_awsdr:5000",
+    },
+    adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
+    roundMaxDuration: 24,
+    metrics: {
+        enable: true,
+        secretKey: "6c1f0f28-70f2-46ae-b031-22624a6cd8df",
+    },
+    enableMsgpackParser: true,
+};

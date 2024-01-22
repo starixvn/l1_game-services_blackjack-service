@@ -1,10 +1,14 @@
+import appConfigs from "./app-configs";
+import gameSettings from "./game-settings";
+import { startTrace } from "sc-instrument";
+
+startTrace(appConfigs.otel?.enabled, appConfigs.otel?.endpoint, appConfigs.otel?.system, appConfigs.sentry.env, gameSettings.name);
+
 import { Core } from "sc-game-base";
 
-import appConfigs from "./app-configs";
 import BlackjackContainerRegistry from "./blackjack-container-registry";
 import BlackJackGameData from "./blackjack-game-data";
 import BlackJackGameDefinition from "./blackjack-game-definition";
-import gameSettings from "./game-settings";
 import { generateResult, settle } from "./helpers/dealer";
 
 const run = async () => {

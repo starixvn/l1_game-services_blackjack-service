@@ -21,24 +21,16 @@
     "license": "ISC",
     "type": "module",
     "dependencies": {
-        "amqplib": "^0.6.0",
-        "body-parser": "^1.19.0",
-        "cron": "^1.8.2",
-        "express": "^4.17.1",
-        "helmet": "^3.23.3",
         "lodash": "^4.17.19",
         "lodash.findindex": "^4.6.0",
         "lodash.sortby": "^4.7.0",
         "moment": "^2.29.0",
-        "mongoose": "^5.9.25",
-        "morgan": "^1.10.0",
         "nodemon": "^2.0.4",
-        "sc-game-base": "3.3.0",
-        "socket.io": "^2.3.0",
+        "sc-game-base": "4.0.1",
+        "sc-instrument": "1.1.1-beta.2",
         "d3-array": "^3.2.0",
         "random": "^3.0.6",
-        "random-js": "^2.1.0",
-        "sc-base-database": "1.10.1"
+        "random-js": "^2.1.0"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.14.7",

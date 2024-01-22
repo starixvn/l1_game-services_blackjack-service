@@ -9810,10 +9810,10 @@ sc-instrument@1.0.0:
     opentelemetry-instrumentation-socket.io "0.34.0"
     socket.io "4.6.1"
 
-sc-instrument@1.1.1-beta.2:
-  version "1.1.1-beta.2"
-  resolved "http://npm.lumigame.com/sc-instrument/-/sc-instrument-1.1.1-beta.2.tgz#7345c39d2903f9b5db5e119ea5f767cb307c843a"
-  integrity sha512-Z6nJH7SU6ElkTSgSjlzD3NjmPxBQxgXdRyFchMz0S4yj1vNbtvwXrwX9hPWMtM9TQ7Dgab9yUC5+wr4DgSpHYw==
+sc-instrument@1.1.1:
+  version "1.1.1"
+  resolved "http://npm.lumigame.com/sc-instrument/-/sc-instrument-1.1.1.tgz#56242cdc7b8999450f0796021f1144e24e046701"
+  integrity sha512-O82cMim5iDkBvnH7ZdeWkGjYt4HMWIbpHiE8vXqlIasQuQZgvsV1k805UqmbxmrD/rhHHp+TN6+9N9wtCMaovQ==
   dependencies:
     "@opentelemetry/context-async-hooks" "1.15.2"
     "@opentelemetry/core" "1.15.2"

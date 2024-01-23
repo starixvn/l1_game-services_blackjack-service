@@ -65,7 +65,7 @@ describe("consume test", () => {
         };
         await consumer.consume(player, payload);
         const ingamePlayer = gameData.ingame[player.profile.name];
-        expect(ingamePlayer.processing).toBeTrue();
+        expect(ingamePlayer.processing).toBe(true);
         expect(ingamePlayer.betQueue).toContainEqual({
             player,
             payload: { action: gameSettings.actions.deal, hands: payload.deal.hands, receivedTime: DATE_TO_USE },

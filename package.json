@@ -12,11 +12,6 @@
         "reg": "npm set registry http://npm.lumigame.com",
         "stats": "nodemon --es-module-specifier-resolution=node --watch ./tests ./tests/result-statistic.js"
     },
-    "jest": {
-        "transform": {
-            "^.+\\.jsx?$": "babel-jest"
-        }
-    },
     "author": "pentagon",
     "license": "ISC",
     "type": "module",
@@ -42,13 +37,14 @@
         "@semantic-release/gitlab": "^6.0.4",
         "@semantic-release/npm": "^7.0.5",
         "@semantic-release/release-notes-generator": "^9.0.1",
-        "@types/jest": "^26.0.23",
-        "babel-jest": "^27.0.2",
+        "@types/jest": "^29.0.0",
+        "babel-jest": "^29.0.0",
         "husky": "^4.2.5",
         "install": "^0.13.0",
-        "jest": "^27.0.5",
-        "jest-extended": "^0.11.5",
-        "jest-micro-auto-stub": "^1.0.6",
+        "jest": "^29.0.0",
+        "jest-auto-fixture": "^1.0.6",
+        "jest-extended": "^3.0.0",
+        "jest-micro-auto-stub": "^1.0.8",
         "jest-sonar-reporter": "^2.0.0",
         "sc-semantic-release": "^1.1.0",
         "semantic-release": "^17.1.1"

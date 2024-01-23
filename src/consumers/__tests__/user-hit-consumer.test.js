@@ -82,14 +82,14 @@ describe("consume test", () => {
 
         await consumer.consume(player, payload);
 
-        expect(ingamePlayer.processing).toBeTrue();
+        expect(ingamePlayer.processing).toBe(true);
         expect(ingamePlayer.betQueue).toContainEqual({
             player,
             payload: { action: gameSettings.actions.hit, id: payload.hit.id, receivedTime: DATE_TO_USE },
         });
     });
 
-    it("invalid payload, publish error to user, not updating betTracs", async() => {
+    it("invalid payload, publish error to user, not updating betTracs", async () => {
         const payload = {
             hit: {
                 id: 200,
@@ -99,13 +99,13 @@ describe("consume test", () => {
         gameData.ingame[player.profile.name] = ingamePlayer;
 
         await consumer.consume(player, payload);
-        expect(ingamePlayer.processing).toBeFalse();
-        expect(ingamePlayer.betQueue).toBeEmpty();
+        expect(ingamePlayer.processing).toBe(false);
+        expect(ingamePlayer.betQueue).toHaveLength(0);
         expect(publisher.publishToUser).toHaveBeenCalled();
     });
 });
 describe("validation test", () => {
-    it("hand is stand, return correct error", async() => {
+    it("hand is stand, return correct error", async () => {
         const payload = {
             hit: {
                 id: 100,
@@ -122,7 +122,7 @@ describe("validation test", () => {
         expect(result).toContainEqual({ failure: true, notice: { errorCode: noticeHelper.handIsStand } });
     });
 
-    it("invalid hand id, return correct error", async() => {
+    it("invalid hand id, return correct error", async () => {
         const payload = {
             hit: {
                 id: 120,

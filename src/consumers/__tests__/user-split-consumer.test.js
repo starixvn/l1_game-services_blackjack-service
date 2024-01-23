@@ -82,7 +82,7 @@ describe("consume test", () => {
 
         await consumer.consume(player, payload);
 
-        expect(ingamePlayer.processing).toBeTrue();
+        expect(ingamePlayer.processing).toBe(true);
         expect(ingamePlayer.betQueue).toContainEqual({
             player,
             payload: { action: gameSettings.actions.split, id: payload.split.id, receivedTime: DATE_TO_USE },
@@ -99,8 +99,8 @@ describe("consume test", () => {
         gameData.ingame[player.profile.name] = ingamePlayer;
 
         await consumer.consume(player, payload);
-        expect(ingamePlayer.processing).toBeFalse();
-        expect(ingamePlayer.betQueue).toBeEmpty();
+        expect(ingamePlayer.processing).toBe(false);
+        expect(ingamePlayer.betQueue).toHaveLength(0);
         expect(publisher.publishToUser).toHaveBeenCalled();
     });
 });

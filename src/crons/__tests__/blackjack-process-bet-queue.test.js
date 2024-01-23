@@ -116,7 +116,7 @@ describe("deal test", () => {
         expect(betTracks.roundId).toEqual(2);
         expect(betTracks.hands).toHaveLength(2);
         expect(betTracks.dealer.cards).toHaveLength(2);
-        expect(gameData.ingame[player.profile.name].processing).toBeFalse();
+        expect(gameData.ingame[player.profile.name].processing).toBe(false);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
     });
 
@@ -138,7 +138,7 @@ describe("deal test", () => {
         expect(betTracks.roundId).toEqual(2);
         expect(betTracks.hands).toHaveLength(2);
         expect(betTracks.dealer.cards).toHaveLength(2);
-        expect(gameData.ingame[player.profile.name].processing).toBeFalse();
+        expect(gameData.ingame[player.profile.name].processing).toBe(false);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
         expect(player.profile.maxBet).toEqual(3000);
         expect(userInfosRepository.updateOne).toHaveBeenCalled();
@@ -159,9 +159,9 @@ describe("deal test", () => {
         expect(roundsRepository.create).not.toHaveBeenCalled();
         expect(betsRepository.insertMany).not.toHaveBeenCalled();
         expect(betTracks.roundId).toBeUndefined();
-        expect(betTracks.hands).toBeEmpty();
-        expect(betTracks.dealer.cards).toBeEmpty();
-        expect(gameData.ingame[player.profile.name].processing).toBeFalse();
+        expect(betTracks.hands).toHaveLength(0);
+        expect(betTracks.dealer.cards).toHaveLength(0);
+        expect(gameData.ingame[player.profile.name].processing).toBe(false);
         expect(placeBetPublisher.publishGameFailedBet).toHaveBeenCalled();
     });
 });
@@ -306,7 +306,7 @@ describe("process hit tests", () => {
 
         expect(hand.actions).toContain(gameSettings.actions.hit);
         expect(hand.actions).toContain(gameSettings.actions.stand);
-        expect(hand.isStand).toBeTrue();
+        expect(hand.isStand).toBe(true);
         expect(hand.cards).toHaveLength(3);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
     });
@@ -355,7 +355,7 @@ describe("process stand tests", () => {
         await processBetQueue.proceedBet(player, { action: gameSettings.actions.stand, id: 100 });
 
         expect(hand.actions).toContain(gameSettings.actions.stand);
-        expect(hand.isStand).toBeTrue();
+        expect(hand.isStand).toBe(true);
         expect(hand.cards).toHaveLength(2);
         expect(betTracks.activeHandId).toEqual(nextHand.id);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
@@ -394,7 +394,7 @@ describe("process split tests", () => {
         await processBetQueue.proceedBet(player, { action: gameSettings.actions.split, id: 100 });
 
         expect(hand.actions).toContain(gameSettings.actions.split);
-        expect(betTracks.hands.some((x) => x.splitFrom === hand.id && x.pos === hand.pos + 3)).toBeTrue();
+        expect(betTracks.hands.some((x) => x.splitFrom === hand.id && x.pos === hand.pos + 3)).toBe(true);
         expect(placeBetPublisher.publishToUser).toHaveBeenCalled();
         expect(betsRepository.create).toHaveBeenCalled();
     });

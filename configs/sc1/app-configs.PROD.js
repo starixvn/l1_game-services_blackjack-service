@@ -53,7 +53,7 @@ export default {
     },
     enableMsgpackParser: true,
     otel: {
-        system: "VG",
+        system: "SG",
         enabled: true,
         endpoint: "http://10.2.189.50:4318/v1/traces",
     },

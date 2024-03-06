@@ -1,5 +1,4 @@
 import TableHttpRouter from "sc-game-base/src/table/routers/table-http-router";
-import { logger } from "sc-common";
 import HttpRouter from "../../src/routers/http-router";
 import BaseEventPublishers from "sc-game-base/src/core/event-publishers/base-event-publisher";
 
@@ -8,8 +7,8 @@ jest.mock("sc-common");
 
 const publisher = new BaseEventPublishers();
 const gameNotificationsRepository = {
-    deleteOne: jest.fn()
-  };
+    deleteOne: jest.fn(),
+};
 
 describe("HttpRouter", () => {
     const app = {
@@ -27,7 +26,7 @@ describe("HttpRouter", () => {
             audiences: [],
         },
     };
-    const logService = {};
+    const logService = { logError: jest.fn() };
     const gameData = {};
     const historyQuery = {};
     const metricQuery = {};
@@ -62,32 +61,30 @@ describe("HttpRouter", () => {
     describe("handleVoidTicket", () => {
         it("should run correctly when player is valid", async () => {
             // Arrange
-            const realPlayer = { UID: 'abc', profile: { name: 'a' } };
+            const realPlayer = { UID: "abc", profile: { name: "a" } };
             const gameData = {
-              ingame: { [realPlayer.profile.name]: {} },
-              gameConfigs: { odds: {} },
-              realPlayers: { 1: realPlayer },
+                ingame: { [realPlayer.profile.name]: {} },
+                gameConfigs: { odds: {} },
+                realPlayers: { 1: realPlayer },
             };
             const definition = { settle: jest.fn() };
-            const router = new HttpRouter(null, gameData, null, null, null, null, definition, publisher, gameNotificationsRepository);
+            const router = new HttpRouter(null, gameData, null, null, logService, definition, publisher, gameNotificationsRepository);
             const res = { send: jest.fn() };
             const req = {
-              body: {
-                UserIdentify: 'abc',
-                Name: 'a',
-              },
+                body: {
+                    UserIdentify: "abc",
+                    Name: "a",
+                },
             };
-           
+
             publisher.publishToUser = jest.fn();
             //Act
             await router.handleVoidTicket(req, res);
-      
+
             // Assert
             expect(router.gameData.ingame).toStrictEqual({});
             expect(gameNotificationsRepository.deleteOne).toHaveBeenCalled();
-            expect(logger.logError).toHaveBeenCalledWith(
-              `Void running ticket from api call for ${JSON.stringify('a')}`,
-            );
+            expect(logService.logError).toHaveBeenCalledWith(`Void running ticket from api call for ${JSON.stringify("a")}`);
             expect(publisher.publishToUser).toHaveBeenCalled();
             expect(res.send).toHaveBeenCalledWith(true);
         });
@@ -101,7 +98,7 @@ describe("HttpRouter", () => {
                 realPlayers: { 1: realPlayer },
             };
             const definition = { settle: jest.fn() };
-            const router = new HttpRouter(null, gameData, null, null, null, null, definition, publisher);
+            const router = new HttpRouter(null, gameData, null, null, logService, definition, publisher, gameNotificationsRepository);
             const res = { send: jest.fn() };
             const req = {
                 body: {
@@ -109,12 +106,12 @@ describe("HttpRouter", () => {
                     Name: "",
                 },
             };
-          
+
             await router.handleVoidTicket(req, res);
 
             // Assert
             expect(router.gameData.ingame).toStrictEqual({ [realPlayer.profile.name]: {} });
-            expect(logger.logError).toHaveBeenCalledWith(`Player not found`);
+            expect(logService.logError).toHaveBeenCalledWith(`Player not found`);
             expect(res.send).toHaveBeenCalledWith(false);
         });
     });

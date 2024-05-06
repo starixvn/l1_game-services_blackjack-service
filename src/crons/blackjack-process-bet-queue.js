@@ -45,34 +45,41 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     }
 
     async proceedBet(player, payload) {
-        switch (payload.action) {
-            case gameSettings.actions.deal:
-                await this.processDeal(player, payload);
-                break;
-            case gameSettings.actions.double:
-                await this.processDouble(player, payload);
-                break;
-            case gameSettings.actions.split:
-                await this.processSplit(player, payload);
-                break;
-            case gameSettings.actions.hit:
-                await this.processHit(player, payload);
-                break;
-            case gameSettings.actions.stand:
-                await this.processStand(player, payload);
-                break;
-        }
+        try {
+            switch (payload.action) {
+                case gameSettings.actions.deal:
+                    await this.processDeal(player, payload);
+                    break;
+                case gameSettings.actions.double:
+                    await this.processDouble(player, payload);
+                    break;
+                case gameSettings.actions.split:
+                    await this.processSplit(player, payload);
+                    break;
+                case gameSettings.actions.hit:
+                    await this.processHit(player, payload);
+                    break;
+                case gameSettings.actions.stand:
+                    await this.processStand(player, payload);
+                    break;
+            }
 
-        const { betTracks } = this.gameData.ingame[player.profile.name];
-        this.gameData.ingame[player.profile.name].processing = false;
+            const { betTracks } = this.gameData.ingame[player.profile.name];
+            this.gameData.ingame[player.profile.name].processing = false;
 
-        const totalProcessedTime = (new Date() - payload.receivedTime) / 1000;
-        this.baseMetrics.collectBetProcessedTime(totalProcessedTime);
+            const totalProcessedTime = (new Date() - payload.receivedTime) / 1000;
+            this.baseMetrics.collectBetProcessedTime(totalProcessedTime);
 
-        if (betTracks.hands.every((hand) => hand.isStand) && betTracks.hands.length > 0) {
-            await this.settleGameRoundConsumer.settleRound(player.profile.name);
-        } else {
-            this.updateActiveHand(player);
+            if (betTracks.hands.every((hand) => hand.isStand) && betTracks.hands.length > 0) {
+                await this.settleGameRoundConsumer.settleRound(player.profile.name);
+            } else {
+                this.updateActiveHand(player);
+            }
+        } catch (error) {
+            this.gameData.ingame[player.profile.name].betTracks = {};
+            this.gameData.ingame[player.profile.name].processing = false;
+            this.handleFailedBet(player, { errorCode: helpers.noticeHelper.cannotPlaceBet });
+            this.logService.logError(error);
         }
     }
 

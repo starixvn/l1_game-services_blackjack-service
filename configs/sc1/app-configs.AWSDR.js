@@ -21,7 +21,7 @@ export default {
     },
     enabledLogs: true,
     database: {
-        url: "mongodb://lmn_backend:Sb%7B5r%40Xy4X%256%28%24%5Bt%252HsOxJ%7CQt9jdR%26t@10.77.15.16:27101/?replicaSet=SabaL1DR",
+        url: "mongodb://lmn_backend:Sb%7B5r%40Xy4X%256%28%24%5Bt%252HsOxJ%7CQt9jdR%26t@10.88.127.158:27101/?replicaSet=SabaL1DR",
         options: {
             dbName: "minigame",
             useNewUrlParser: true,

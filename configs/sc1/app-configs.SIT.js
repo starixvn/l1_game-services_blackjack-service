@@ -2,8 +2,8 @@ export default {
     hostingPort: 5000,
     apiSettings: {
         enabledApi: true,
-        apiUrl: "http://l1_game_api_sit:5000",
-        authUrl: "http://l1_auth_api_sit:5000",
+        apiUrl: "http://l1-game-api-sit-service:5000",
+        authUrl: "http://l1-auth-api-sit-service:5000",
         client: {
             id: "game-server",
             secret: "gameserver@20luminet&",
@@ -34,7 +34,7 @@ export default {
         env: "SIT",
     },
     authenticateSettings: {
-        url: "http://l1_auth_api_sit:5000",
+        url: "http://l1-auth-api-sit-service:5000",
         id: "game-services",
         secret: "gameservices@20luminet&",
         requestTimeout: 10000,
@@ -42,7 +42,7 @@ export default {
         audiences: ["api", "admin-api"],
     },
     userServiceSettings: {
-        url: "http://l1_user_service_sit:5000",
+        url: "http://l1-user-service-sit-service:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
     roundMaxDuration: 1,

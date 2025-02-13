@@ -2,8 +2,8 @@ export default {
     hostingPort: 5000,
     apiSettings: {
         enabledApi: true,
-        apiUrl: "http://l2_game_api_uat:5000",
-        authUrl: "http://l2_auth_api_uat:5000",
+        apiUrl: "http://l2-game-api-uat-service:5000",
+        authUrl: "http://l2-auth-api-uat-service:5000",
         client: {
             id: "game-server",
             secret: "gameserver@20luminet&",
@@ -35,7 +35,7 @@ export default {
         env: "UAT",
     },
     authenticateSettings: {
-        url: "http://l2_auth_api_uat:5000",
+        url: "http://l2-auth-api-uat-service:5000",
         id: "game-services",
         secret: "gameservices@20luminet&",
         requestTimeout: 10000,
@@ -43,7 +43,7 @@ export default {
         audiences: ["api", "admin-api"],
     },
     userServiceSettings: {
-        url: "http://l2_user_service_uat:5000",
+        url: "http://l2-user-service-uat-service:5000",
     },
     adminSecretKey: "asWDEerfOIdgsdqRTFabvmgh",
     roundMaxDuration: 24,

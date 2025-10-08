@@ -26,7 +26,6 @@ export default {
             dbName: "minigame",
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            auto_reconnect: true,
         },
     },
     sentry: {
@@ -46,5 +45,5 @@ export default {
         url: "http://localhost:8004/api",
     },
     adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
-    roundMaxDuration: 24,
+    roundMaxDuration: 1440,
 };

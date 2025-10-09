@@ -45,5 +45,5 @@ export default {
         url: "http://localhost:8004/api",
     },
     adminSecretKey: "asWDEer4yGdgsdqR4uqmKQZgh",
-    roundMaxDuration: 1440,
+    roundMaxDuration: 5,
 };

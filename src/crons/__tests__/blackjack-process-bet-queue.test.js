@@ -55,6 +55,7 @@ beforeEach(() => {
             blackjack: 2.5,
         },
         choices_maxbet: null,
+        slotMechanics: { enabled: false }, // Disable slot mechanics for classic mode tests
     };
 
     processBetQueue = new BlackJackProcessBetQueue({

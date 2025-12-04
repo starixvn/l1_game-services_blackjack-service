@@ -13,6 +13,7 @@ const Schema = new mongoose.Schema({
     name: { type: String, required: true },
     odds: { type: Object },
     exchangeRateId: { type: Number, required: true },
+    dealerOutcomeType: { type: String },
 });
 
 const rounds = mongoose.model(modelName, Schema);

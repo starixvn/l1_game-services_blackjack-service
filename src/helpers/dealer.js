@@ -21,7 +21,7 @@ export const generateResult = (dealerCards, decks, isUpCard, slotConfig = null) 
     const useSlotMechanics = slotConfig?.enabled ?? false;
 
     if (useSlotMechanics) {
-        return generateResultWithSlotMechanics(isUpCard, slotConfig);
+        return generateResultWithSlotMechanics(dealerCards, isUpCard, slotConfig);
     }
 
     return generateResultClassic(dealerCards, decks, isUpCard);
@@ -47,13 +47,20 @@ const generateResultClassic = (dealerCards, decks, isUpCard) => {
 
 /**
  * Slot mode: Generate result from weighted distribution
+ * @param {array} initialDealerCards - Initial dealer cards (first card was shown to player)
+ * @param {boolean} isUpCard - If true, only return up card info
+ * @param {object} slotConfig - Slot configuration
  */
-const generateResultWithSlotMechanics = (isUpCard, slotConfig) => {
+const generateResultWithSlotMechanics = (initialDealerCards, isUpCard, slotConfig) => {
     const distribution = slotConfig?.distribution ?? gameSettings.slotMechanics?.distributions?.[1];
+
+    // Pass the up card (first card shown to player) to preserve consistency
+    const upCard = initialDealerCards?.[0] ?? null;
 
     const result = generateResultFromDistribution({
         distribution,
         isUpCardOnly: isUpCard,
+        upCard,
     });
 
     return {

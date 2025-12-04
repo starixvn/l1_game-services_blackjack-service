@@ -8,6 +8,7 @@ import SettleGameConsumer from "../consumers/settle-game-consumer";
 import gameSettings from "../game-settings";
 import { calculate, calculateFinalValue, isAce, isBlackjack } from "../helpers/card-helper";
 import { generateDecks } from "../helpers/deck-helper";
+import { generateResultFromDistribution, DEALER_OUTCOME_TYPES } from "../helpers/dealer-distribution";
 
 export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -462,7 +463,11 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });
     }
 
-    dealCards({ dealer, hands, deck }) {
+    dealCards(betTracks) {
+        const { dealer, hands, deck } = betTracks;
+        const slotConfig = this.buildSlotConfig();
+
+        // Deal player cards from deck
         for (let turn = 1; turn <= 2; turn++) {
             for (const hand of hands) {
                 hand.cards.push(deck.shift());
@@ -475,7 +480,25 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 }
             }
 
-            dealer.cards.push(deck.shift());
+            // In classic mode, deal dealer cards from deck
+            if (!slotConfig?.enabled) {
+                dealer.cards.push(deck.shift());
+            }
+        }
+
+        // In slot mode, generate dealer cards from distribution
+        if (slotConfig?.enabled) {
+            const result = generateResultFromDistribution({
+                distribution: slotConfig.distribution,
+            });
+
+            dealer.cards = result.result;
+            // Store outcome info for settlement
+            betTracks.slotOutcome = {
+                outcomeType: result.outcomeType,
+                settlementResult: result.settlementResult,
+                randomMode: slotConfig.randomMode,
+            };
         }
 
         if (isBlackjack(dealer.cards)) {
@@ -484,6 +507,54 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                 hand.actions.push(gameSettings.actions.stand);
             }
         }
+    }
+
+    /**
+     * Build slot mechanics configuration based on randomMode
+     * @returns {object|null} - Slot config or null if disabled
+     */
+    buildSlotConfig() {
+        const configFromDb = this.gameData.gameConfigs?.slotMechanics;
+        const configFromSettings = gameSettings.slotMechanics;
+
+        const enabled = configFromDb?.enabled ?? configFromSettings?.enabled ?? false;
+
+        if (!enabled) {
+            return null;
+        }
+
+        const randomMode = this.gameData.gameConfigs?.randomMode ?? 1;
+        const distribution = this.getDistributionForMode(randomMode, configFromDb, configFromSettings);
+
+        return {
+            enabled: true,
+            distribution,
+            randomMode,
+        };
+    }
+
+    /**
+     * Get distribution config for a specific random mode
+     * @param {number} randomMode - The random mode (1, 2, or 3)
+     * @param {object} configFromDb - Config from database
+     * @param {object} configFromSettings - Config from game-settings
+     * @returns {object} - Distribution weights for the mode
+     */
+    getDistributionForMode(randomMode, configFromDb, configFromSettings) {
+        if (configFromDb) {
+            if (configFromDb.distributions?.[randomMode]) {
+                return configFromDb.distributions[randomMode];
+            }
+            if (configFromDb.dealerDistribution) {
+                return configFromDb.dealerDistribution;
+            }
+        }
+
+        if (configFromSettings?.distributions?.[randomMode]) {
+            return configFromSettings.distributions[randomMode];
+        }
+
+        return configFromSettings?.distributions?.[1] ?? {};
     }
 
     handleFailedBet(player, notice) {

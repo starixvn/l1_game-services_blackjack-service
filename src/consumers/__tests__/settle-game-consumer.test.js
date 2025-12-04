@@ -11,6 +11,9 @@ import { gameNotifications } from "sc-base-database";
 jest.mock("../../publishers/round-result-publisher");
 jest.mock("sc-base-database");
 
+// Store original slotMechanics config
+const originalSlotMechanics = { ...gameSettings.slotMechanics };
+
 /** @type {BlackjackGameDefinition}*/
 let definition = null;
 /** @type {BlackjackGameData}*/
@@ -200,7 +203,15 @@ describe("settle bet tests", () => {
 });
 
 describe("buildSlotConfig", () => {
+    afterEach(() => {
+        // Restore original slotMechanics config after each test
+        gameSettings.slotMechanics = { ...originalSlotMechanics };
+    });
+
     it("should return null when slotMechanics is not enabled in gameConfigs or settings", () => {
+        // Disable slotMechanics in game-settings for this test
+        gameSettings.slotMechanics = { enabled: false };
+
         gameData.gameConfigs = {
             randomMode: 1,
             odds: { regular: 2, blackjack: 2.5 },

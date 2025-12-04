@@ -18,7 +18,7 @@ import { generateResultFromDistribution } from "./dealer-distribution";
  * @returns {object} - { result: cards[], settlementResult: number, outcomeType?: string }
  */
 export const generateResult = (dealerCards, decks, isUpCard, slotConfig = null) => {
-    const useSlotMechanics = slotConfig?.enabled ?? gameSettings.slotMechanics?.enabled ?? false;
+    const useSlotMechanics = slotConfig?.enabled ?? false;
 
     if (useSlotMechanics) {
         return generateResultWithSlotMechanics(isUpCard, slotConfig);

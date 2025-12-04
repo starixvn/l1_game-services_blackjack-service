@@ -24,22 +24,22 @@ export default {
      * The mode determines the dealer's card drawing probability distribution
      */
     dealerProbability: {
-        // Mode 1: Hard
+        // Mode 1: Standard
         1: {
-            bust: 0.05,
-            seventeenToTwenty: 0.8,
-            twentyOne: 0.15,
+            bust: 0.24,
+            seventeenToTwenty: 0.71,
+            twentyOne: 0.05,
         },
         // Mode 2: Medium
         2: {
-            bust: 0.2,
-            seventeenToTwenty: 0.75,
+            bust: 0.15,
+            seventeenToTwenty: 0.8,
             twentyOne: 0.05,
         },
-        // Mode 3: Easy
+        // Mode 3: Hard
         3: {
-            bust: 0.4,
-            seventeenToTwenty: 0.5,
+            bust: 0.05,
+            seventeenToTwenty: 0.85,
             twentyOne: 0.1,
         },
     },

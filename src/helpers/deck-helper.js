@@ -210,8 +210,8 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
     for (let i = 0; i < bustSets; i++) {
         const bustValue = 22 + Math.floor(mathRandom() * 5); // 22-26
         const cardSet = generateCardSetForTarget(bustValue);
-        // Create a deep copy to avoid reference issues
-        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+        // Card objects are already created by generateCardSetForTarget, just copy the array
+        pool.push([...cardSet]);
     }
 
     // Generate 17-20 sets
@@ -219,15 +219,15 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
         const values = [17, 18, 19, 20];
         const targetValue = values[Math.floor(mathRandom() * values.length)];
         const cardSet = generateCardSetForTarget(targetValue);
-        // Create a deep copy to avoid reference issues
-        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+        // Card objects are already created by generateCardSetForTarget, just copy the array
+        pool.push([...cardSet]);
     }
 
     // Generate 21 sets
     for (let i = 0; i < twentyOneSets; i++) {
         const cardSet = generateCardSetForTarget(21);
-        // Create a deep copy to avoid reference issues
-        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+        // Card objects are already created by generateCardSetForTarget, just copy the array
+        pool.push([...cardSet]);
     }
 
     // Randomly pick one set from the pool

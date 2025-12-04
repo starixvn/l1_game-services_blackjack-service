@@ -11,7 +11,8 @@
         "prod": "node --max-old-space-size=8192 --es-module-specifier-resolution=node ./src/app.js",
         "reg": "npm set registry http://npm.lumigame.com",
         "stats": "nodemon --es-module-specifier-resolution=node --watch ./tests ./tests/result-statistic.js",
-        "simulate:dealer": "node --es-module-specifier-resolution=node ./tests/dealer-distribution-simulation.js"
+        "simulate:dealer": "node --es-module-specifier-resolution=node ./tests/dealer-distribution-simulation.js",
+        "simulate:slot": "node --es-module-specifier-resolution=node ./tests/slot-mechanics-simulation.js"
     },
     "author": "pentagon",
     "license": "ISC",

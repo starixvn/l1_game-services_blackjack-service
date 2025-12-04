@@ -3,11 +3,12 @@ import { helpers } from "sc-common";
 import ProcessBetQueue from "sc-game-base/src/core/crons/process-bet-queue";
 
 import { cards } from "../card";
+import appConfigs from "../app-configs";
 import constants from "../constants";
 import SettleGameConsumer from "../consumers/settle-game-consumer";
 import gameSettings from "../game-settings";
 import { calculate, calculateFinalValue, isAce, isBlackjack } from "../helpers/card-helper";
-import { generateDecks } from "../helpers/deck-helper";
+import { generateDecks, generateDealerDeck } from "../helpers/deck-helper";
 
 export default class BlackJackProcessBetQueue extends ProcessBetQueue {
     baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
@@ -154,6 +155,9 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         if (betTracks.hands.length > 0) {
             betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
             betTracks.deck = generateDecks([], randomMode);
+            // Generate dealer deck for probability-based dealer card drawing
+            const dealerProbability = appConfigs.dealer?.probability || null;
+            betTracks.dealerDeck = generateDealerDeck(randomMode, dealerProbability);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);
             betTracks.activeHandId = betTracks.hands.find((hand) => !hand.isStand)?.id;
@@ -203,6 +207,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             softPoints: calculate(hand.cards),
             time: new Date(),
             actions: hand.actions,
+            dealerDeck: betTracks.dealerDeck, // Store dealer deck for round recovery
         }));
 
         if (player.session) {
@@ -345,6 +350,7 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             splitFrom: splitHand.splitFrom,
             currency: bet.currency,
             rate: bet.rate,
+            dealerDeck: betTracks.dealerDeck, // Maintain dealer deck for split hands
 
             playerId: player.session?.playerId,
             operatorId: bet.operatorId,
@@ -462,7 +468,8 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
         this.placeBetPublisher.publishGameFailedBet(player.UID, { endBet: -1, blackjackNotice });
     }
 
-    dealCards({ dealer, hands, deck }) {
+    dealCards({ dealer, hands, deck, dealerDeck }) {
+        // Deal player hands (2 cards each)
         for (let turn = 1; turn <= 2; turn++) {
             for (const hand of hands) {
                 hand.cards.push(deck.shift());
@@ -474,8 +481,19 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
                     hand.total = calculate(hand.cards);
                 }
             }
+        }
 
-            dealer.cards.push(deck.shift());
+        // Deal dealer cards from dealerDeck (draw only 2 cards initially, keep rest for settlement)
+        if (dealerDeck && dealerDeck.length > 0) {
+            // Draw only 2 cards initially, keep remaining cards in dealerDeck for settlement
+            for (let turn = 1; turn <= 2 && dealerDeck.length > 0; turn++) {
+                dealer.cards.push(dealerDeck.shift());
+            }
+        } else {
+            // Fallback to regular deck if dealerDeck is empty (draw 2 cards)
+            for (let turn = 1; turn <= 2; turn++) {
+                dealer.cards.push(deck.shift());
+            }
         }
 
         if (isBlackjack(dealer.cards)) {

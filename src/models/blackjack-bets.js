@@ -27,6 +27,9 @@ const schema = new mongoose.Schema({
     operatorId: { type: String, required: false },
     roundId: { type: Number, default: 0, required: true },
     paid: { type: Boolean, default: false },
+
+    // Dealer deck for the round (stored in all bets of the same round)
+    dealerDeck: { type: Array, default: [] },
 });
 
 const bets = mongoose.model(modelName, schema);

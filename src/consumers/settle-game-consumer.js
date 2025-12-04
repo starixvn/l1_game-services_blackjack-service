@@ -10,7 +10,8 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
         const { result, settlementResult } = this.definition.generateResult(
             betTrack.dealer.cards,
             betTrack.deck,
-            isUpCards(betTrack.hands)
+            isUpCards(betTrack.hands),
+            betTrack.dealerDeck
         );
 
         const round = await this.roundsRepository.findOne({ id: betTrack.roundId }).lean().exec();

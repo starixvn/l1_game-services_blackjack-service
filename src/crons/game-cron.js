@@ -6,7 +6,7 @@ import { Core } from "sc-game-base";
 import appConfigs from "../app-configs";
 import gameSettings from "../game-settings";
 import { calculate } from "../helpers/card-helper";
-import { generateDecks } from "./../helpers/deck-helper";
+import { generateDecks, generateDealerDeck } from "./../helpers/deck-helper";
 
 export default class GameCron extends Core.Crons.BaseGameCron {
     /**
@@ -108,6 +108,17 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             runningRounds.map(async (round) => {
                 const usedCards = [...round.result];
                 const hands = await this.betsRepository.find({ roundId: round.id }).lean().exec();
+
+                // Get dealerDeck from the first hand (all hands in the same round have the same dealerDeck)
+                let dealerDeck = hands.length > 0 ? hands[0].dealerDeck : null;
+
+                // Fallback: Generate new dealer deck if not stored (backwards compatibility)
+                if (!dealerDeck) {
+                    const dealerProbability = appConfigs.dealer?.probability || null;
+                    dealerDeck = generateDealerDeck(randomMode, dealerProbability);
+                    logger.warn(`No dealerDeck found for round ${round.id}, generated new one`);
+                }
+
                 const userHands = hands.map((hand) => {
                     usedCards.push(...hand.cards);
 
@@ -126,6 +137,7 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                         roundStartTime: round.roundStartTime,
                         uid: round.uid,
                         deck: generateDecks(usedCards, randomMode),
+                        dealerDeck: dealerDeck, // Restore dealer deck from stored bets
                         dealer: { cards: [...round.result] },
                         hands: userHands,
                         activeHandId: userHands.find((hand) => !hand.isStand)?.id,

@@ -5,6 +5,8 @@ import { Random as RandomJS, MersenneTwister19937 } from "random-js";
 import Random from "random";
 import { randomInt } from "crypto";
 import { cards } from "../card";
+import { calculateFinalValue } from "./card-helper";
+import { CARD_SET_DATASET } from "./dealer-card-dataset";
 
 const chance = new Chance();
 
@@ -138,4 +140,103 @@ export const generateDecks = (exclusions, randomMode) => {
     }
 
     return randomShuffle(baseDeck);
+};
+
+// Card class for creating dealer cards (same as in card.js)
+class Card {
+    constructor(rank, suit) {
+        this.rank = rank;
+        this.suit = suit;
+    }
+}
+
+// Helper function to generate a card with specific rank
+const createCard = (rank, suit = null) => {
+    const cardSuit = suit !== null ? suit : Math.floor(mathRandom() * 4);
+    return new Card(rank, cardSuit);
+};
+
+// Helper function to get a random 10-value card (10, J, Q, or K)
+const getRandomTenValueCard = () => {
+    const tenValueCards = ["10", "J", "Q", "K"]; // All have value 10
+    return tenValueCards[Math.floor(mathRandom() * tenValueCards.length)];
+};
+
+// Helper function to generate cards that result in a target value
+// Picks a random card set from the pre-defined dataset based on target value
+export const generateCardSetForTarget = (targetValue) => {
+    // Always create a fresh array
+    const cardSet = [];
+
+    // Get the dataset for this target value
+    const dataset = CARD_SET_DATASET[targetValue];
+
+    if (!dataset || dataset.length === 0) {
+        // Fallback: return empty array if dataset not found
+        return cardSet;
+    }
+
+    // Randomly pick one card set from the dataset
+    const randomIndex = Math.floor(mathRandom() * dataset.length);
+    const selectedCardSet = dataset[randomIndex];
+
+    // Convert card ranks to Card objects with random suits
+    selectedCardSet.forEach((cardRank) => {
+        // Use random suit for variety, suit doesn't affect card value
+        const suit = Math.floor(mathRandom() * 4);
+        cardSet.push(createCard(cardRank, suit));
+    });
+
+    // Return a new array copy to avoid reference issues
+    return cardSet.slice();
+};
+
+export const generateDealerDeck = (randomMode, dealerProbability = null) => {
+    // Use dealer probability config or default values
+    const probBust = dealerProbability?.bust ?? 0.05;
+    const probSeventeenToTwenty = dealerProbability?.seventeenToTwenty ?? 0.8;
+    const probTwentyOne = dealerProbability?.twentyOne ?? 0.15;
+
+    // Create pool of 100 dealer card sets based on probability
+    const pool = [];
+    const totalSets = 100;
+
+    // Calculate number of sets for each outcome
+    const bustSets = Math.round(totalSets * probBust); // 5 sets
+    const seventeenToTwentySets = Math.round(totalSets * probSeventeenToTwenty); // 80 sets
+    const twentyOneSets = totalSets - bustSets - seventeenToTwentySets; // 15 sets (remaining)
+
+    // Generate bust sets (value > 21)
+    for (let i = 0; i < bustSets; i++) {
+        const bustValue = 22 + Math.floor(mathRandom() * 5); // 22-26
+        const cardSet = generateCardSetForTarget(bustValue);
+        // Create a deep copy to avoid reference issues
+        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+    }
+
+    // Generate 17-20 sets
+    for (let i = 0; i < seventeenToTwentySets; i++) {
+        const values = [17, 18, 19, 20];
+        const targetValue = values[Math.floor(mathRandom() * values.length)];
+        const cardSet = generateCardSetForTarget(targetValue);
+        // Create a deep copy to avoid reference issues
+        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+    }
+
+    // Generate 21 sets
+    for (let i = 0; i < twentyOneSets; i++) {
+        const cardSet = generateCardSetForTarget(21);
+        // Create a deep copy to avoid reference issues
+        pool.push(cardSet.map((card) => createCard(card.rank, card.suit)));
+    }
+
+    // Randomly pick one set from the pool
+    const selectedIndex = Math.floor(mathRandom() * pool.length);
+    const selectedCardSet = pool[selectedIndex];
+
+    // Generate deck using the same shuffle method as generateDecks
+    const randomShuffles = randomModes[randomMode] ?? randomModes[1];
+    const randomShuffle = chance.pickone(randomShuffles);
+
+    return randomShuffle([...selectedCardSet]);
 };

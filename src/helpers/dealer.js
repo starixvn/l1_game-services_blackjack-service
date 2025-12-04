@@ -1,12 +1,39 @@
 import constants from "./../constants";
 import gameSettings from "./../game-settings";
 import { calculateFinalValue, isBlackjack, isBust } from "./card-helper";
+import { generateResultFromDistribution } from "./dealer-distribution";
 
-export const generateResult = (dealerCards, decks, isUpCard) => {
+/**
+ * Generate dealer result
+ * Supports two modes:
+ * 1. Classic mode: Draw cards from deck until >= 17
+ * 2. Slot mode: Generate result from weighted distribution (separate dealer deck)
+ *
+ * @param {array} dealerCards - Dealer's initial cards (used in classic mode)
+ * @param {array} decks - Remaining deck (used in classic mode)
+ * @param {boolean} isUpCard - If true, dealer doesn't draw (all players bust/blackjack)
+ * @param {object} slotConfig - Slot mechanics config (optional)
+ * @param {boolean} slotConfig.enabled - Enable slot mechanics
+ * @param {object} slotConfig.distribution - Distribution weights
+ * @returns {object} - { result: cards[], settlementResult: number, outcomeType?: string }
+ */
+export const generateResult = (dealerCards, decks, isUpCard, slotConfig = null) => {
+    const useSlotMechanics = slotConfig?.enabled ?? gameSettings.slotMechanics?.enabled ?? false;
+
+    if (useSlotMechanics) {
+        return generateResultWithSlotMechanics(isUpCard, slotConfig);
+    }
+
+    return generateResultClassic(dealerCards, decks, isUpCard);
+};
+
+/**
+ * Classic mode: Draw cards from shared deck
+ */
+const generateResultClassic = (dealerCards, decks, isUpCard) => {
     let settlementResult = calculateFinalValue(dealerCards);
 
     if (isUpCard) {
-        settlementResult = calculateFinalValue(dealerCards);
         return { result: dealerCards, settlementResult };
     }
 
@@ -16,6 +43,25 @@ export const generateResult = (dealerCards, decks, isUpCard) => {
     }
 
     return { result: dealerCards, settlementResult };
+};
+
+/**
+ * Slot mode: Generate result from weighted distribution
+ */
+const generateResultWithSlotMechanics = (isUpCard, slotConfig) => {
+    const distribution = slotConfig?.distribution ?? gameSettings.slotMechanics?.distributions?.[1];
+
+    const result = generateResultFromDistribution({
+        distribution,
+        isUpCardOnly: isUpCard,
+    });
+
+    return {
+        result: result.result,
+        settlementResult: result.settlementResult,
+        outcomeType: result.outcomeType,
+        randomMode: slotConfig?.randomMode,
+    };
 };
 
 export const settle = (dealerCards, bet, odds) => {

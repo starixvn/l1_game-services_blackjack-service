@@ -1,3 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
+    <file path="G:\Projects\blackjack-service\src\helpers\__tests__\card-helper.test.js">
+        <testCase name="calculate() should return blackjack" duration="33"/>
+        <testCase name="calculate() when cards has aces, should return value correctly" duration="2"/>
+        <testCase name="calculate() should calculate value correctly" duration="1"/>
+        <testCase name="calculateFinalValue() should return single value" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\helpers\__tests__\dealer-distribution.test.js">
+        <testCase name="dealer-distribution selectOutcomeFromDistribution should return a valid outcome type" duration="34"/>
+        <testCase name="dealer-distribution selectOutcomeFromDistribution should respect distribution weights over many iterations" duration="39"/>
+        <testCase name="dealer-distribution selectOutcomeFromDistribution should handle custom distribution" duration="10"/>
+        <testCase name="dealer-distribution generateCardsForValue blackjack should generate exactly 2 cards totaling 21" duration="0"/>
+        <testCase name="dealer-distribution generateCardsForValue blackjack should generate valid card objects" duration="4"/>
+        <testCase name="dealer-distribution generateCardsForValue standing hands (17-20) should generate cards totaling 17" duration="1"/>
+        <testCase name="dealer-distribution generateCardsForValue standing hands (17-20) should generate cards totaling 18" duration="0"/>
+        <testCase name="dealer-distribution generateCardsForValue standing hands (17-20) should generate cards totaling 19" duration="1"/>
+        <testCase name="dealer-distribution generateCardsForValue standing hands (17-20) should generate cards totaling 20" duration="0"/>
+        <testCase name="dealer-distribution generateCardsForValue standing hands (17-20) should generate valid card objects for standing hands" duration="1"/>
+        <testCase name="dealer-distribution generateCardsForValue 21 (non-blackjack) should generate 3+ cards totaling 21" duration="1"/>
+        <testCase name="dealer-distribution generateCardsForValue bust should generate cards totaling &gt; 21" duration="0"/>
+        <testCase name="dealer-distribution generateCardsForValue bust should generate at least 3 cards for bust" duration="0"/>
+        <testCase name="dealer-distribution generateCardsForValue bust should generate bust values within realistic range (22-26)" duration="15"/>
+        <testCase name="dealer-distribution generateCardsForValue bust should generate exactly 3 cards for bust (realistic dealer hit scenario)" duration="3"/>
+        <testCase name="dealer-distribution generateResultFromDistribution should return result with required properties" duration="1"/>
+        <testCase name="dealer-distribution generateResultFromDistribution should generate blackjack when outcome is blackjack" duration="0"/>
+        <testCase name="dealer-distribution generateResultFromDistribution should generate bust when outcome is bust" duration="0"/>
+        <testCase name="dealer-distribution generateResultFromDistribution should handle isUpCardOnly mode" duration="1"/>
+        <testCase name="dealer-distribution validateDistribution should validate correct distribution" duration="1"/>
+        <testCase name="dealer-distribution validateDistribution should reject null distribution" duration="0"/>
+        <testCase name="dealer-distribution validateDistribution should reject negative weights" duration="0"/>
+        <testCase name="dealer-distribution validateDistribution should reject zero total weight" duration="0"/>
+        <testCase name="dealer-distribution card shuffling should shuffle standing hand cards (not always same order)" duration="1"/>
+        <testCase name="dealer-distribution card shuffling should shuffle bust hand cards" duration="1"/>
+        <testCase name="dealer-distribution card shuffling should maintain correct hand value after shuffling" duration="5"/>
+        <testCase name="dealer-distribution per-mode distributions should generate different outcomes based on distribution weights" duration="4"/>
+        <testCase name="dealer-distribution per-mode distributions should handle all outcome types correctly" duration="1"/>
+        <testCase name="dealer-distribution per-mode distributions should generate 3+ cards for twenty_one (non-blackjack)" duration="2"/>
+        <testCase name="dealer-distribution per-mode distributions should generate exactly 2 cards for blackjack" duration="3"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\helpers\__tests__\desk-helper.test.js">
+        <testCase name="deckHelper generateDeck when random mode is undefined should return valid deck of cards" duration="31"/>
+        <testCase name="deckHelper generateDeck when random mode is undefined should return deck of cards without exclusions" duration="0"/>
+        <testCase name="deckHelper generateDeck when random mode is 1 should return valid deck of cards" duration="3"/>
+        <testCase name="deckHelper generateDeck when random mode is 1 should return deck of cards without exclusions" duration="2"/>
+        <testCase name="deckHelper generateDeck when random mode is 2 should return valid deck of cards" duration="4"/>
+        <testCase name="deckHelper generateDeck when random mode is 2 should return deck of cards without exclusions" duration="2"/>
+        <testCase name="deckHelper generateDeck when random mode is 3 should return valid deck of cards" duration="0"/>
+        <testCase name="deckHelper generateDeck when random mode is 3 should return deck of cards without exclusions" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\helpers\__tests__\dealer.test.js">
+        <testCase name="generateResult() should auto deal until it reach min value of dealer" duration="33"/>
+        <testCase name="generateResult() should not deal since it reached min value of dealer" duration="10"/>
+        <testCase name="settle() should return push if both dealer and player are blackjack" duration="0"/>
+        <testCase name="settle() should return blackjack odds if player is blackjack but dealer is not" duration="1"/>
+        <testCase name="settle() should return regular odds if player is blackjack but splitted" duration="0"/>
+        <testCase name="settle() should return 0 if player is bust" duration="0"/>
+        <testCase name="settle() should return regular odds if player is greater than dealer and not bust" duration="1"/>
+        <testCase name="settle() should return push if both dealer and player are the same" duration="1"/>
+        <testCase name="isUpCards() should be true if all hands are bust" duration="0"/>
+        <testCase name="isUpCards() should be true if all hands are blackjack" duration="0"/>
+        <testCase name="isUpCards() should be true if count of blackjack and bust are equal total hands" duration="1"/>
+        <testCase name="isUpCards() should be false if count of blackjack and bust are NOT equal total hands" duration="1"/>
+        <testCase name="isUpCards() should be false if count of blackjack and bust are equal total hands but blackjack hands were splitted" duration="0"/>
+        <testCase name="generateResult() with slot mechanics should use classic mode when slotConfig is null" duration="3"/>
+        <testCase name="generateResult() with slot mechanics should use classic mode when slotConfig.enabled is false" duration="4"/>
+        <testCase name="generateResult() with slot mechanics should use slot mechanics when enabled" duration="1"/>
+        <testCase name="generateResult() with slot mechanics should generate bust when distribution is 100% bust" duration="4"/>
+        <testCase name="generateResult() with slot mechanics should generate standing 17 when distribution is 100% standing_17" duration="2"/>
+        <testCase name="generateResult() with slot mechanics should generate standing 20 when distribution is 100% standing_20" duration="2"/>
+        <testCase name="generateResult() with slot mechanics should generate blackjack when distribution is 100% blackjack" duration="2"/>
+        <testCase name="generateResult() with slot mechanics should generate twenty_one (non-blackjack) when distribution is 100% twenty_one" duration="5"/>
+        <testCase name="generateResult() with slot mechanics should include randomMode in result for audit" duration="0"/>
+        <testCase name="generateResult() with slot mechanics should handle isUpCard=true in slot mode" duration="1"/>
+        <testCase name="generateResult() with slot mechanics should generate valid cards with correct structure" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\tests\routers\http-router.test.js">
+        <testCase name="HttpRouter should inherit TableHttpRouter" duration="22"/>
+        <testCase name="HttpRouter init should run correct" duration="3"/>
+        <testCase name="HttpRouter handleVoidTicket should run correctly when player is valid" duration="1"/>
+        <testCase name="HttpRouter handleVoidTicket should run incorrectly when player is invalid" duration="2"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\user-split-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="28"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="2"/>
+        <testCase name="validation test hand is stand, return correct error" duration="2"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="1"/>
+        <testCase name="validation test Attempt to split child hand, return correct error" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\user-double-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="20"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="1"/>
+        <testCase name="validation test hand is stand, return correct error" duration="1"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="4"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\outgame-consumer.test.js">
+        <testCase name="test outgame consumer should save running round to database, clear the game data" duration="17"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\user-deal-consumer.test.js">
+        <testCase name="consume test valid bet, add to betQueue, flag processing = true" duration="19"/>
+        <testCase name="consume test invalid bet, publish error to user, not creating ingame" duration="1"/>
+        <testCase name="validation test payload has bet amount exceed maxbet, return correct error" duration="2"/>
+        <testCase name="validation test payload has no hand, return correct error" duration="2"/>
+        <testCase name="validation test payload has hand having invalid postion, return correct error" duration="1"/>
+        <testCase name="validation test gameData has running round, return correct error" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\user-stand-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="13"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="1"/>
+        <testCase name="validation test hand is stand, return correct error" duration="1"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+        <testCase name="validation test hand isnt active, return correct error" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\user-hit-consumer.test.js">
+        <testCase name="consume test valid payload, add to betQueue, flag processing = true" duration="12"/>
+        <testCase name="consume test invalid payload, publish error to user, not updating betTracs" duration="1"/>
+        <testCase name="validation test hand is stand, return correct error" duration="1"/>
+        <testCase name="validation test invalid hand id, return correct error" duration="1"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\ingame-consumer.test.js">
+        <testCase name="test ingame consumer should store player into gamedata &amp; publish to user via socket correctly" duration="9"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\crons\__tests__\blackjack-process-bet-queue.test.js">
+        <testCase name="deal test valid bet, start dealing cards, save to database, update bettracks, publish to user" duration="14"/>
+        <testCase name="deal test valid bet, user stake change, start dealing cards, save to database, update bettracks, publish to user, update user stake level" duration="3"/>
+        <testCase name="deal test placeBet return error, only publish errors to user" duration="1"/>
+        <testCase name="process double tests api return isOk = true, update betTracks and database" duration="3"/>
+        <testCase name="process double tests placeBet return error, only publish error to user" duration="5"/>
+        <testCase name="process hit tests should update betTracks and database" duration="1"/>
+        <testCase name="process hit tests should auto stand hand when total &gt; 21" duration="1"/>
+        <testCase name="process stand tests should update betTracks, database &amp; publish to user" duration="1"/>
+        <testCase name="process split tests api return isOk = true, update betTracks and database" duration="2"/>
+        <testCase name="process split tests placeBet return error, only publish error to user" duration="2"/>
+    </file>
+    <file path="G:\Projects\blackjack-service\src\consumers\__tests__\settle-game-consumer.test.js">
+        <testCase name="settle round tests should delete ingame, publish round result delete data in game notification" duration="10"/>
+        <testCase name="settle bet tests should delete ingame, publish round result" duration="3"/>
+        <testCase name="buildSlotConfig should return null when slotMechanics is not enabled in gameConfigs or settings" duration="0"/>
+        <testCase name="buildSlotConfig should return null when slotMechanics.enabled is false" duration="0"/>
+        <testCase name="buildSlotConfig should return config when slotMechanics is enabled in gameConfigs" duration="1"/>
+        <testCase name="buildSlotConfig should use correct distribution for randomMode" duration="2"/>
+        <testCase name="buildSlotConfig should default to randomMode 1 when not set" duration="1"/>
+        <testCase name="buildSlotConfig should fall back to old dealerDistribution format for backwards compatibility" duration="0"/>
+        <testCase name="getDistributionForMode should prioritize DB distributions over settings" duration="1"/>
+        <testCase name="getDistributionForMode should fall back to settings when DB has no distribution for mode" duration="0"/>
+        <testCase name="getDistributionForMode should fall back to old dealerDistribution when distributions not available" duration="1"/>
+        <testCase name="getDistributionForMode should fall back to mode 1 from settings as ultimate fallback" duration="0"/>
+        <testCase name="getDistributionForMode should return empty object when no distribution available" duration="0"/>
+    </file>
 </testExecutions>

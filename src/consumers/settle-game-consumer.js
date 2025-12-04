@@ -3,14 +3,19 @@ import { Core } from "sc-game-base";
 
 import { calculateFinalValue } from "../helpers/card-helper";
 import { isUpCards } from "../helpers/dealer";
+import gameSettings from "../game-settings";
 
 export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGameRoundConsumer {
     async settleRound(playerName) {
         const betTrack = this.gameData.ingame[playerName].betTracks;
-        const { result, settlementResult } = this.definition.generateResult(
+
+        const slotConfig = this.buildSlotConfig();
+
+        const { result, settlementResult, outcomeType } = this.definition.generateResult(
             betTrack.dealer.cards,
             betTrack.deck,
-            isUpCards(betTrack.hands)
+            isUpCards(betTrack.hands),
+            slotConfig
         );
 
         const round = await this.roundsRepository.findOne({ id: betTrack.roundId }).lean().exec();
@@ -30,6 +35,7 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
                 settlementResult,
                 time: new Date(),
                 ended: true,
+                ...(outcomeType && { dealerOutcomeType: outcomeType }),
             }
         );
 
@@ -93,5 +99,55 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
     collectRoundResult(result, settlementResult, winningHands) {
         return { result, settlementResult, winningHands };
+    }
+
+    /**
+     * Build slot mechanics configuration based on randomMode
+     * Priority: gameConfigs (from DB) > game-settings (default)
+     * @returns {object|null} - Slot config or null if disabled
+     */
+    buildSlotConfig() {
+        const configFromDb = this.gameData.gameConfigs?.slotMechanics;
+        const configFromSettings = gameSettings.slotMechanics;
+
+        // Check if slot mechanics is enabled
+        const enabled = configFromDb?.enabled ?? configFromSettings?.enabled ?? false;
+
+        if (!enabled) {
+            return null;
+        }
+
+        const randomMode = this.gameData.gameConfigs?.randomMode ?? 1;
+        const distribution = this.getDistributionForMode(randomMode, configFromDb, configFromSettings);
+
+        return {
+            enabled: true,
+            distribution,
+            randomMode,
+        };
+    }
+
+    /**
+     * Get distribution config for a specific random mode
+     * @param {number} randomMode - The random mode (1, 2, or 3)
+     * @param {object} configFromDb - Config from database
+     * @param {object} configFromSettings - Config from game-settings
+     * @returns {object} - Distribution weights for the mode
+     */
+    getDistributionForMode(randomMode, configFromDb, configFromSettings) {
+        if (configFromDb) {
+            if (configFromDb.distributions?.[randomMode]) {
+                return configFromDb.distributions[randomMode];
+            }
+            if (configFromDb.dealerDistribution) {
+                return configFromDb.dealerDistribution;
+            }
+        }
+
+        if (configFromSettings?.distributions?.[randomMode]) {
+            return configFromSettings.distributions[randomMode];
+        }
+
+        return configFromSettings?.distributions?.[1] ?? {};
     }
 }

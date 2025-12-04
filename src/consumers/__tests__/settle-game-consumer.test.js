@@ -198,3 +198,170 @@ describe("settle bet tests", () => {
         expect(gameData.ingame["player"]).toBeUndefined();
     });
 });
+
+describe("buildSlotConfig", () => {
+    it("should return null when slotMechanics is not enabled in gameConfigs or settings", () => {
+        gameData.gameConfigs = {
+            randomMode: 1,
+            odds: { regular: 2, blackjack: 2.5 },
+        };
+
+        const result = consumer.buildSlotConfig();
+        expect(result).toBeNull();
+    });
+
+    it("should return null when slotMechanics.enabled is false", () => {
+        gameData.gameConfigs = {
+            randomMode: 1,
+            odds: { regular: 2, blackjack: 2.5 },
+            slotMechanics: {
+                enabled: false,
+            },
+        };
+
+        const result = consumer.buildSlotConfig();
+        expect(result).toBeNull();
+    });
+
+    it("should return config when slotMechanics is enabled in gameConfigs", () => {
+        gameData.gameConfigs = {
+            randomMode: 2,
+            odds: { regular: 2, blackjack: 2.5 },
+            slotMechanics: {
+                enabled: true,
+                distributions: {
+                    2: { bust: 40, standing_17: 20, standing_20: 40 },
+                },
+            },
+        };
+
+        const result = consumer.buildSlotConfig();
+
+        expect(result).not.toBeNull();
+        expect(result.enabled).toBe(true);
+        expect(result.randomMode).toBe(2);
+        expect(result.distribution).toEqual({ bust: 40, standing_17: 20, standing_20: 40 });
+    });
+
+    it("should use correct distribution for randomMode", () => {
+        gameData.gameConfigs = {
+            randomMode: 3,
+            odds: { regular: 2, blackjack: 2.5 },
+            slotMechanics: {
+                enabled: true,
+                distributions: {
+                    1: { bust: 28 },
+                    2: { bust: 35 },
+                    3: { bust: 22 },
+                },
+            },
+        };
+
+        const result = consumer.buildSlotConfig();
+
+        expect(result.randomMode).toBe(3);
+        expect(result.distribution).toEqual({ bust: 22 });
+    });
+
+    it("should default to randomMode 1 when not set", () => {
+        gameData.gameConfigs = {
+            odds: { regular: 2, blackjack: 2.5 },
+            slotMechanics: {
+                enabled: true,
+                distributions: {
+                    1: { bust: 28 },
+                },
+            },
+        };
+
+        const result = consumer.buildSlotConfig();
+
+        expect(result.randomMode).toBe(1);
+    });
+
+    it("should fall back to old dealerDistribution format for backwards compatibility", () => {
+        gameData.gameConfigs = {
+            randomMode: 2,
+            odds: { regular: 2, blackjack: 2.5 },
+            slotMechanics: {
+                enabled: true,
+                dealerDistribution: { bust: 30, standing_17: 70 },
+            },
+        };
+
+        const result = consumer.buildSlotConfig();
+
+        expect(result.distribution).toEqual({ bust: 30, standing_17: 70 });
+    });
+});
+
+describe("getDistributionForMode", () => {
+    it("should prioritize DB distributions over settings", () => {
+        const configFromDb = {
+            distributions: {
+                1: { bust: 50 },
+            },
+        };
+        const configFromSettings = {
+            distributions: {
+                1: { bust: 28 },
+            },
+        };
+
+        const result = consumer.getDistributionForMode(1, configFromDb, configFromSettings);
+
+        expect(result).toEqual({ bust: 50 });
+    });
+
+    it("should fall back to settings when DB has no distribution for mode", () => {
+        const configFromDb = {
+            distributions: {
+                2: { bust: 50 },
+            },
+        };
+        const configFromSettings = {
+            distributions: {
+                1: { bust: 28 },
+                3: { bust: 22 },
+            },
+        };
+
+        const result = consumer.getDistributionForMode(3, configFromDb, configFromSettings);
+
+        expect(result).toEqual({ bust: 22 });
+    });
+
+    it("should fall back to old dealerDistribution when distributions not available", () => {
+        const configFromDb = {
+            dealerDistribution: { bust: 40 },
+        };
+        const configFromSettings = {
+            distributions: {
+                1: { bust: 28 },
+            },
+        };
+
+        const result = consumer.getDistributionForMode(1, configFromDb, configFromSettings);
+
+        expect(result).toEqual({ bust: 40 });
+    });
+
+    it("should fall back to mode 1 from settings as ultimate fallback", () => {
+        const configFromDb = null;
+        const configFromSettings = {
+            distributions: {
+                1: { bust: 28 },
+            },
+        };
+
+        const result = consumer.getDistributionForMode(99, configFromDb, configFromSettings);
+
+        expect(result).toEqual({ bust: 28 });
+    });
+
+    it("should return empty object when no distribution available", () => {
+        const result = consumer.getDistributionForMode(1, null, null);
+
+        expect(result).toEqual({});
+    });
+});

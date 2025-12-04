@@ -54,7 +54,6 @@ const generateResultClassic = (dealerCards, decks, isUpCard) => {
 const generateResultWithSlotMechanics = (initialDealerCards, isUpCard, slotConfig) => {
     const distribution = slotConfig?.distribution ?? gameSettings.slotMechanics?.distributions?.[1];
 
-    // Pass the up card (first card shown to player) to preserve consistency
     const upCard = initialDealerCards?.[0] ?? null;
 
     const result = generateResultFromDistribution({

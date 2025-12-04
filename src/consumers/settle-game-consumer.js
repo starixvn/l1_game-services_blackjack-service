@@ -10,20 +10,12 @@ export default class SettleGameConsumer extends Core.BaseEventConsumers.SettleGa
 
         let result, settlementResult, outcomeType;
 
-        // Check if slot mechanics was used (dealer cards pre-generated at deal time)
         if (betTrack.slotOutcome) {
-            // Use pre-generated dealer cards and outcome from deal time
             result = betTrack.dealer.cards;
             settlementResult = betTrack.slotOutcome.settlementResult;
             outcomeType = betTrack.slotOutcome.outcomeType;
         } else {
-            // Classic mode: generate result from deck
-            const generated = this.definition.generateResult(
-                betTrack.dealer.cards,
-                betTrack.deck,
-                isUpCards(betTrack.hands),
-                null // No slot config in classic mode
-            );
+            const generated = this.definition.generateResult(betTrack.dealer.cards, betTrack.deck, isUpCards(betTrack.hands), null);
             result = generated.result;
             settlementResult = generated.settlementResult;
             outcomeType = generated.outcomeType;

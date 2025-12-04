@@ -181,9 +181,30 @@ export const generateCardSetForTarget = (targetValue) => {
     const selectedCardSet = dataset[randomIndex];
 
     // Convert card ranks to Card objects with random suits
+    // Track used suits for each rank to avoid duplicate cards (same rank + same suit)
+    const usedSuitsPerRank = {};
+
     selectedCardSet.forEach((cardRank) => {
-        // Use random suit for variety, suit doesn't affect card value
-        const suit = Math.floor(mathRandom() * 4);
+        // Initialize tracking for this rank if not exists
+        if (!usedSuitsPerRank[cardRank]) {
+            usedSuitsPerRank[cardRank] = [];
+        }
+
+        // Get available suits (0, 1, 2, 3) that haven't been used for this rank
+        const availableSuits = [0, 1, 2, 3].filter((suit) => !usedSuitsPerRank[cardRank].includes(suit));
+
+        // If all suits are used (more than 4 cards of same rank), reset and start over
+        if (availableSuits.length === 0) {
+            usedSuitsPerRank[cardRank] = [];
+            availableSuits.push(0, 1, 2, 3);
+        }
+
+        // Pick a random suit from available suits
+        const suit = availableSuits[Math.floor(mathRandom() * availableSuits.length)];
+
+        // Mark this suit as used for this rank
+        usedSuitsPerRank[cardRank].push(suit);
+
         cardSet.push(createCard(cardRank, suit));
     });
 

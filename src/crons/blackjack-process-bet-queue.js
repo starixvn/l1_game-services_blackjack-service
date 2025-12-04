@@ -156,7 +156,8 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             betTracks.hands.sort((hand1, hand2) => hand1.pos - hand2.pos);
             betTracks.deck = generateDecks([], randomMode);
             // Generate dealer deck for probability-based dealer card drawing
-            const dealerProbability = appConfigs.dealer?.probability || null;
+            // Get dealer probability based on randomMode (1, 2, or 3)
+            const dealerProbability = gameSettings.dealerProbability?.[randomMode] || null;
             betTracks.dealerDeck = generateDealerDeck(randomMode, dealerProbability);
             betTracks.roundStartTime = new Date();
             this.dealCards(betTracks);

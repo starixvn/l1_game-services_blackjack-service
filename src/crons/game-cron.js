@@ -114,9 +114,10 @@ export default class GameCron extends Core.Crons.BaseGameCron {
 
                 // Fallback: Generate new dealer deck if not stored (backwards compatibility)
                 if (!dealerDeck) {
-                    const dealerProbability = appConfigs.dealer?.probability || null;
+                    // Get dealer probability based on randomMode (1, 2, or 3)
+                    const dealerProbability = gameSettings.dealerProbability?.[randomMode] || null;
                     dealerDeck = generateDealerDeck(randomMode, dealerProbability);
-                    logger.warn(`No dealerDeck found for round ${round.id}, generated new one`);
+                    logger.warn(`No dealerDeck found for round ${round.id}, generated new one with mode ${randomMode}`);
                 }
 
                 const userHands = hands.map((hand) => {

@@ -25,15 +25,15 @@
         "prom-client": "^15.1.0",
         "random": "^3.0.6",
         "random-js": "^2.1.0",
-        "sc-game-base": "4.1.0",
+        "sc-game-base": "5.4.0",
         "sc-instrument": "1.1.1"
     },
     "resolutions": {
-        "sc-base-apis": "1.18.2",
+        "sc-base-apis": "3.0.2",
         "socket.io-prom-metrics": "1.0.3",
         "mongoose": "6.13.6",
         "form-data": "4.0.4",
-        "sc-common": "2.0.0"
+        "sc-common": "3.0.0"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.14.7",

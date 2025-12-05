@@ -29,27 +29,96 @@ const DEFAULT_ODDS = {
     regular: 2, // 1:1 payout
 };
 
+// Helper to get card rank value for dealer upcard check
+const getDealerUpcardRank = (dealerCards) => {
+    if (!dealerCards || dealerCards.length === 0) return null;
+    return dealerCards[0].rank; // First card is upcard
+};
+
+// Check if dealer upcard is in favorable set [2, 3, 7, A]
+const isFavorableDealerUpcard = (dealerCards) => {
+    const rank = getDealerUpcardRank(dealerCards);
+    return ["2", "3", "7", "A"].includes(rank);
+};
+
+// Check if hand is a pair of specific rank
+const isPair = (cards, rank) => {
+    return cards.length === 2 && cards[0].rank === rank && cards[1].rank === rank;
+};
+
+// Check if hand should be split (A,A or 8,8 or 2,2 or 3,3)
+const shouldSplit = (cards) => {
+    if (cards.length !== 2) return false;
+    return isPair(cards, "A") || isPair(cards, "8") || isPair(cards, "2") || isPair(cards, "3");
+};
+
 // Strategies
 const STRATEGIES = {
     "always-stand": {
         name: "Always Stand",
         description: "Player stands immediately after initial deal",
+        isAdvanced: false,
         shouldHit: () => false,
+    },
+    "stand-over-13": {
+        name: "Stand Over 13",
+        description: "Player hits until hand value > 13, then stands",
+        isAdvanced: false,
+        shouldHit: (handValue) => handValue <= 13,
     },
     "stand-over-15": {
         name: "Stand Over 15",
         description: "Player hits until hand value > 15, then stands",
+        isAdvanced: false,
         shouldHit: (handValue) => handValue <= 15,
     },
     "stand-over-16": {
         name: "Stand Over 16",
         description: "Player hits until hand value > 16, then stands",
+        isAdvanced: false,
         shouldHit: (handValue) => handValue <= 16,
     },
     "stand-over-17": {
         name: "Stand Over 17",
         description: "Player hits until hand value > 17, then stands (mimic dealer)",
+        isAdvanced: false,
         shouldHit: (handValue) => handValue < 17,
+    },
+    "super-3-hands": {
+        name: "Super 3 Hands",
+        description: "Advanced strategy: stand>17, hit<17 only vs [2,3,7,A], double vs [2,3,7,A], split A/8/2/3 pairs",
+        isAdvanced: true,
+        // Returns action: "stand", "hit", "double", "split"
+        getAction: (hand, dealerCards, canDouble, canSplit) => {
+            const handValue = calculateFinalValue(hand.cards);
+            const isFavorable = isFavorableDealerUpcard(dealerCards);
+
+            // Check for split first (A,A or 8,8 or 2,2 or 3,3)
+            if (canSplit && shouldSplit(hand.cards)) {
+                return "split";
+            }
+
+            // Stand if hand >= 17
+            if (handValue >= 17) {
+                return "stand";
+            }
+
+            // Under 17 logic
+            if (handValue < 17) {
+                if (isFavorable) {
+                    // Double if possible vs [2,3,7,A], otherwise hit
+                    if (canDouble && hand.cards.length === 2) {
+                        return "double";
+                    }
+                    return "hit";
+                } else {
+                    // Stand vs other dealer upcards
+                    return "stand";
+                }
+            }
+
+            return "stand";
+        },
     },
 };
 
@@ -75,7 +144,8 @@ function parseArgs() {
 }
 
 // Simulate dealing initial cards
-function dealInitialCards(deck, numHands) {
+// Player cards come from playerDeck, dealer cards come from dealerDeck (separate decks like actual game)
+function dealInitialCards(playerDeck, dealerDeck, numHands) {
     const dealerCards = [];
     const playerHands = [];
 
@@ -90,19 +160,19 @@ function dealInitialCards(deck, numHands) {
 
     // Deal cards (2 rounds)
     for (let round = 0; round < 2; round++) {
-        // Deal to each player hand
+        // Deal to each player hand from playerDeck
         for (let i = 0; i < numHands; i++) {
-            playerHands[i].cards.push(deck.shift());
+            playerHands[i].cards.push(playerDeck.shift());
         }
-        // Deal to dealer
-        dealerCards.push(deck.shift());
+        // Deal to dealer from dealerDeck (predetermined)
+        dealerCards.push(dealerDeck.shift());
     }
 
     return { dealerCards, playerHands };
 }
 
-// Simulate player actions based on strategy
-function playHand(hand, deck, strategy) {
+// Simulate player actions based on simple strategy
+function playHandSimple(hand, deck, strategy) {
     let handValue = calculateFinalValue(hand.cards);
 
     // Check for blackjack - no actions needed
@@ -122,43 +192,153 @@ function playHand(hand, deck, strategy) {
     hand.actions.push(gameSettings.actions.stand);
 }
 
+// Simulate player actions based on advanced strategy (supports double, split)
+// Returns array of hands (may split into multiple)
+function playHandAdvanced(hand, deck, strategy, dealerCards, allHands) {
+    const resultHands = [hand];
+
+    // Check for blackjack - no actions needed
+    if (isBlackjack(hand.cards)) {
+        hand.actions.push(gameSettings.actions.stand);
+        hand.bet = hand.bet || 1;
+        return resultHands;
+    }
+
+    // Initialize bet if not set
+    hand.bet = hand.bet || 1;
+
+    let keepPlaying = true;
+    while (keepPlaying && !isBust(hand.cards) && deck.length > 0) {
+        const canDouble = hand.cards.length === 2 && !hand.hasDoubled;
+        const canSplit = hand.cards.length === 2 && hand.cards[0].rank === hand.cards[1].rank && !hand.hasSplit;
+
+        const action = strategy.getAction(hand, dealerCards, canDouble, canSplit);
+
+        switch (action) {
+            case "hit":
+                hand.cards.push(deck.shift());
+                hand.actions.push(gameSettings.actions.hit);
+                break;
+
+            case "double":
+                hand.cards.push(deck.shift());
+                hand.actions.push(gameSettings.actions.double);
+                hand.bet *= 2; // Double the bet
+                hand.hasDoubled = true;
+                hand.actions.push(gameSettings.actions.stand);
+                keepPlaying = false;
+                break;
+
+            case "split":
+                // Create split hand
+                const splitCard = hand.cards.pop();
+                hand.actions.push(gameSettings.actions.split);
+                hand.hasSplit = true;
+
+                // Draw new card for original hand
+                hand.cards.push(deck.shift());
+
+                // Create new hand with split card
+                const newHand = {
+                    cards: [splitCard, deck.shift()],
+                    actions: [],
+                    splitFrom: hand.id || 1,
+                    bet: hand.bet, // Same bet as original
+                    hasSplit: true,
+                };
+
+                // Add new hand to results
+                resultHands.push(newHand);
+
+                // If split aces, only one card each and stand
+                if (splitCard.rank === "A") {
+                    hand.actions.push(gameSettings.actions.stand);
+                    newHand.actions.push(gameSettings.actions.stand);
+                    keepPlaying = false;
+                }
+                break;
+
+            case "stand":
+            default:
+                hand.actions.push(gameSettings.actions.stand);
+                keepPlaying = false;
+                break;
+        }
+
+        // Check if bust after action
+        if (isBust(hand.cards)) {
+            if (!hand.actions.includes(gameSettings.actions.stand)) {
+                hand.actions.push(gameSettings.actions.stand);
+            }
+            keepPlaying = false;
+        }
+    }
+
+    // Play split hands (but don't allow re-split)
+    for (let i = 1; i < resultHands.length; i++) {
+        const splitHand = resultHands[i];
+        if (!splitHand.actions.includes(gameSettings.actions.stand)) {
+            // Play the split hand (simplified - just hit/stand logic)
+            let handValue = calculateFinalValue(splitHand.cards);
+            while (!isBust(splitHand.cards) && handValue < 17 && deck.length > 0) {
+                const isFavorable = isFavorableDealerUpcard(dealerCards);
+                if (isFavorable) {
+                    splitHand.cards.push(deck.shift());
+                    splitHand.actions.push(gameSettings.actions.hit);
+                    handValue = calculateFinalValue(splitHand.cards);
+                } else {
+                    break;
+                }
+            }
+            if (!splitHand.actions.includes(gameSettings.actions.stand)) {
+                splitHand.actions.push(gameSettings.actions.stand);
+            }
+        }
+    }
+
+    return resultHands;
+}
+
 // Run a single round simulation
 function simulateRound(mode, numHands, strategy, odds) {
-    // Generate decks
+    // Generate decks (separate decks like actual game)
     const dealerProbability = gameSettings.dealerProbability[mode];
-    const dealerDeck = generateDealerDeck(mode, dealerProbability);
-    const playerDeck = generateDecks([], mode);
+    const dealerDeck = generateDealerDeck(mode, dealerProbability); // Predetermined dealer cards
+    const playerDeck = generateDecks([], mode); // Random player deck
 
-    // Create a combined deck for initial deal (using dealer deck for dealer, player deck for players)
-    // First, deal from dealerDeck for dealer, playerDeck for players
-    const deck = [...playerDeck];
+    // Deal initial cards (2 cards each)
+    // Player cards from playerDeck, dealer cards from dealerDeck
+    const { dealerCards, playerHands } = dealInitialCards(playerDeck, dealerDeck, numHands);
 
-    // Deal initial cards
-    const { dealerCards, playerHands } = dealInitialCards(deck, numHands);
-
-    // Replace dealer cards with cards from dealerDeck (simulating the actual game flow)
-    // In actual game, dealer draws from dealerDeck
-    dealerCards.length = 0;
-    const tempDealerDeck = [...dealerDeck];
-    dealerCards.push(tempDealerDeck.shift());
-    dealerCards.push(tempDealerDeck.shift());
-
-    // Play each hand
-    playerHands.forEach((hand) => {
-        playHand(hand, deck, strategy);
-    });
+    // Play each hand based on strategy type
+    let allPlayerHands = [];
+    if (strategy.isAdvanced) {
+        // Advanced strategy with double/split support
+        playerHands.forEach((hand) => {
+            const resultHands = playHandAdvanced(hand, playerDeck, strategy, dealerCards, playerHands);
+            allPlayerHands.push(...resultHands);
+        });
+    } else {
+        // Simple strategy (hit/stand only)
+        playerHands.forEach((hand) => {
+            hand.bet = 1; // Initialize bet
+            playHandSimple(hand, playerDeck, strategy);
+        });
+        allPlayerHands = playerHands;
+    }
 
     // Check if all hands are bust or blackjack (upcard scenario)
-    const allBustOrBlackjack = playerHands.every(
+    const allBustOrBlackjack = allPlayerHands.every(
         (hand) => isBust(hand.cards) || isBlackjack(hand.cards)
     );
 
     // Generate dealer result
+    // Dealer draws additional cards from remaining dealerDeck first, then playerDeck as fallback
     const { result: finalDealerCards, settlementResult } = generateResult(
         [...dealerCards],
-        deck,
+        playerDeck,
         allBustOrBlackjack,
-        tempDealerDeck
+        dealerDeck // Remaining cards from predetermined dealer deck
     );
 
     // Determine dealer outcome category
@@ -171,8 +351,8 @@ function simulateRound(mode, numHands, strategy, odds) {
     let totalBet = 0;
     let totalWin = 0;
 
-    playerHands.forEach((hand) => {
-        const betAmount = 1; // Normalized bet
+    allPlayerHands.forEach((hand) => {
+        const betAmount = hand.bet || 1; // Use hand bet (may be doubled)
         totalBet += betAmount;
 
         const multiplier = settle(finalDealerCards, hand, odds);
@@ -187,10 +367,11 @@ function simulateRound(mode, numHands, strategy, odds) {
         dealerBlackjack,
         dealerSeventeenToTwenty,
         dealerTwentyOne,
-        playerResults: playerHands.map((hand) => ({
+        playerResults: allPlayerHands.map((hand) => ({
             value: calculateFinalValue(hand.cards),
             bust: isBust(hand.cards),
             blackjack: isBlackjack(hand.cards),
+            bet: hand.bet || 1,
         })),
     };
 }

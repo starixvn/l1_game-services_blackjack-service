@@ -48,9 +48,27 @@ npm run verify-rtp -- --mode=2 --hands=1 --strategy=always-stand --rounds=20000
 | Strategy Key | Name | Description |
 |--------------|------|-------------|
 | `always-stand` | Always Stand | Player stands immediately after initial deal |
+| `stand-over-13` | Stand Over 13 | Player hits until hand value > 13, then stands |
 | `stand-over-15` | Stand Over 15 | Player hits until hand value > 15, then stands |
 | `stand-over-16` | Stand Over 16 | Player hits until hand value > 16, then stands |
 | `stand-over-17` | Stand Over 17 | Player mimics dealer strategy (hit until 17+) |
+| `super-3-hands` | Super 3 Hands | Advanced strategy (see below) |
+
+### Super 3 Hands Strategy Details
+
+The `super-3-hands` strategy is an advanced strategy that considers dealer upcard and supports double/split actions:
+
+**Rules:**
+1. **Always stand** if hand value >= 17
+2. **When hand value < 17:**
+   - If dealer upcard is [2, 3, 7, A]: **Double** (if allowed) or **Hit**
+   - If dealer upcard is other values: **Stand**
+3. **Always split** pairs of: A-A, 8-8, 2-2, 3-3
+
+**Usage:**
+```bash
+npm run verify-rtp -- --strategy=super-3-hands --hands=3
+```
 
 ### Dealer Probability Modes
 

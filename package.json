@@ -10,7 +10,8 @@
         "debug": "nodemon --es-module-specifier-resolution=node --watch ./ --inspect ./src/app.js",
         "prod": "node --max-old-space-size=8192 --es-module-specifier-resolution=node ./src/app.js",
         "reg": "npm set registry http://npm.lumigame.com",
-        "stats": "nodemon --es-module-specifier-resolution=node --watch ./tests ./tests/result-statistic.js"
+        "stats": "nodemon --es-module-specifier-resolution=node --watch ./tests ./tests/result-statistic.js",
+        "verify-rtp": "node --es-module-specifier-resolution=node scripts/verify-rtp.js"
     },
     "author": "pentagon",
     "license": "ISC",

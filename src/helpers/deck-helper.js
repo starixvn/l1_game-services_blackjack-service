@@ -7,6 +7,7 @@ import { randomInt } from "crypto";
 import { cards } from "../card";
 import { calculateFinalValue } from "./card-helper";
 import { CARD_SET_DATASET } from "./dealer-card-dataset";
+import gameSettings from "../game-settings";
 
 const chance = new Chance();
 
@@ -208,10 +209,11 @@ export const generateCardSetForTarget = (targetValue) => {
 };
 
 export const generateDealerDeck = (randomMode, dealerProbability = null) => {
-    // Use dealer probability config or default values
-    const probBust = dealerProbability?.bust ?? 0.05;
-    const probSeventeenToTwenty = dealerProbability?.seventeenToTwenty ?? 0.8;
-    const probTwentyOne = dealerProbability?.twentyOne ?? 0.15;
+    // Use dealer probability config or default to mode 1 from game settings
+    const defaultProb = gameSettings.dealerProbability[1];
+    const probBust = dealerProbability?.bust ?? defaultProb.bust;
+    const probSeventeenToTwenty = dealerProbability?.seventeenToTwenty ?? defaultProb.seventeenToTwenty;
+    const probTwentyOne = dealerProbability?.twentyOne ?? defaultProb.twentyOne;
 
     // Create pool of 100 dealer card sets based on probability
     const pool = [];

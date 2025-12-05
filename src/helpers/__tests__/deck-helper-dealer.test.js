@@ -1,5 +1,6 @@
 import { generateDealerDeck, generateCardSetForTarget, createCard } from "../deck-helper";
 import { calculateFinalValue, isBust, isBlackjack } from "../card-helper";
+import gameSettings from "../../game-settings";
 
 describe("deck-helper dealer functions", () => {
     describe("createCard", () => {
@@ -342,6 +343,90 @@ describe("deck-helper dealer functions", () => {
         });
 
         describe("Probability Distribution Tests (10,000 runs)", () => {
+            it("should use mode 1 from game settings as default when dealerProbability is not provided", () => {
+                const mode1Probability = gameSettings.dealerProbability[1];
+
+                const results = {
+                    bust: 0,
+                    seventeenToTwenty: 0,
+                    twentyOne: 0,
+                    blackjack: 0,
+                    other: 0,
+                };
+
+                const totalRuns = 5000;
+
+                // Generate decks without providing dealerProbability
+                for (let i = 0; i < totalRuns; i++) {
+                    const dealerDeck = generateDealerDeck(1); // No dealerProbability provided
+
+                    if (!dealerDeck || !Array.isArray(dealerDeck) || dealerDeck.length === 0) {
+                        results.other++;
+                        continue;
+                    }
+
+                    const hasInvalidCard = dealerDeck.some((card) => !card || !card.rank || card.suit === undefined);
+                    if (hasInvalidCard) {
+                        results.other++;
+                        continue;
+                    }
+
+                    const finalValue = calculateFinalValue(dealerDeck);
+
+                    if (finalValue > 21) {
+                        results.bust++;
+                    } else if (finalValue === 21) {
+                        results.twentyOne++;
+                        if (isBlackjack(dealerDeck)) {
+                            results.blackjack++;
+                        }
+                    } else if (finalValue >= 17 && finalValue <= 20) {
+                        results.seventeenToTwenty++;
+                    } else {
+                        results.other++;
+                    }
+                }
+
+                // Calculate actual ratios
+                const bustRatio = results.bust / totalRuns;
+                const seventeenToTwentyRatio = results.seventeenToTwenty / totalRuns;
+                const twentyOneRatio = results.twentyOne / totalRuns;
+
+                // Log results for visibility
+                console.log("\n=== Default Mode 1 Test Results (5,000 runs) ===");
+                console.log(
+                    `Bust (>21):        ${results.bust.toLocaleString()} (${(bustRatio * 100).toFixed(2)}%) - Expected: ${(
+                        mode1Probability.bust * 100
+                    ).toFixed(2)}%`
+                );
+                console.log(
+                    `17-20:             ${results.seventeenToTwenty.toLocaleString()} (${(seventeenToTwentyRatio * 100).toFixed(
+                        2
+                    )}%) - Expected: ${(mode1Probability.seventeenToTwenty * 100).toFixed(2)}%`
+                );
+                console.log(
+                    `21:                ${results.twentyOne.toLocaleString()} (${(twentyOneRatio * 100).toFixed(2)}%) - Expected: ${(
+                        mode1Probability.twentyOne * 100
+                    ).toFixed(2)}%`
+                );
+                console.log("================================================\n");
+
+                // Verify distribution matches mode 1 (bust: 0.24, seventeenToTwenty: 0.71, twentyOne: 0.05)
+                expect(results.other).toBeLessThanOrEqual(5);
+
+                // Bust should be close to 24% (±1.5%)
+                expect(bustRatio).toBeGreaterThanOrEqual(0.225);
+                expect(bustRatio).toBeLessThanOrEqual(0.255);
+
+                // 17-20 should be close to 71% (±1.5%)
+                expect(seventeenToTwentyRatio).toBeGreaterThanOrEqual(0.695);
+                expect(seventeenToTwentyRatio).toBeLessThanOrEqual(0.725);
+
+                // 21 should be close to 5% (±0.8%)
+                expect(twentyOneRatio).toBeGreaterThanOrEqual(0.042);
+                expect(twentyOneRatio).toBeLessThanOrEqual(0.058);
+            });
+
             it("should follow default probability distribution over 10,000 runs", () => {
                 const dealerProbability = {
                     bust: 0.05,

@@ -164,7 +164,6 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                 roundMaxDuration: `${roundMaxDuration} minutes`,
                 expiredBefore: expiredDate.format("YYYY-MM-DD HH:mm:ss"),
                 currentTime: moment.utc().format("YYYY-MM-DD HH:mm:ss"),
-                ingame: JSON.stringify(this.gameData?.ingame),
             });
 
             if (this.gameData.ingame) {

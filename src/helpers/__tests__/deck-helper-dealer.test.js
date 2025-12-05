@@ -741,4 +741,241 @@ describe("deck-helper dealer functions", () => {
             });
         });
     });
+
+    describe("generateDealerDeck - Card Order Preservation (Shuffle Bug Fix)", () => {
+        it("should NOT shuffle the selected card set - preserve original order", () => {
+            // Run multiple times to check consistency
+            const runs = 100;
+            let allOrdersPreserved = true;
+
+            for (let i = 0; i < runs; i++) {
+                const dealerDeck = generateDealerDeck(1, { bust: 1, seventeenToTwenty: 0, twentyOne: 0 });
+
+                // For a bust hand, verify first 2 cards don't result in >=17
+                // If cards were shuffled, sometimes we'd get high cards first causing early stand
+                const firstTwo = dealerDeck.slice(0, 2);
+                const firstTwoValue = calculateFinalValue(firstTwo);
+
+                // The dataset is designed so first 2 cards should allow hitting
+                // A bust hand's first 2 cards should be <=16 to allow the 3rd+ card to create bust
+                if (dealerDeck.length >= 3) {
+                    // 3+ card bust hands should have first 2 cards that don't cause stand
+                    if (firstTwoValue >= 17 && firstTwoValue <= 21) {
+                        // This would mean cards were shuffled incorrectly
+                        allOrdersPreserved = false;
+                        console.log(
+                            `SHUFFLE BUG DETECTED: Bust hand has first 2 cards = ${firstTwoValue} (should be <=16 for multi-card hands)`
+                        );
+                    }
+                }
+            }
+
+            expect(allOrdersPreserved).toBe(true);
+        });
+
+        it("should return dealer decks that reach target value when played by rules", () => {
+            // Test each category
+            const testCases = [
+                { bust: 1, seventeenToTwenty: 0, twentyOne: 0, expectedRange: [22, 26] },
+                { bust: 0, seventeenToTwenty: 1, twentyOne: 0, expectedRange: [17, 20] },
+                { bust: 0, seventeenToTwenty: 0, twentyOne: 1, expectedRange: [21, 21] },
+            ];
+
+            testCases.forEach((testCase) => {
+                for (let run = 0; run < 50; run++) {
+                    const dealerDeck = generateDealerDeck(1, testCase);
+                    const dealerCards = [];
+
+                    // Simulate dealer play: draw cards until >=17 or bust
+                    let currentValue = 0;
+                    let cardIndex = 0;
+
+                    while (currentValue < 17 && cardIndex < dealerDeck.length) {
+                        dealerCards.push(dealerDeck[cardIndex]);
+                        currentValue = calculateFinalValue(dealerCards);
+                        cardIndex++;
+                    }
+
+                    // Verify final value is in expected range
+                    expect(currentValue).toBeGreaterThanOrEqual(testCase.expectedRange[0]);
+                    expect(currentValue).toBeLessThanOrEqual(testCase.expectedRange[1]);
+                }
+            });
+        });
+
+        it("should maintain correct probability distribution over 10,000 runs (no shuffle interference)", () => {
+            const runs = 10000;
+            const results = { bust: 0, seventeenToTwenty: 0, twentyOne: 0, invalid: 0 };
+
+            const testProb = { bust: 0.25, seventeenToTwenty: 0.7, twentyOne: 0.05 };
+
+            for (let i = 0; i < runs; i++) {
+                const dealerDeck = generateDealerDeck(1, testProb);
+                const dealerCards = [];
+
+                // Simulate dealer play
+                let currentValue = 0;
+                let cardIndex = 0;
+
+                while (currentValue < 17 && cardIndex < dealerDeck.length) {
+                    dealerCards.push(dealerDeck[cardIndex]);
+                    currentValue = calculateFinalValue(dealerCards);
+                    cardIndex++;
+                }
+
+                // Categorize result
+                if (currentValue > 21) {
+                    results.bust++;
+                } else if (currentValue >= 17 && currentValue <= 20) {
+                    results.seventeenToTwenty++;
+                } else if (currentValue === 21) {
+                    results.twentyOne++;
+                } else {
+                    results.invalid++;
+                }
+            }
+
+            const bustRatio = results.bust / runs;
+            const seventeenToTwentyRatio = results.seventeenToTwenty / runs;
+            const twentyOneRatio = results.twentyOne / runs;
+
+            console.log("\n=== Card Order Preservation Test (10,000 runs) ===");
+            console.log(`Bust:        ${results.bust} (${(bustRatio * 100).toFixed(2)}%) - Expected: ${(testProb.bust * 100).toFixed(2)}%`);
+            console.log(
+                `17-20:       ${results.seventeenToTwenty} (${(seventeenToTwentyRatio * 100).toFixed(2)}%) - Expected: ${(
+                    testProb.seventeenToTwenty * 100
+                ).toFixed(2)}%`
+            );
+            console.log(
+                `21:          ${results.twentyOne} (${(twentyOneRatio * 100).toFixed(2)}%) - Expected: ${(testProb.twentyOne * 100).toFixed(
+                    2
+                )}%`
+            );
+            console.log(`Invalid:     ${results.invalid}`);
+
+            // Probabilities should be close to target (±2% for statistical variance)
+            expect(bustRatio).toBeGreaterThanOrEqual(testProb.bust - 0.02);
+            expect(bustRatio).toBeLessThanOrEqual(testProb.bust + 0.02);
+
+            expect(seventeenToTwentyRatio).toBeGreaterThanOrEqual(testProb.seventeenToTwenty - 0.02);
+            expect(seventeenToTwentyRatio).toBeLessThanOrEqual(testProb.seventeenToTwenty + 0.02);
+
+            expect(twentyOneRatio).toBeGreaterThanOrEqual(testProb.twentyOne - 0.02);
+            expect(twentyOneRatio).toBeLessThanOrEqual(testProb.twentyOne + 0.02);
+
+            // Should have minimal invalid outcomes
+            expect(results.invalid).toBeLessThanOrEqual(10);
+        });
+
+        it("should verify specific card sequences are preserved for multi-card hands", () => {
+            // Test that a 3-card hand maintains order
+            // Example: If we get ["5", "6", "7"] for 18, order matters
+            const runs = 100;
+
+            for (let i = 0; i < runs; i++) {
+                const dealerDeck = generateDealerDeck(1, { bust: 0, seventeenToTwenty: 1, twentyOne: 0 });
+
+                if (dealerDeck.length === 3) {
+                    // 3-card hand
+                    const card1 = dealerDeck[0];
+                    const card2 = dealerDeck[1];
+                    const card3 = dealerDeck[2];
+
+                    const firstTwoValue = calculateFinalValue([card1, card2]);
+                    const allThreeValue = calculateFinalValue([card1, card2, card3]);
+
+                    // First two cards should be <=16 (dealer must hit)
+                    expect(firstTwoValue).toBeLessThanOrEqual(16);
+
+                    // All three should reach 17-20
+                    expect(allThreeValue).toBeGreaterThanOrEqual(17);
+                    expect(allThreeValue).toBeLessThanOrEqual(20);
+                }
+            }
+        });
+
+        it("should handle edge case: empty or invalid card set with fallback", () => {
+            // This tests the validation logic at lines 255-259
+            // We can't easily force an invalid cardSet, but we verify the function doesn't crash
+            const dealerDeck = generateDealerDeck(1, { bust: 0.5, seventeenToTwenty: 0.5, twentyOne: 0 });
+
+            // Should return a valid deck
+            expect(dealerDeck).toBeDefined();
+            expect(Array.isArray(dealerDeck)).toBe(true);
+            expect(dealerDeck.length).toBeGreaterThan(0);
+
+            // All cards should be valid
+            dealerDeck.forEach((card) => {
+                expect(card).toBeDefined();
+                expect(card).toHaveProperty("rank");
+                expect(card).toHaveProperty("suit");
+            });
+        });
+
+        it("should demonstrate upcard scenario reduces actual outcomes (player bust effect)", () => {
+            // Simulate what happens when player busts (upcard = true)
+            const runs = 5000;
+            const withUpcard = { bust: 0, seventeenToTwenty: 0, twentyOne: 0, underSeventeen: 0 };
+            const withoutUpcard = { bust: 0, seventeenToTwenty: 0, twentyOne: 0, underSeventeen: 0 };
+
+            const testProb = { bust: 0.24, seventeenToTwenty: 0.71, twentyOne: 0.05 };
+
+            for (let i = 0; i < runs; i++) {
+                const dealerDeck = generateDealerDeck(1, testProb);
+
+                // WITHOUT upcard - dealer plays normally
+                {
+                    const dealerCards = [];
+                    let currentValue = 0;
+                    let cardIndex = 0;
+
+                    while (currentValue < 17 && cardIndex < dealerDeck.length) {
+                        dealerCards.push(dealerDeck[cardIndex]);
+                        currentValue = calculateFinalValue(dealerCards);
+                        cardIndex++;
+                    }
+
+                    if (currentValue > 21) withoutUpcard.bust++;
+                    else if (currentValue >= 17 && currentValue <= 20) withoutUpcard.seventeenToTwenty++;
+                    else if (currentValue === 21) withoutUpcard.twentyOne++;
+                    else withoutUpcard.underSeventeen++;
+                }
+
+                // WITH upcard - dealer stops at first 2 cards (simulating player bust)
+                {
+                    const first2Cards = dealerDeck.slice(0, 2);
+                    const value = calculateFinalValue(first2Cards);
+
+                    if (value > 21) withUpcard.bust++;
+                    else if (value >= 17 && value <= 20) withUpcard.seventeenToTwenty++;
+                    else if (value === 21) withUpcard.twentyOne++;
+                    else withUpcard.underSeventeen++;
+                }
+            }
+
+            console.log("\n=== Upcard Scenario Impact (5,000 runs) ===");
+            console.log("WITHOUT upcard (normal play):");
+            console.log(`  Bust:        ${withoutUpcard.bust} (${((withoutUpcard.bust / runs) * 100).toFixed(2)}%)`);
+            console.log(
+                `  17-20:       ${withoutUpcard.seventeenToTwenty} (${((withoutUpcard.seventeenToTwenty / runs) * 100).toFixed(2)}%)`
+            );
+            console.log(`  21:          ${withoutUpcard.twentyOne} (${((withoutUpcard.twentyOne / runs) * 100).toFixed(2)}%)`);
+            console.log(`  <17:         ${withoutUpcard.underSeventeen} (${((withoutUpcard.underSeventeen / runs) * 100).toFixed(2)}%)`);
+
+            console.log("\nWITH upcard (player bust scenario):");
+            console.log(`  Bust:        ${withUpcard.bust} (${((withUpcard.bust / runs) * 100).toFixed(2)}%)`);
+            console.log(`  17-20:       ${withUpcard.seventeenToTwenty} (${((withUpcard.seventeenToTwenty / runs) * 100).toFixed(2)}%)`);
+            console.log(`  21:          ${withUpcard.twentyOne} (${((withUpcard.twentyOne / runs) * 100).toFixed(2)}%)`);
+            console.log(`  <17:         ${withUpcard.underSeventeen} (${((withUpcard.underSeventeen / runs) * 100).toFixed(2)}%)`);
+
+            // WITHOUT upcard should have minimal <17 outcomes
+            expect(withoutUpcard.underSeventeen).toBeLessThanOrEqual(runs * 0.01); // <1%
+
+            // WITH upcard should have significant <17 outcomes (multi-card hands stopped early)
+            expect(withUpcard.underSeventeen).toBeGreaterThan(runs * 0.1); // >10%
+
+            // Bust rate should be significantly lower with upcard
+            expect(withUpcard.bust).toBeLessThan(withoutUpcard.bust * 0.9); // At least 10% reduction
+        });
+    });
 });

@@ -208,7 +208,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             softPoints: calculate(hand.cards),
             time: new Date(),
             actions: hand.actions,
-            dealerDeck: betTracks.dealerDeck, // Store dealer deck for round recovery
         }));
 
         if (player.session) {
@@ -351,7 +350,6 @@ export default class BlackJackProcessBetQueue extends ProcessBetQueue {
             splitFrom: splitHand.splitFrom,
             currency: bet.currency,
             rate: bet.rate,
-            dealerDeck: betTracks.dealerDeck, // Maintain dealer deck for split hands
 
             playerId: player.session?.playerId,
             operatorId: bet.operatorId,

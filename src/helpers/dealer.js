@@ -10,8 +10,8 @@ export const generateResult = (dealerCards, decks, isUpCard, dealerDeck = null) 
         return { result: dealerCards, settlementResult };
     }
 
-    // Use dealerDeck if available, otherwise fallback to regular deck
-    const cardSource = dealerDeck && dealerDeck.length > 0 ? dealerDeck : decks;
+    // Use dealerDeck first if available, then append regular deck
+    const cardSource = dealerDeck && dealerDeck.length > 0 ? [...dealerDeck, ...decks] : decks;
 
     while (settlementResult < constants.minDealerHand && cardSource.length > 0) {
         dealerCards.push(cardSource.shift());

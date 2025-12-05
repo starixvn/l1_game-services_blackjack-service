@@ -128,7 +128,8 @@ const randomModes = {
 };
 
 export const generateDecks = (exclusions, randomMode) => {
-    const baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards, ...cards];
+    // 5 decks, since 1 deck is for dealer
+    const baseDeck = [...cards, ...cards, ...cards, ...cards, ...cards];
     const randomShuffles = randomModes[randomMode] ?? randomModes[1];
     const randomShuffle = chance.pickone(randomShuffles);
 
@@ -154,12 +155,6 @@ class Card {
 const createCard = (rank, suit = null) => {
     const cardSuit = suit !== null ? suit : Math.floor(mathRandom() * 4);
     return new Card(rank, cardSuit);
-};
-
-// Helper function to get a random 10-value card (10, J, Q, or K)
-const getRandomTenValueCard = () => {
-    const tenValueCards = ["10", "J", "Q", "K"]; // All have value 10
-    return tenValueCards[Math.floor(mathRandom() * tenValueCards.length)];
 };
 
 // Helper function to generate cards that result in a target value

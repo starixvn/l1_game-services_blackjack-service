@@ -109,17 +109,6 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                 const usedCards = [...round.result];
                 const hands = await this.betsRepository.find({ roundId: round.id }).lean().exec();
 
-                // Get dealerDeck from the first hand (all hands in the same round have the same dealerDeck)
-                let dealerDeck = hands.length > 0 ? hands[0].dealerDeck : null;
-
-                // Fallback: Generate new dealer deck if not stored (backwards compatibility)
-                if (!dealerDeck) {
-                    // Get dealer probability based on randomMode (1, 2, or 3)
-                    const dealerProbability = gameSettings.dealerProbability?.[randomMode] || null;
-                    dealerDeck = generateDealerDeck(randomMode, dealerProbability);
-                    logger.warn(`No dealerDeck found for round ${round.id}, generated new one with mode ${randomMode}`);
-                }
-
                 const userHands = hands.map((hand) => {
                     usedCards.push(...hand.cards);
 
@@ -138,7 +127,6 @@ export default class GameCron extends Core.Crons.BaseGameCron {
                         roundStartTime: round.roundStartTime,
                         uid: round.uid,
                         deck: generateDecks(usedCards, randomMode),
-                        dealerDeck: dealerDeck, // Restore dealer deck from stored bets
                         dealer: { cards: [...round.result] },
                         hands: userHands,
                         activeHandId: userHands.find((hand) => !hand.isStand)?.id,
@@ -168,9 +156,16 @@ export default class GameCron extends Core.Crons.BaseGameCron {
             }
         }
 
-        if (this.gameData.remainingTime < 0) {
+        if (this.gameData.remainingTime <= 0) {
             this.gameData.remainingTime = durations.wholeAction;
-            const expiredDate = moment.utc().subtract(appConfigs.roundMaxDuration, "minutes");
+            const roundMaxDuration = appConfigs.roundMaxDuration || 1440; // default 24 hours
+            const expiredDate = moment.utc().subtract(roundMaxDuration, "minutes");
+            console.log("[GameCron] Checking for expired rounds:", {
+                roundMaxDuration: `${roundMaxDuration} minutes`,
+                expiredBefore: expiredDate.format("YYYY-MM-DD HH:mm:ss"),
+                currentTime: moment.utc().format("YYYY-MM-DD HH:mm:ss"),
+                ingame: JSON.stringify(this.gameData?.ingame),
+            });
 
             if (this.gameData.ingame) {
                 await Promise.all(

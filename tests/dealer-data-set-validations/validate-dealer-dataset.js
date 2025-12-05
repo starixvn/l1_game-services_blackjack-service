@@ -5,10 +5,12 @@ import { CARD_SET_DATASET } from "../../src/helpers/dealer-card-dataset.js";
  *
  * Validates that all card combinations:
  * 1. Sum to the correct target value (17-26)
- * 2. Follow dealer rules for bust scenarios (22-26):
+ * 2. Follow proper dealer drawing sequence:
  *    - Dealer MUST HIT on 16 or less
  *    - Dealer MUST STAND on 17 or more
- *    - Dealer busts only if total > 21
+ *    - For 3+ card hands: first 2 cards must be ≤16
+ *    - For 4-card hands: first 3 cards must also be ≤16
+ *    - Ensures dealer would actually reach the target value in real gameplay
  */
 
 // Calculate hand total with proper Ace handling
@@ -41,38 +43,33 @@ function calculateHandTotal(cards) {
 function isValidDealerSequence(cards, targetValue) {
     if (cards.length < 2) return false;
 
-    // For non-bust scenarios (17-21), just check the total
-    if (targetValue <= 21) {
-        const total = calculateHandTotal(cards);
-        return total === targetValue;
-    }
+    const total = calculateHandTotal(cards);
 
-    // For bust scenarios (22+), validate dealer rules
+    // Total must match target
+    if (total !== targetValue) return false;
+
+    // 2-card combinations are always valid
+    if (cards.length === 2) return true;
+
+    // For 3+ card combinations, check dealer drawing rules
     const first2Total = calculateHandTotal(cards.slice(0, 2));
 
-    // First 2 cards must be ≤ 16 (dealer must hit)
+    // First 2 cards must be ≤ 16 (dealer must hit to draw 3rd card)
     if (first2Total >= 17) {
-        return false;
+        return false; // Dealer would have stopped at 17+
     }
 
-    if (cards.length === 3) {
-        // 3-card bust: first 2 ≤ 16, total after 3rd card > 21
-        const total = calculateHandTotal(cards);
-        return total === targetValue && total > 21;
-    }
-
+    // For 4-card combinations, also check first 3 cards
     if (cards.length === 4) {
-        // 4-card bust: first 2 ≤ 16, first 3 ≤ 16, total after 4th card > 21
         const first3Total = calculateHandTotal(cards.slice(0, 3));
-        if (first3Total >= 17) {
-            return false; // Dealer would stand after 3 cards
-        }
 
-        const total = calculateHandTotal(cards);
-        return total === targetValue && total > 21;
+        // First 3 cards must be ≤ 16 (dealer must hit to draw 4th card)
+        if (first3Total >= 17) {
+            return false; // Dealer would have stopped at 17+
+        }
     }
 
-    return false;
+    return true;
 }
 
 // Validate the entire dataset
@@ -98,28 +95,41 @@ function validateDataset() {
             const cardSet = cardSets[i];
             const actualTotal = calculateHandTotal(cardSet);
 
-            // Check if total matches
-            if (actualTotal !== target) {
+            // Validate dealer sequence (checks both total and drawing rules)
+            if (!isValidDealerSequence(cardSet, target)) {
                 results.valid = false;
-                const error = `Target ${target}, Index ${i}: [${cardSet.join(", ")}] sums to ${actualTotal}, not ${target}`;
-                results.errors.push(error);
-                results.summary[target].invalid++;
-                console.log(`  ❌ ${error}`);
-                continue;
-            }
 
-            // For bust scenarios (22+), validate dealer rules
-            if (target > 21) {
-                if (!isValidDealerSequence(cardSet, target)) {
-                    results.valid = false;
-                    const error = `Target ${target}, Index ${i}: [${cardSet.join(
-                        ", "
-                    )}] - No valid ordering where dealer would draw these cards (dealer would stand at 17+)`;
-                    results.errors.push(error);
-                    results.summary[target].invalid++;
-                    console.log(`  ❌ ${error}`);
-                    continue;
+                let errorMsg;
+                if (actualTotal !== target) {
+                    errorMsg = `Target ${target}, Index ${i}: [${cardSet.join(", ")}] sums to ${actualTotal}, not ${target}`;
+                } else {
+                    // Total is correct but sequence is invalid
+                    if (cardSet.length === 3) {
+                        const first2Total = calculateHandTotal(cardSet.slice(0, 2));
+                        errorMsg = `Target ${target}, Index ${i}: [${cardSet.join(
+                            ", "
+                        )}] - First 2 cards = ${first2Total} (≥17), dealer would STAND, never draw 3rd card`;
+                    } else if (cardSet.length === 4) {
+                        const first2Total = calculateHandTotal(cardSet.slice(0, 2));
+                        const first3Total = calculateHandTotal(cardSet.slice(0, 3));
+                        if (first2Total >= 17) {
+                            errorMsg = `Target ${target}, Index ${i}: [${cardSet.join(
+                                ", "
+                            )}] - First 2 cards = ${first2Total} (≥17), dealer would STAND, never draw 3rd/4th card`;
+                        } else {
+                            errorMsg = `Target ${target}, Index ${i}: [${cardSet.join(
+                                ", "
+                            )}] - First 3 cards = ${first3Total} (≥17), dealer would STAND, never draw 4th card`;
+                        }
+                    } else {
+                        errorMsg = `Target ${target}, Index ${i}: [${cardSet.join(", ")}] - Invalid dealer sequence`;
+                    }
                 }
+
+                results.errors.push(errorMsg);
+                results.summary[target].invalid++;
+                console.log(`  ❌ ${errorMsg}`);
+                continue;
             }
 
             results.summary[target].valid++;
@@ -138,6 +148,8 @@ console.log("=".repeat(70));
 console.log("\nRules:");
 console.log("  - Dealer must HIT on 16 or less");
 console.log("  - Dealer must STAND on 17 or more");
+console.log("  - For 3+ card hands: first 2 cards must be ≤16");
+console.log("  - For 4-card hands: first 3 cards must also be ≤16");
 console.log("  - Dealer busts if total > 21");
 console.log("=".repeat(70));
 

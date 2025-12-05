@@ -152,8 +152,8 @@ class Card {
 }
 
 // Helper function to generate a card with specific rank
-const createCard = (rank, suit = null) => {
-    const cardSuit = suit !== null ? suit : Math.floor(mathRandom() * 4);
+export const createCard = (rank, suit = null) => {
+    const cardSuit = suit !== null ? suit : randomInt(4);
     return new Card(rank, cardSuit);
 };
 
@@ -172,7 +172,7 @@ export const generateCardSetForTarget = (targetValue) => {
     }
 
     // Randomly pick one card set from the dataset
-    const randomIndex = Math.floor(mathRandom() * dataset.length);
+    const randomIndex = randomInt(dataset.length);
     const selectedCardSet = dataset[randomIndex];
 
     // Convert card ranks to Card objects with random suits
@@ -195,7 +195,7 @@ export const generateCardSetForTarget = (targetValue) => {
         }
 
         // Pick a random suit from available suits
-        const suit = availableSuits[Math.floor(mathRandom() * availableSuits.length)];
+        const suit = availableSuits[randomInt(availableSuits.length)];
 
         // Mark this suit as used for this rank
         usedSuitsPerRank[cardRank].push(suit);
@@ -224,7 +224,7 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
 
     // Generate bust sets (value > 21)
     for (let i = 0; i < bustSets; i++) {
-        const bustValue = 22 + Math.floor(mathRandom() * 5); // 22-26
+        const bustValue = randomInt(22, 27); // 22-26 (randomInt is exclusive on upper bound)
         const cardSet = generateCardSetForTarget(bustValue);
         // Card objects are already created by generateCardSetForTarget, just copy the array
         pool.push([...cardSet]);
@@ -233,7 +233,7 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
     // Generate 17-20 sets
     for (let i = 0; i < seventeenToTwentySets; i++) {
         const values = [17, 18, 19, 20];
-        const targetValue = values[Math.floor(mathRandom() * values.length)];
+        const targetValue = values[randomInt(values.length)];
         const cardSet = generateCardSetForTarget(targetValue);
         // Card objects are already created by generateCardSetForTarget, just copy the array
         pool.push([...cardSet]);
@@ -247,7 +247,7 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
     }
 
     // Randomly pick one set from the pool
-    const selectedIndex = Math.floor(mathRandom() * pool.length);
+    const selectedIndex = randomInt(pool.length);
     const selectedCardSet = pool[selectedIndex];
 
     // Validate selectedCardSet before shuffling

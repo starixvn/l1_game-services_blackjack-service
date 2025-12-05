@@ -87,18 +87,18 @@ When all validations pass, you should see:
 ======================================================================
 
 Breakdown by target:
-  Target 17: 110 valid combinations
-  Target 18: 103 valid combinations
-  Target 19: 113 valid combinations
-  Target 20: 131 valid combinations
-  Target 21: 145 valid combinations
-  Target 22 (BUST): 79 valid combinations
-  Target 23 (BUST): 62 valid combinations
-  Target 24 (BUST): 63 valid combinations
-  Target 25 (BUST): 43 valid combinations
-  Target 26 (BUST): 23 valid combinations
+  Target 17: 147 valid combinations
+  Target 18: 106 valid combinations
+  Target 19: 118 valid combinations
+  Target 20: 130 valid combinations
+  Target 21: 243 valid combinations
+  Target 22 (BUST): 69 valid combinations
+  Target 23 (BUST): 59 valid combinations
+  Target 24 (BUST): 57 valid combinations
+  Target 25 (BUST): 54 valid combinations
+  Target 26 (BUST): 41 valid combinations
 
-Total: 872 valid combinations
+Total: 1,024 valid combinations
 ```
 
 ## Common Issues to Look For
@@ -176,16 +176,16 @@ The dataset is organized as:
 
 ```javascript
 export const CARD_SET_DATASET = {
-    17: [ /* 110 combinations */ ],
-    18: [ /* 103 combinations */ ],
-    19: [ /* 113 combinations */ ],
-    20: [ /* 131 combinations */ ],
-    21: [ /* 145 combinations */ ],
-    22: [ /* 79 bust combinations */ ],
-    23: [ /* 62 bust combinations */ ],
-    24: [ /* 63 bust combinations */ ],
-    25: [ /* 43 bust combinations */ ],
-    26: [ /* 23 bust combinations */ ],
+    17: [ /* 147 combinations */ ],
+    18: [ /* 106 combinations */ ],
+    19: [ /* 118 combinations */ ],
+    20: [ /* 130 combinations */ ],
+    21: [ /* 243 combinations */ ],
+    22: [ /* 69 bust combinations */ ],
+    23: [ /* 59 bust combinations */ ],
+    24: [ /* 57 bust combinations */ ],
+    25: [ /* 54 bust combinations */ ],
+    26: [ /* 41 bust combinations */ ],
 };
 ```
 
@@ -218,6 +218,13 @@ If you find issues or have questions about the validations, please consult the d
 ---
 
 **Last Updated:** December 2025  
-**Dataset Version:** 1.0  
-**Total Valid Combinations:** 872
+**Dataset Version:** 2.0 (Cleaned)  
+**Total Valid Combinations:** 1,024  
+**Invalid Sequences Removed:** 99  
+
+### Changelog - Version 2.0
+- **Fixed critical dealer sequence issue**: Removed 99 invalid combinations where dealer would have stopped drawing early (e.g., 10+A=21)
+- **Updated validation scripts**: Added dealer drawing sequence validation to all checks
+- **Updated blackjack ratio**: After cleanup, blackjack percentage in value-21 hands is now ~50% (was ~43%)
+- **Added 40 new valid combinations** for value 17 starting with 10, J, Q, K
 

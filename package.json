@@ -30,7 +30,7 @@
     },
     "resolutions": {
         "sc-base-apis": "1.18.2",
-        "socket.io-prom-metrics": "1.0.3",
+        "socket.io-prom-metrics": "1.0.14",
         "mongoose": "6.13.6",
         "form-data": "4.0.4",
         "sc-common": "2.0.0"

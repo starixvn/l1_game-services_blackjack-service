@@ -250,9 +250,23 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
     const selectedIndex = Math.floor(mathRandom() * pool.length);
     const selectedCardSet = pool[selectedIndex];
 
+    // Validate selectedCardSet before shuffling
+    if (!selectedCardSet || selectedCardSet.length === 0) {
+        // Fallback: return a simple dealer hand of 19 (9 + 10)
+        return [createCard("9", 0), createCard("10", 1)];
+    }
+
     // Generate deck using the same shuffle method as generateDecks
     const randomShuffles = randomModes[randomMode] ?? randomModes[1];
     const randomShuffle = chance.pickone(randomShuffles);
 
-    return randomShuffle([...selectedCardSet]);
+    const shuffledDeck = randomShuffle([...selectedCardSet]);
+
+    // Validate shuffled deck to ensure no undefined cards
+    if (!shuffledDeck || shuffledDeck.length === 0 || shuffledDeck.some((card) => !card || !card.rank || card.suit === undefined)) {
+        // Fallback: return unshuffled version if shuffle corrupted the deck
+        return [...selectedCardSet];
+    }
+
+    return shuffledDeck;
 };

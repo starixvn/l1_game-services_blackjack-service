@@ -252,23 +252,14 @@ export const generateDealerDeck = (randomMode, dealerProbability = null) => {
     const selectedIndex = randomInt(pool.length);
     const selectedCardSet = pool[selectedIndex];
 
-    // Validate selectedCardSet before shuffling
+    // Validate selectedCardSet
     if (!selectedCardSet || selectedCardSet.length === 0) {
         // Fallback: return a simple dealer hand of 19 (9 + 10)
         return [createCard("9", 0), createCard("10", 1)];
     }
 
-    // Generate deck using the same shuffle method as generateDecks
-    const randomShuffles = randomModes[randomMode] ?? randomModes[1];
-    const randomShuffle = chance.pickone(randomShuffles);
-
-    const shuffledDeck = randomShuffle([...selectedCardSet]);
-
-    // Validate shuffled deck to ensure no undefined cards
-    if (!shuffledDeck || shuffledDeck.length === 0 || shuffledDeck.some((card) => !card || !card.rank || card.suit === undefined)) {
-        // Fallback: return unshuffled version if shuffle corrupted the deck
-        return [...selectedCardSet];
-    }
-
-    return shuffledDeck;
+    // DO NOT SHUFFLE! The card order in CARD_SET_DATASET is intentional
+    // Cards are ordered to follow dealer rules: hit on ≤16, stand on ≥17
+    // Shuffling would break the intended dealing sequence and target values
+    return selectedCardSet;
 };
